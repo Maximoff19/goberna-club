@@ -12,8 +12,13 @@ function splitTitleInTwoLines(title) {
 function ConsultantOptionCard({ option, index }) {
   const titleLines = splitTitleInTwoLines(option.title);
 
+  const handleClick = (e) => { 
+    console.log('Card clicked:', option.title);
+    window.location.hash = '#crear-perfil'; 
+  };
+
   return (
-    <article className="want-consultant__option-card">
+    <article className="want-consultant__option-card" onClick={handleClick} style={{cursor: 'pointer'}}>
       <div className="want-consultant__option-media-wrap">
         <img
           className={`want-consultant__option-media ${index === 0 ? 'want-consultant__option-media--trim' : ''}`}

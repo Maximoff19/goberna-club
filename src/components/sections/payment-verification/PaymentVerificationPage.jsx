@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { FaLock, FaLockOpen, FaShieldHalved, FaCheck, FaArrowRight } from 'react-icons/fa6';
+import { FaLock, FaLockOpen, FaShieldHalved, FaCheck } from 'react-icons/fa6';
 import PrimaryButton from '../../ui/PrimaryButton';
+import HeroNetworkBackground from '../home/hero/HeroNetworkBackground';
 import './paymentVerification.css';
 
 function PaymentVerificationPage({ onVerified }) {
@@ -34,6 +35,7 @@ function PaymentVerificationPage({ onVerified }) {
   return (
     <section className={`payment-verification ${showContent ? 'payment-verification--visible' : ''}`}>
       <div className="payment-verification__background">
+        <HeroNetworkBackground className="payment-verification__particles" particleId="payment-tsparticles" disableOnMobile={false} />
         <div className="payment-verification__overlay"></div>
       </div>
 
@@ -58,8 +60,6 @@ function PaymentVerificationPage({ onVerified }) {
           <div className="payment-verification__lock-container">
             {isVerified ? (
               <FaLockOpen className="payment-verification__lock-icon payment-verification__lock-icon--open" />
-            ) : isVerifying ? (
-              <div className="payment-verification__lock-spinner"></div>
             ) : (
               <FaLock className="payment-verification__lock-icon" />
             )}
@@ -69,18 +69,6 @@ function PaymentVerificationPage({ onVerified }) {
             {isVerifying ? 'Verificando...' : isVerified ? 'Pago verificado' : 'Pago pendiente'}
           </span>
         </div>
-
-        {/* Información de transferencia */}
-        {!isVerifying && !isVerified && (
-          <div className="payment-verification__transfer-info">
-            <p className="payment-verification__transfer-label">
-              Has seleccionado: <strong>Transferencia bancaria</strong>
-            </p>
-            <p className="payment-verification__transfer-hint">
-              Una vez realizado el pago, haz clic en verificar
-            </p>
-          </div>
-        )}
 
         {/* Botón de verificación */}
         {!isVerified && (
@@ -114,7 +102,6 @@ function PaymentVerificationPage({ onVerified }) {
             <p className="payment-verification__success-hint">
               Redirigiendo al formulario de perfil...
             </p>
-            <FaArrowRight className="payment-verification__success-arrow" />
           </div>
         )}
 

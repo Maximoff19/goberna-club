@@ -16,30 +16,55 @@ import './profilePage.css';
 
 const PROFILE_STORAGE_KEY = 'goberna.profileDirectory';
 
-function ProfilePage() {
+function ProfilePage({ initialProfile }) {
   const [isEditMode, setIsEditMode] = useState(false);
+  // Inicializar con valor por defecto para evitar null checks en el render
   const [currentProfile, setCurrentProfile] = useState(PROFILE_DIRECTORY[0]);
 
   useEffect(() => {
+    // Función para cargar el perfil desde localStorage
     const loadProfile = () => {
       try {
         const storedProfiles = window.localStorage.getItem(PROFILE_STORAGE_KEY);
-        if (!storedProfiles) {
-          setCurrentProfile(PROFILE_DIRECTORY[0]);
-          return;
+        
+        if (storedProfiles) {
+          const parsedProfiles = JSON.parse(storedProfiles);
+          if (Array.isArray(parsedProfiles) && parsedProfiles.length > 0) {
+            // Usar el último perfil creado o el primero por defecto
+            setCurrentProfile(parsedProfiles[parsedProfiles.length - 1]);
+            return;
+          }
         }
-
-        const parsedProfiles = JSON.parse(storedProfiles);
-        if (!Array.isArray(parsedProfiles) || parsedProfiles.length === 0) {
-          setCurrentProfile(PROFILE_DIRECTORY[0]);
-          return;
-        }
-
-        setCurrentProfile(parsedProfiles.find((profile) => profile.id === 'pf-1') || parsedProfiles[0]);
-      } catch {
+        
+        // Si no hay perfiles guardados, usar el de PROFILE_DIRECTORY
+        setCurrentProfile(PROFILE_DIRECTORY[0]);
+      } catch (e) {
+        console.error('Error loading profile:', e);
         setCurrentProfile(PROFILE_DIRECTORY[0]);
       }
     };
+    
+    // Primero intentar cargar el último perfil creado por ID
+    const lastCreatedId = localStorage.getItem('goberna.lastCreatedProfileId');
+    
+    if (lastCreatedId) {
+      try {
+        const storedProfiles = window.localStorage.getItem(PROFILE_STORAGE_KEY);
+        if (storedProfiles) {
+          const parsedProfiles = JSON.parse(storedProfiles);
+          const lastProfile = parsedProfiles.find(p => p.id === lastCreatedId);
+          if (lastProfile) {
+            setCurrentProfile(lastProfile);
+            return;
+          }
+        }
+      } catch (e) {
+        console.error('Error loading last created profile:', e);
+      }
+    }
+    
+    // Si no se encontró por ID, cargar el más reciente o el por defecto
+    loadProfile();
 
     const syncProfileFromController = (event) => {
       const nextProfile = event.detail?.profile;
@@ -59,7 +84,6 @@ function ProfilePage() {
       });
     };
 
-    loadProfile();
     window.addEventListener('app:profile-data-updated', syncProfileFromController);
     window.addEventListener('app:profile-edit-mode-toggle', onEditModeToggle);
 

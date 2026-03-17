@@ -16,7 +16,13 @@ function splitPrice(price) {
   };
 }
 
-function PricingCard({ plan }) {
+function PricingCard({ plan, onSelectPlan }) {
+
+  const handleClick = () => {
+    if (onSelectPlan) {
+      onSelectPlan(plan);
+    }
+  };
   const priceParts = splitPrice(plan.price);
 
   return (
@@ -60,10 +66,10 @@ function PricingCard({ plan }) {
             alwaysActive
             className="pricing-card__button-glare"
           >
-            <PrimaryButton className="pricing-card__button">PAGAR AHORA</PrimaryButton>
+            <PrimaryButton className="pricing-card__button" onClick={handleClick}>PAGAR AHORA</PrimaryButton>
           </GlareHover>
         ) : (
-          <PrimaryButton className="pricing-card__button">PAGAR AHORA</PrimaryButton>
+          <PrimaryButton className="pricing-card__button" onClick={handleClick}>PAGAR AHORA</PrimaryButton>
         )}
       </div>
     </article>

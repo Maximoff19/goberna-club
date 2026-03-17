@@ -84,7 +84,7 @@ function PricingSection() {
 
         <div className="pricing__cards-row">
           {PRICING_PLANS.map((plan) => (
-            <PricingCard key={plan.id} plan={plan} />
+            <PricingCard key={plan.id} plan={plan} onSelectPlan={() => { window.location.hash = '#crear-perfil'; }} />
           ))}
         </div>
       </div>

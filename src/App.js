@@ -1,6 +1,8 @@
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import Footer from './components/sections/home/footer/Footer';
 import ConsultantSearchController from './components/sections/profile/ConsultantSearchController';
+import PaymentVerificationPage from './components/sections/payment-verification/PaymentVerificationPage';
+import ProfileCreatePage from './components/sections/profile-create/ProfileCreatePage';
 import './App.css';
 
 const Hero = lazy(() => import('./components/sections/home/hero/Hero'));
@@ -25,11 +27,20 @@ function resolveViewFromHash(hashValue) {
     return 'explore';
   }
 
+  if (hashValue === '#crear-perfil') {
+    return 'create-profile-verification';
+  }
+
+  if (hashValue === '#formulario-perfil') {
+    return 'create-profile-form';
+  }
+
   return 'home';
 }
 
 function App() {
   const [viewMode, setViewMode] = useState(resolveViewFromHash(window.location.hash));
+  const [createdProfile, setCreatedProfile] = useState(null);
   const targetScrollRef = useRef(0);
   const currentScrollRef = useRef(0);
   const velocityRef = useRef(0);
@@ -165,18 +176,30 @@ function App() {
     };
   }, [viewMode]);
 
+  const handleVerificationComplete = () => {
+    window.location.hash = 'formulario-perfil';
+  };
+
+  const handleProfileCreated = (profileData) => {
+    setCreatedProfile(profileData);
+  };
+
   return (
     <>
       <ConsultantSearchController />
       {viewMode === 'profile' ? (
         <Suspense fallback={null}>
-          <ProfilePage />
+          <ProfilePage initialProfile={createdProfile} />
           <Footer enableReveal={false} />
         </Suspense>
       ) : viewMode === 'explore' ? (
         <Suspense fallback={null}>
           <ConsultantsExplorePage />
         </Suspense>
+      ) : viewMode === 'create-profile-verification' ? (
+        <PaymentVerificationPage onVerified={handleVerificationComplete} />
+      ) : viewMode === 'create-profile-form' ? (
+        <ProfileCreatePage onProfileCreated={handleProfileCreated} />
       ) : (
         <Suspense fallback={null}>
           <main>
