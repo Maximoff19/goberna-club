@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "skills": {
+    "react-19": {
+      "source": "prowler-cloud/prowler",
+      "sourceType": "github",
+      "computedHash": "83f14c6635583cca94c1cb67c38e6c8fbd8920680bd9859e64c4da91b39b15a7"
+    },
+    "react-dev": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "computedHash": "4ce3a30e2ad46fdb79f01e0e44701f961c055da7f25f9418af0283a7ad54b791"
+    },
+    "vercel-react-best-practices": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "computedHash": "afeca00ac2f492d88fdd010e73d91719a5b57c564bb4a73325b0bd77e11323ab"
+    }
+  }
+}

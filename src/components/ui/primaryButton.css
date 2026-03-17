@@ -1,0 +1,32 @@
+.primary-button {
+  border: 1px solid #ffc502;
+  border-radius: 999px;
+  background: #ffc502;
+  color: #0f1923;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55), inset 0 -8px 14px rgba(255, 255, 255, 0.2);
+  min-height: 46px;
+  padding: 12px 24px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.96rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease, filter 220ms ease;
+}
+
+.primary-button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(255, 197, 2, 0.16), inset 0 0 0 1px rgba(255, 255, 255, 0.56),
+    inset 0 -8px 14px rgba(255, 255, 255, 0.2);
+  filter: saturate(1.01);
+}
+
+.primary-button:active {
+  transform: translateY(0) scale(0.99);
+}
+
+.primary-button:focus-visible {
+  outline: 2px solid rgba(255, 197, 2, 0.65);
+  outline-offset: 2px;
+}
