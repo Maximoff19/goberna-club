@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FaPlus, FaTrash, FaUpload, FaGlobe, FaBriefcase, FaGraduationCap, FaMedal, FaImage, FaCheck, FaUser, FaEnvelope, FaPhone, FaLink, FaFacebook, FaInstagram, FaXTwitter, FaLinkedin } from 'react-icons/fa6';
+import { FaPlus, FaTrash, FaUpload, FaBriefcase, FaGraduationCap, FaMedal, FaCheck, FaUser, FaEnvelope, FaInfoCircle, FaCircleExclamation } from 'react-icons/fa6';
 import Footer from '../home/footer/Footer';
 import './profileCreate.css';
 
@@ -24,17 +24,40 @@ const MODES = [
   'Contrato',
 ];
 
+const STEPS = ['basicos', 'contacto', 'experiencia', 'formacion', 'adicional'];
+
+// Tooltip component
+function FieldTooltip({ content }) {
+  return (
+    <span className="profile-create__tooltip-wrapper">
+      <button type="button" className="profile-create__tooltip-trigger" aria-label="Información">
+        i
+      </button>
+      <span className="profile-create__tooltip">{content}</span>
+    </span>
+  );
+}
+
+// Field component with optional tooltip
+function LabelWithTooltip({ children, tooltip, required, htmlFor }) {
+  return (
+    <div className="profile-create__label-row">
+      <label className="profile-create__label" htmlFor={htmlFor}>
+        {children} {required && <span className="profile-create__required">*</span>}
+      </label>
+      {tooltip && <FieldTooltip content={tooltip} />}
+    </div>
+  );
+}
+
 function ProfileCreatePage({ onProfileCreated }) {
   const [formData, setFormData] = useState({
-    // Datos básicos
     name: '',
     specialization: '',
     country: '',
     imageSrc: '',
     avatarSrc: '',
     summary: '',
-    
-    // Información de contacto
     phone: '',
     email: '',
     website: '',
@@ -44,64 +67,96 @@ function ProfileCreatePage({ onProfileCreated }) {
       twitter: '',
       linkedin: '',
     },
-    
-    // Experiencia
     experiences: [
-      {
-        company: '',
-        role: '',
-        mode: '',
-        period: '',
-        country: '',
-        summary: '',
-      },
+      { company: '', role: '', mode: '', periodStart: '', periodEnd: '', country: '', summary: '' },
     ],
-    
-    // Educación
     educations: [
-      {
-        institution: '',
-        program: '',
-        period: '',
-      },
+      { institution: '', program: '', periodStart: '', periodEnd: '' },
     ],
-    
-    // Idiomas
     languages: '',
-    
-    // Habilidades
     skills: '',
-    
-    // Galería
     gallery: [],
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState('basicos');
+  const [errors, setErrors] = useState({});
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  // Validar campos obligatorios por paso
+  // Validación por paso
   const validateStep = (step) => {
+    const newErrors = {};
+    
     if (step === 'basicos') {
+      if (!formData.name?.trim()) {
+        newErrors.name = 'El nombre es obligatorio';
+      }
+      if (!formData.specialization?.trim()) {
+        newErrors.specialization = 'La especialización es obligatoria';
+      }
+    }
+    
+    if (step === 'contacto') {
+      const hasContact = formData.email?.trim() || formData.phone?.trim() || formData.website?.trim();
+      if (!hasContact) {
+        newErrors.contact = 'Agrega al menos un medio de contacto (email, teléfono o sitio web)';
+      }
+      if (formData.email?.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        newErrors.email = 'Ingresá un email válido';
+      }
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const isCurrentStepValid = () => {
+    if (activeSection === 'basicos') {
       return formData.name?.trim() && formData.specialization?.trim();
     }
-    if (step === 'contacto') {
+    if (activeSection === 'contacto') {
       return formData.email?.trim() || formData.phone?.trim() || formData.website?.trim();
     }
     return true;
   };
 
-  const isCurrentStepValid = validateStep(activeSection);
   const isLastStep = activeSection === 'adicional';
+  const canProceed = isCurrentStepValid();
 
   const handleNextStep = () => {
-    const steps = ['basicos', 'contacto', 'experiencia', 'formacion', 'adicional'];
-    const currentIndex = steps.indexOf(activeSection);
-    if (currentIndex < steps.length - 1) {
-      setActiveSection(steps[currentIndex + 1]);
+    if (!validateStep(activeSection)) {
+      setErrorMessage('Completá los campos obligatorios para continuar');
+      setShowErrorToast(true);
+      setTimeout(() => setShowErrorToast(false), 4000);
+      return;
+    }
+    
+    const currentIndex = STEPS.indexOf(activeSection);
+    if (currentIndex < STEPS.length - 1) {
+      setActiveSection(STEPS[currentIndex + 1]);
+      setErrors({});
     }
   };
 
+  const handlePrevStep = () => {
+    const currentIndex = STEPS.indexOf(activeSection);
+    if (currentIndex > 0) {
+      setActiveSection(STEPS[currentIndex - 1]);
+      setErrors({});
+    }
+  };
+
+  const clearError = (field) => {
+    setErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors[field];
+      return newErrors;
+    });
+  };
+
   const handleInputChange = (field, value) => {
+    clearError(field);
     setFormData(prev => ({
       ...prev,
       [field]: value,
@@ -111,7 +166,6 @@ function ProfileCreatePage({ onProfileCreated }) {
   const handleFileChange = (field, e) => {
     const file = e.target.files[0];
     if (file) {
-      // Crear URL temporal para previsualizar
       const fileUrl = URL.createObjectURL(file);
       setFormData(prev => ({
         ...prev,
@@ -121,6 +175,7 @@ function ProfileCreatePage({ onProfileCreated }) {
   };
 
   const handleSocialChange = (network, value) => {
+    clearError('contact');
     setFormData(prev => ({
       ...prev,
       socials: {
@@ -153,7 +208,7 @@ function ProfileCreatePage({ onProfileCreated }) {
       ...prev,
       experiences: [
         ...prev.experiences,
-        { company: '', role: '', mode: '', period: '', country: '', summary: '' },
+        { company: '', role: '', mode: '', periodStart: '', periodEnd: '', country: '', summary: '' },
       ],
     }));
   };
@@ -172,7 +227,7 @@ function ProfileCreatePage({ onProfileCreated }) {
       ...prev,
       educations: [
         ...prev.educations,
-        { institution: '', program: '', period: '' },
+        { institution: '', program: '', periodStart: '', periodEnd: '' },
       ],
     }));
   };
@@ -188,82 +243,82 @@ function ProfileCreatePage({ onProfileCreated }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validar paso final
+    if (!validateStep(activeSection)) {
+      setErrorMessage('Completá los campos obligatorios para crear tu perfil');
+      setShowErrorToast(true);
+      setTimeout(() => setShowErrorToast(false), 4000);
+      return;
+    }
+    
     setIsSubmitting(true);
 
-    // Generar ID único
     const profileId = `pf-${Date.now()}`;
     
-      // Generar período unificado para experiencias y educations
-      const formatPeriod = (start, end) => {
-        if (!start && !end) return '';
-        const formatDate = (date) => {
-          if (!date) return '';
-          const [year, month] = date.split('-');
-          const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-          return month ? `${monthNames[parseInt(month, 10) - 1]} ${year}` : year;
-        };
-        const startFormatted = formatDate(start);
-        const endFormatted = end ? formatDate(end) : 'Actualidad';
-        return startFormatted ? `${startFormatted} - ${endFormatted}` : endFormatted;
+    const formatPeriod = (start, end) => {
+      if (!start && !end) return '';
+      const formatDate = (date) => {
+        if (!date) return '';
+        const [year, month] = date.split('-');
+        const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+        return month ? `${monthNames[parseInt(month, 10) - 1]} ${year}` : year;
       };
+      const startFormatted = formatDate(start);
+      const endFormatted = end ? formatDate(end) : 'Actualidad';
+      return startFormatted ? `${startFormatted} - ${endFormatted}` : endFormatted;
+    };
 
-      // Preparar datos del perfil
-      const profileData = {
-        id: profileId,
-        name: formData.name,
-        specialization: formData.specialization,
-        country: formData.country,
-        imageSrc: formData.imageSrc || '',
-        avatarSrc: formData.avatarSrc || '',
-        summary: formData.summary,
-        phone: formData.phone,
-        email: formData.email,
-        website: formData.website,
-        socials: Object.entries(formData.socials)
-          .filter(([_, url]) => url)
-          .map(([network, url]) => ({ network, url })),
-        experiences: formData.experiences
-          .filter(exp => exp.company || exp.role)
-          .map(exp => ({
-            company: exp.company,
-            role: exp.role,
-            mode: exp.mode,
-            period: formatPeriod(exp.periodStart, exp.periodEnd),
-            country: exp.country,
-            summary: exp.summary,
-          })),
-        educations: formData.educations
-          .filter(edu => edu.institution || edu.program)
-          .map(edu => ({
-            institution: edu.institution,
-            program: edu.program,
-            period: formatPeriod(edu.periodStart, edu.periodEnd),
-          })),
-        languages: formData.languages,
-        skills: formData.skills,
-        gallery: formData.gallery,
-      };
+    const profileData = {
+      id: profileId,
+      name: formData.name,
+      specialization: formData.specialization,
+      country: formData.country,
+      imageSrc: formData.imageSrc || '',
+      avatarSrc: formData.avatarSrc || '',
+      summary: formData.summary,
+      phone: formData.phone,
+      email: formData.email,
+      website: formData.website,
+      socials: Object.entries(formData.socials)
+        .filter(([_, url]) => url)
+        .map(([network, url]) => ({ network, url })),
+      experiences: formData.experiences
+        .filter(exp => exp.company || exp.role)
+        .map(exp => ({
+          company: exp.company,
+          role: exp.role,
+          mode: exp.mode,
+          period: formatPeriod(exp.periodStart, exp.periodEnd),
+          country: exp.country,
+          summary: exp.summary,
+        })),
+      educations: formData.educations
+        .filter(edu => edu.institution || edu.program)
+        .map(edu => ({
+          institution: edu.institution,
+          program: edu.program,
+          period: formatPeriod(edu.periodStart, edu.periodEnd),
+        })),
+      languages: formData.languages,
+      skills: formData.skills,
+      gallery: formData.gallery,
+    };
 
     try {
-      // Guardar en localStorage
       const existingProfiles = JSON.parse(localStorage.getItem('goberna.profileDirectory') || '[]');
       const updatedProfiles = [...existingProfiles, profileData];
       localStorage.setItem('goberna.profileDirectory', JSON.stringify(updatedProfiles));
-      
-      // Guardar el ID del último perfil creado
       localStorage.setItem('goberna.lastCreatedProfileId', profileId);
       
-      // Dispatch event para actualizar
       window.dispatchEvent(new CustomEvent('app:profile-data-updated', { 
         detail: { profile: profileData } 
       }));
 
-      // Notificar al padre
       if (onProfileCreated) {
         onProfileCreated(profileData);
       }
 
-      // Cambiar hash para ir al perfil
       window.location.hash = '#perfil';
     } catch (error) {
       console.error('Error saving profile:', error);
@@ -272,21 +327,30 @@ function ProfileCreatePage({ onProfileCreated }) {
     }
   };
 
+  const currentStepIndex = STEPS.indexOf(activeSection);
+
   const sections = [
-    { id: 'basicos', label: '', icon: FaUser },
-    { id: 'contacto', label: '', icon: FaEnvelope },
-    { id: 'experiencia', label: '', icon: FaBriefcase },
-    { id: 'educacion', label: '', icon: FaGraduationCap },
-    { id: 'adicional', label: '', icon: FaMedal },
+    { id: 'basicos', label: 'Básicos', icon: FaUser },
+    { id: 'contacto', label: 'Contacto', icon: FaEnvelope },
+    { id: 'experiencia', label: 'Experiencia', icon: FaBriefcase },
+    { id: 'educacion', label: 'Educación', icon: FaGraduationCap },
+    { id: 'adicional', label: 'Adicional', icon: FaMedal },
   ];
 
   return (
     <div className="profile-create">
+      {showErrorToast && (
+        <div className="profile-create__error-tooltip">
+          <FaCircleExclamation size={16} style={{ marginRight: 8, verticalAlign: 'middle' }} />
+          {errorMessage}
+        </div>
+      )}
+      
       <div className="profile-create__container">
         <header className="profile-create__header">
           <h1 className="profile-create__title">Crear tu perfil</h1>
           <p className="profile-create__subtitle">
-            Completa tu información para unirte a la red de consultores políticos
+            Completá tu información para unirte a la red de consultores políticos
           </p>
         </header>
 
@@ -298,16 +362,31 @@ function ProfileCreatePage({ onProfileCreated }) {
                 const Icon = section.icon;
                 return (
                   <button
+                    type="button"
                     key={section.id}
                     className={`profile-create__nav-item ${activeSection === section.id ? 'profile-create__nav-item--active' : ''}`}
                     onClick={() => setActiveSection(section.id)}
-                    title={section.label || section.id}
+                    title={section.label}
                   >
                     <Icon size={20} />
+                    <span>{section.label}</span>
                   </button>
                 );
               })}
             </nav>
+
+            {/* Progress dots */}
+            <div className="profile-create__progress">
+              {sections.map((section, index) => (
+                <div
+                  key={section.id}
+                  className={`profile-create__progress-dot ${
+                    index === currentStepIndex ? 'profile-create__progress-dot--active' : 
+                    index < currentStepIndex ? 'profile-create__progress-dot--completed' : ''
+                  }`}
+                />
+              ))}
+            </div>
           </aside>
 
           {/* Formulario */}
@@ -317,37 +396,56 @@ function ProfileCreatePage({ onProfileCreated }) {
               <div className="profile-create__section">
                 <h2 className="profile-create__section-title">Información básica</h2>
                 
-                <div className="profile-create__field">
-                  <label className="profile-create__label">
-                    Nombre completo <span className="profile-create__required">*</span>
-                  </label>
+                <div className={`profile-create__field ${errors.name ? 'profile-create__field--error' : ''}`}>
+                  <LabelWithTooltip 
+                    tooltip="Tu nombre completo tal como aparecerá en tu perfil público" 
+                    required
+                  >
+                    Nombre completo
+                  </LabelWithTooltip>
                   <input
                     type="text"
+                    id="name"
                     className="profile-create__input"
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
                     placeholder="Ej: Rodrigo Beltrán"
-                    required
                   />
+                  {errors.name && (
+                    <span className="profile-create__field-error">
+                      <FaCircleExclamation size={12} /> {errors.name}
+                    </span>
+                  )}
                 </div>
 
-                <div className="profile-create__field">
-                  <label className="profile-create__label">
-                    Especialización <span className="profile-create__required">*</span>
-                  </label>
+                <div className={`profile-create__field ${errors.specialization ? 'profile-create__field--error' : ''}`}>
+                  <LabelWithTooltip 
+                    tooltip="Tu área de especialización principal en consultoría política" 
+                    required
+                  >
+                    Especialización
+                  </LabelWithTooltip>
                   <input
                     type="text"
+                    id="specialization"
                     className="profile-create__input"
                     value={formData.specialization}
                     onChange={(e) => handleInputChange('specialization', e.target.value)}
-                    placeholder="Ej: Analista de datos y especialista en ciberdefensa política"
-                    required
+                    placeholder="Ej: Estrategia electoral y comunicación política"
                   />
+                  {errors.specialization && (
+                    <span className="profile-create__field-error">
+                      <FaCircleExclamation size={12} /> {errors.specialization}
+                    </span>
+                  )}
                 </div>
 
                 <div className="profile-create__field">
-                  <label className="profile-create__label">País</label>
+                  <LabelWithTooltip tooltip="País donde resides o trabajas principalmente">
+                    País
+                  </LabelWithTooltip>
                   <select
+                    id="country"
                     className="profile-create__select"
                     value={formData.country || ''}
                     onChange={(e) => handleInputChange('country', e.target.value)}
@@ -360,8 +458,11 @@ function ProfileCreatePage({ onProfileCreated }) {
                 </div>
 
                 <div className="profile-create__field">
-                  <label className="profile-create__label">Resumen profesional</label>
+                  <LabelWithTooltip tooltip="Una breve descripción de tu experiencia y enfoque profesional">
+                    Resumen profesional
+                  </LabelWithTooltip>
                   <textarea
+                    id="summary"
                     className="profile-create__textarea"
                     value={formData.summary}
                     onChange={(e) => handleInputChange('summary', e.target.value)}
@@ -371,10 +472,12 @@ function ProfileCreatePage({ onProfileCreated }) {
                 </div>
 
                 <div className="profile-create__field">
-                  <label className="profile-create__label">Foto de perfil</label>
+                  <LabelWithTooltip tooltip="Una foto de perfil ayuda a que otros consultores te reconozcan">
+                    Foto de perfil
+                  </LabelWithTooltip>
                   <label className="profile-create__file-button">
                     <FaUpload size={20} />
-                    <span>Subir foto</span>
+                    <span>{formData.avatarSrc ? 'Cambiar foto' : 'Subir foto'}</span>
                     <input
                       type="file"
                       accept="image/*"
@@ -382,6 +485,13 @@ function ProfileCreatePage({ onProfileCreated }) {
                       onChange={(e) => handleFileChange('avatarSrc', e)}
                     />
                   </label>
+                  {formData.avatarSrc && (
+                    <img 
+                      src={formData.avatarSrc} 
+                      alt="Vista previa" 
+                      style={{ marginTop: 10, width: 80, height: 80, objectFit: 'cover', borderRadius: '50%', border: '2px solid #FFC502' }} 
+                    />
+                  )}
                 </div>
               </div>
             )}
@@ -391,38 +501,52 @@ function ProfileCreatePage({ onProfileCreated }) {
               <div className="profile-create__section">
                 <h2 className="profile-create__section-title">Información de contacto</h2>
                 
-                <div className="profile-create__field">
-                  <label className="profile-create__label">
-                    Teléfono <span className="profile-create__required">*</span>
-                  </label>
+                {errors.contact && (
+                  <div className="profile-create__field-error" style={{ marginBottom: 16, fontSize: 13 }}>
+                    <FaCircleExclamation size={14} /> {errors.contact}
+                  </div>
+                )}
+                
+                <div className={`profile-create__field ${errors.phone ? 'profile-create__field--error' : ''}`}>
+                  <LabelWithTooltip tooltip="Tu número de teléfono para contacto directo">
+                    Teléfono
+                  </LabelWithTooltip>
                   <input
                     type="tel"
+                    id="phone"
                     className="profile-create__input"
                     value={formData.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                     placeholder="(+51) 999 221 784"
-                    required
                   />
                 </div>
 
-                <div className="profile-create__field">
-                  <label className="profile-create__label">
-                    Email <span className="profile-create__required">*</span>
-                  </label>
+                <div className={`profile-create__field ${errors.email ? 'profile-create__field--error' : ''}`}>
+                  <LabelWithTooltip tooltip="Tu correo electrónico principal de contacto">
+                    Email
+                  </LabelWithTooltip>
                   <input
                     type="email"
+                    id="email"
                     className="profile-create__input"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     placeholder="nombre@goberna.com"
-                    required
                   />
+                  {errors.email && (
+                    <span className="profile-create__field-error">
+                      <FaCircleExclamation size={12} /> {errors.email}
+                    </span>
+                  )}
                 </div>
 
                 <div className="profile-create__field">
-                  <label className="profile-create__label">Sitio web</label>
+                  <LabelWithTooltip tooltip="Tu sitio web personal o de tu empresa">
+                    Sitio web
+                  </LabelWithTooltip>
                   <input
                     type="url"
+                    id="website"
                     className="profile-create__input"
                     value={formData.website}
                     onChange={(e) => handleInputChange('website', e.target.value)}
@@ -431,9 +555,12 @@ function ProfileCreatePage({ onProfileCreated }) {
                 </div>
 
                 <div className="profile-create__field">
-                  <label className="profile-create__label">Idiomas</label>
+                  <LabelWithTooltip tooltip="Los idiomas que dominas, separados por comas">
+                    Idiomas
+                  </LabelWithTooltip>
                   <input
                     type="text"
+                    id="languages"
                     className="profile-create__input"
                     value={formData.languages}
                     onChange={(e) => handleInputChange('languages', e.target.value)}
@@ -442,13 +569,12 @@ function ProfileCreatePage({ onProfileCreated }) {
                 </div>
 
                 <h3 className="profile-create__subsection-title">Redes sociales</h3>
-                
+
                 <div className="profile-create__field">
-                  <label className="profile-create__label profile-create__label--with-icon">
-                    <FaFacebook size={16} /> Facebook
-                  </label>
+                  <label className="profile-create__label" htmlFor="facebook">Facebook</label>
                   <input
                     type="url"
+                    id="facebook"
                     className="profile-create__input"
                     value={formData.socials.facebook}
                     onChange={(e) => handleSocialChange('facebook', e.target.value)}
@@ -457,11 +583,10 @@ function ProfileCreatePage({ onProfileCreated }) {
                 </div>
 
                 <div className="profile-create__field">
-                  <label className="profile-create__label profile-create__label--with-icon">
-                    <FaInstagram size={16} /> Instagram
-                  </label>
+                  <label className="profile-create__label" htmlFor="instagram">Instagram</label>
                   <input
                     type="url"
+                    id="instagram"
                     className="profile-create__input"
                     value={formData.socials.instagram}
                     onChange={(e) => handleSocialChange('instagram', e.target.value)}
@@ -470,11 +595,10 @@ function ProfileCreatePage({ onProfileCreated }) {
                 </div>
 
                 <div className="profile-create__field">
-                  <label className="profile-create__label profile-create__label--with-icon">
-                    <FaXTwitter size={16} /> X (Twitter)
-                  </label>
+                  <label className="profile-create__label" htmlFor="twitter">X (Twitter)</label>
                   <input
                     type="url"
+                    id="twitter"
                     className="profile-create__input"
                     value={formData.socials.twitter}
                     onChange={(e) => handleSocialChange('twitter', e.target.value)}
@@ -483,11 +607,10 @@ function ProfileCreatePage({ onProfileCreated }) {
                 </div>
 
                 <div className="profile-create__field">
-                  <label className="profile-create__label profile-create__label--with-icon">
-                    <FaLinkedin size={16} /> LinkedIn
-                  </label>
+                  <label className="profile-create__label" htmlFor="linkedin">LinkedIn</label>
                   <input
                     type="url"
+                    id="linkedin"
                     className="profile-create__input"
                     value={formData.socials.linkedin}
                     onChange={(e) => handleSocialChange('linkedin', e.target.value)}
@@ -502,6 +625,12 @@ function ProfileCreatePage({ onProfileCreated }) {
               <div className="profile-create__section">
                 <h2 className="profile-create__section-title">Experiencia laboral</h2>
                 
+                <div className="profile-create__field">
+                  <LabelWithTooltip tooltip="Podés agregar una o más experiencias laborales. Si no tenés experiencia, podés saltar este paso">
+                    Agregá tu experiencia profesional
+                  </LabelWithTooltip>
+                </div>
+                
                 {formData.experiences.map((exp, index) => (
                   <div key={index} className="profile-create__item">
                     <div className="profile-create__item-header">
@@ -511,6 +640,7 @@ function ProfileCreatePage({ onProfileCreated }) {
                           type="button"
                           className="profile-create__item-remove"
                           onClick={() => removeExperience(index)}
+                          aria-label="Eliminar experiencia"
                         >
                           <FaTrash size={14} />
                         </button>
@@ -518,9 +648,10 @@ function ProfileCreatePage({ onProfileCreated }) {
                     </div>
 
                     <div className="profile-create__field">
-                      <label className="profile-create__label">Empresa / Organización</label>
+                      <label className="profile-create__label" htmlFor={`exp-company-${index}`}>Empresa / Organización</label>
                       <input
                         type="text"
+                        id={`exp-company-${index}`}
                         className="profile-create__input"
                         value={exp.company}
                         onChange={(e) => handleExperienceChange(index, 'company', e.target.value)}
@@ -529,9 +660,10 @@ function ProfileCreatePage({ onProfileCreated }) {
                     </div>
 
                     <div className="profile-create__field">
-                      <label className="profile-create__label">Cargo</label>
+                      <label className="profile-create__label" htmlFor={`exp-role-${index}`}>Cargo</label>
                       <input
                         type="text"
+                        id={`exp-role-${index}`}
                         className="profile-create__input"
                         value={exp.role}
                         onChange={(e) => handleExperienceChange(index, 'role', e.target.value)}
@@ -541,8 +673,9 @@ function ProfileCreatePage({ onProfileCreated }) {
 
                     <div className="profile-create__row">
                       <div className="profile-create__field">
-                        <label className="profile-create__label">Modalidad</label>
+                        <label className="profile-create__label" htmlFor={`exp-mode-${index}`}>Modalidad</label>
                         <select
+                          id={`exp-mode-${index}`}
                           className="profile-create__select"
                           value={exp.mode}
                           onChange={(e) => handleExperienceChange(index, 'mode', e.target.value)}
@@ -555,8 +688,9 @@ function ProfileCreatePage({ onProfileCreated }) {
                       </div>
 
                       <div className="profile-create__field">
-                        <label className="profile-create__label">País</label>
+                        <label className="profile-create__label" htmlFor={`exp-country-${index}`}>País</label>
                         <select
+                          id={`exp-country-${index}`}
                           className="profile-create__select"
                           value={exp.country}
                           onChange={(e) => handleExperienceChange(index, 'country', e.target.value)}
@@ -570,26 +704,32 @@ function ProfileCreatePage({ onProfileCreated }) {
                     </div>
 
                     <div className="profile-create__field">
-                      <label className="profile-create__label">Período</label>
+                      <LabelWithTooltip tooltip="Mes y año de inicio y fin. Si aún estás ahí, dejá vacío el campo 'Fin'">
+                        Período
+                      </LabelWithTooltip>
                       <div className="profile-create__row">
                         <input
                           type="month"
+                          id={`exp-start-${index}`}
                           className="profile-create__input"
                           value={exp.periodStart || ''}
                           onChange={(e) => handleExperienceChange(index, 'periodStart', e.target.value)}
                         />
                         <input
                           type="month"
+                          id={`exp-end-${index}`}
                           className="profile-create__input"
                           value={exp.periodEnd || ''}
                           onChange={(e) => handleExperienceChange(index, 'periodEnd', e.target.value)}
+                          placeholder="En curso"
                         />
                       </div>
                     </div>
 
                     <div className="profile-create__field">
-                      <label className="profile-create__label">Descripción</label>
+                      <label className="profile-create__label" htmlFor={`exp-summary-${index}`}>Descripción</label>
                       <textarea
+                        id={`exp-summary-${index}`}
                         className="profile-create__textarea"
                         value={exp.summary}
                         onChange={(e) => handleExperienceChange(index, 'summary', e.target.value)}
@@ -616,6 +756,12 @@ function ProfileCreatePage({ onProfileCreated }) {
               <div className="profile-create__section">
                 <h2 className="profile-create__section-title">Formación académica</h2>
                 
+                <div className="profile-create__field">
+                  <LabelWithTooltip tooltip="Agregá tu formación académica. Podés agregar varias o saltar este paso si no aplica">
+                    Agregá tu formación educativa
+                  </LabelWithTooltip>
+                </div>
+                
                 {formData.educations.map((edu, index) => (
                   <div key={index} className="profile-create__item">
                     <div className="profile-create__item-header">
@@ -625,6 +771,7 @@ function ProfileCreatePage({ onProfileCreated }) {
                           type="button"
                           className="profile-create__item-remove"
                           onClick={() => removeEducation(index)}
+                          aria-label="Eliminar formación"
                         >
                           <FaTrash size={14} />
                         </button>
@@ -632,9 +779,10 @@ function ProfileCreatePage({ onProfileCreated }) {
                     </div>
 
                     <div className="profile-create__field">
-                      <label className="profile-create__label">Institución</label>
+                      <label className="profile-create__label" htmlFor={`edu-institution-${index}`}>Institución</label>
                       <input
                         type="text"
+                        id={`edu-institution-${index}`}
                         className="profile-create__input"
                         value={edu.institution}
                         onChange={(e) => handleEducationChange(index, 'institution', e.target.value)}
@@ -643,9 +791,10 @@ function ProfileCreatePage({ onProfileCreated }) {
                     </div>
 
                     <div className="profile-create__field">
-                      <label className="profile-create__label">Programa / Carrera</label>
+                      <label className="profile-create__label" htmlFor={`edu-program-${index}`}>Programa / Carrera</label>
                       <input
                         type="text"
+                        id={`edu-program-${index}`}
                         className="profile-create__input"
                         value={edu.program}
                         onChange={(e) => handleEducationChange(index, 'program', e.target.value)}
@@ -654,16 +803,20 @@ function ProfileCreatePage({ onProfileCreated }) {
                     </div>
 
                     <div className="profile-create__field">
-                      <label className="profile-create__label">Período</label>
+                      <LabelWithTooltip tooltip="Mes y año de inicio y fin de tus estudios">
+                        Período
+                      </LabelWithTooltip>
                       <div className="profile-create__row">
                         <input
                           type="month"
+                          id={`edu-start-${index}`}
                           className="profile-create__input"
                           value={edu.periodStart || ''}
                           onChange={(e) => handleEducationChange(index, 'periodStart', e.target.value)}
                         />
                         <input
                           type="month"
+                          id={`edu-end-${index}`}
                           className="profile-create__input"
                           value={edu.periodEnd || ''}
                           onChange={(e) => handleEducationChange(index, 'periodEnd', e.target.value)}
@@ -690,34 +843,47 @@ function ProfileCreatePage({ onProfileCreated }) {
                 <h2 className="profile-create__section-title">Información adicional</h2>
                 
                 <div className="profile-create__field">
-                  <label className="profile-create__label">Habilidades</label>
+                  <LabelWithTooltip tooltip="Listá tus habilidades clave separadas por comas. Ej: Liderazgo, Análisis de datos, Comunicación estratégica">
+                    Habilidades
+                  </LabelWithTooltip>
                   <input
                     type="text"
+                    id="skills"
                     className="profile-create__input"
                     value={formData.skills}
                     onChange={(e) => handleInputChange('skills', e.target.value)}
                     placeholder="Ej: Empatía, Gestión del tiempo, Trabajo en equipo"
                   />
-                  <span className="profile-create__hint">Separa las habilidades con comas</span>
+                  <span className="profile-create__hint">Separás las habilidades con comas</span>
                 </div>
               </div>
             )}
 
-            {/* Botón de envío */}
+            {/* Botón de navegación y envío */}
             <div className="profile-create__actions">
-              {!isLastStep || !isCurrentStepValid ? (
+              {currentStepIndex > 0 && (
                 <button
                   type="button"
-                  className="profile-create__submit profile-create__submit--next"
+                  onClick={handlePrevStep}
+                  style={{ marginBottom: 12, background: 'transparent', border: 'none', color: '#0F1923', cursor: 'pointer', fontSize: 13, opacity: 0.7 }}
+                >
+                  ← Volver atrás
+                </button>
+              )}
+              
+              {!isLastStep ? (
+                <button
+                  type="button"
+                  className={`profile-create__submit ${!canProceed ? 'profile-create__submit--disabled' : ''}`}
                   onClick={handleNextStep}
                 >
-                  <span>Seguir</span>
+                  <span>Continuar</span>
                 </button>
               ) : (
                 <button
                   type="submit"
-                  className="profile-create__submit"
-                  disabled={isSubmitting}
+                  className={`profile-create__submit ${!canProceed ? 'profile-create__submit--disabled' : ''}`}
+                  disabled={isSubmitting || !canProceed}
                 >
                   {isSubmitting ? (
                     <>
@@ -731,6 +897,12 @@ function ProfileCreatePage({ onProfileCreated }) {
                     </>
                   )}
                 </button>
+              )}
+              
+              {!canProceed && (
+                <p style={{ textAlign: 'center', fontSize: 12, color: '#FF5252', marginTop: 8 }}>
+                  Completá los campos obligatorios para continuar
+                </p>
               )}
             </div>
           </form>
