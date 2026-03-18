@@ -12,24 +12,13 @@ function toArrayItems(values, fallback, prefix) {
 }
 
 function toExperienceItems(values) {
-  const fallback = [
-    {
-      company: 'Grupo Goberna',
-      role: 'Director de Estrategia Electoral',
-      mode: 'Tiempo completo',
-      period: '2020 - Actualidad',
-      country: 'Peru',
-      summary: 'Diseno de estrategia integral para candidatos presidenciales y subnacionales.',
-    },
-  ];
-
-  const source = Array.isArray(values) && values.length > 0 ? values : fallback;
+  const source = Array.isArray(values) && values.length > 0 ? values : [];
 
   return source.map((item) => ({
     id: createId('experience'),
     company: item.company || '',
     role: item.role || '',
-    mode: item.mode || 'Tiempo completo',
+    mode: item.mode || '',
     period: item.period || '',
     country: item.country || '',
     summary: item.summary || '',
@@ -53,15 +42,7 @@ function normalizeEducation(item) {
 }
 
 function toEducationItems(values) {
-  const fallback = [
-    {
-      institution: 'Escuela de Gobierno Goberna',
-      program: 'Especializacion en Estrategia Politica Electoral',
-      period: '2018 - 2019',
-    },
-  ];
-
-  const source = Array.isArray(values) && values.length > 0 ? values : fallback;
+  const source = Array.isArray(values) && values.length > 0 ? values : [];
 
   return source.map((item) => ({
     id: createId('education'),
@@ -81,36 +62,34 @@ function ProfileSectionEditorModal({ isOpen, sectionKey, itemIndex, profile, onC
 
     if (sectionKey === 'summary') {
       setDraft({
-        summary:
-          profile.summary ||
-          'Consultor politico con experiencia en estrategia electoral, comunicacion de crisis y direccion de campanas en America Latina.',
+        summary: profile.summary || '',
       });
       return;
     }
 
     if (sectionKey === 'languages') {
-      const values = (profile.languages || 'Espanol, Ingles')
+      const values = (profile.languages || '')
         .split(',')
         .map((item) => item.trim())
         .filter(Boolean);
-      setDraft({ languages: toArrayItems(values, ['Espanol'], 'language') });
+      setDraft({ languages: toArrayItems(values, [], 'language') });
       return;
     }
 
     if (sectionKey === 'skills') {
-      const values = (profile.skills || 'Empatia, Gestion del tiempo, Trabajo en equipo')
+      const values = (profile.skills || '')
         .split(',')
         .map((item) => item.trim())
         .filter(Boolean);
-      setDraft({ skills: toArrayItems(values, ['Empatia'], 'skill') });
+      setDraft({ skills: toArrayItems(values, [], 'skill') });
       return;
     }
 
     if (sectionKey === 'contact') {
       setDraft({
-        phone: profile.phone || '(+51) 999 221 784',
-        email: profile.email || 'rodrigo.beltran@goberna.com',
-        website: profile.website || 'grupogoberna.com',
+        phone: profile.phone || '',
+        email: profile.email || '',
+        website: profile.website || '',
       });
       return;
     }
@@ -158,11 +137,7 @@ function ProfileSectionEditorModal({ isOpen, sectionKey, itemIndex, profile, onC
 
     if (sectionKey === 'gallery') {
       setDraft({
-        gallery: toArrayItems(
-          profile.gallery,
-          ['/galeria/1c0ca2ea0f7ad3da8f9a68ae161cc016.jpg', '/galeria/333abe6e88c2beb8786d1cda08813aaf.jpg'],
-          'gallery'
-        ),
+        gallery: toArrayItems(profile.gallery || [], [], 'gallery'),
       });
       setPreviewImage('');
     }

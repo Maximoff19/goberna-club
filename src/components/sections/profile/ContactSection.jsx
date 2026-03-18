@@ -5,7 +5,11 @@ import ContactSocialsModal from './ContactSocialsModal';
 function ContactSection({ showEdit, onEdit, profile }) {
   const [isSocialsModalOpen, setIsSocialsModalOpen] = useState(false);
 
-  const socials = Array.isArray(profile?.socials) && profile.socials.length > 0 ? profile.socials : [{ network: 'instagram', url: 'https://instagram.com' }, { network: 'facebook', url: 'https://facebook.com' }];
+  const socials = Array.isArray(profile?.socials) && profile.socials.length > 0 
+    ? profile.socials 
+    : [];
+
+  const hasContactInfo = profile?.phone || profile?.email || profile?.website;
 
   const iconByNetwork = {
     instagram: Instagram,
@@ -37,41 +41,59 @@ function ContactSection({ showEdit, onEdit, profile }) {
         )}
       </div>
 
-      <ul className="profile-contact-list">
-        <li>
-          <Phone size={16} />
-          <span>{profile?.phone || '(+51) 999 221 784'}</span>
-        </li>
-        <li>
-          <Mail size={16} />
-          <span>{profile?.email || 'rodrigo.beltran@goberna.com'}</span>
-        </li>
-        <li>
-          <Globe size={16} />
-          <span>{profile?.website || 'grupogoberna.com'}</span>
-        </li>
-      </ul>
+      {hasContactInfo ? (
+        <ul className="profile-contact-list">
+          {profile?.phone && (
+            <li>
+              <Phone size={16} />
+              <span>{profile.phone}</span>
+            </li>
+          )}
+          {profile?.email && (
+            <li>
+              <Mail size={16} />
+              <span>{profile.email}</span>
+            </li>
+          )}
+          {profile?.website && (
+            <li>
+              <Globe size={16} />
+              <span>{profile.website}</span>
+            </li>
+          )}
+        </ul>
+      ) : !showEdit && (
+        <p className="profile-section-empty">No hay información de contacto.</p>
+      )}
 
-      <div className="profile-contact-socials">
-        {socials.map((social) => {
-          const network = typeof social === 'string' ? (social.includes('facebook') ? 'facebook' : 'instagram') : social.network;
-          const url = typeof social === 'string' ? social : social.url;
-          const label = network || 'Red social';
-          const Icon = iconByNetwork[network] || Globe;
+      {socials.length > 0 && (
+        <div className="profile-contact-socials">
+          {socials.map((social) => {
+            const network = typeof social === 'string' ? (social.includes('facebook') ? 'facebook' : 'instagram') : social.network;
+            const url = typeof social === 'string' ? social : social.url;
+            const label = network || 'Red social';
+            const Icon = iconByNetwork[network] || Globe;
 
-          return (
-            <a key={`${url}-${label}`} href={url} aria-label={label}>
-              <Icon size={17} />
-            </a>
-          );
-        })}
+            return (
+              <a key={`${url}-${label}`} href={url} aria-label={label}>
+                <Icon size={17} />
+              </a>
+            );
+          })}
 
-        {showEdit && (
-          <button type="button" className="profile-contact-socials__add" aria-label="Agregar red social" onClick={() => setIsSocialsModalOpen(true)}>
-            <Plus size={16} aria-hidden="true" />
-          </button>
-        )}
-      </div>
+          {showEdit && (
+            <button type="button" className="profile-contact-socials__add" aria-label="Agregar red social" onClick={() => setIsSocialsModalOpen(true)}>
+              <Plus size={16} aria-hidden="true" />
+            </button>
+          )}
+        </div>
+      )}
+
+      {showEdit && socials.length === 0 && (
+        <button type="button" className="profile-contact-socials__add" aria-label="Agregar red social" onClick={() => setIsSocialsModalOpen(true)}>
+          <Plus size={16} aria-hidden="true" />
+        </button>
+      )}
 
       <ContactSocialsModal
         isOpen={isSocialsModalOpen}

@@ -1,9 +1,9 @@
 import ProfileHeaderInfo from './ProfileHeaderInfo';
 
-function ProfileIdentitySection() {
+function ProfileIdentitySection({ profile }) {
   return (
     <section className="profile-identity" aria-labelledby="profile-name">
-      <ProfileHeaderInfo variant="compact" />
+      <ProfileHeaderInfo variant="compact" profile={profile} />
     </section>
   );
 }

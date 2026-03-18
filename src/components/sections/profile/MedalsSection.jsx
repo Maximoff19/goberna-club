@@ -1,13 +1,11 @@
 import { Award } from 'lucide-react';
 
-const MEDALS = [
-  'Top estratega electoral 2023',
-  'Reconocimiento en comunicacion politica regional',
-  'Premio a innovacion en analisis de opinion publica',
-];
-
 function MedalsSection({ medals }) {
-  const currentMedals = Array.isArray(medals) && medals.length > 0 ? medals : MEDALS;
+  const currentMedals = Array.isArray(medals) && medals.length > 0 ? medals : [];
+
+  if (currentMedals.length === 0) {
+    return null; // No mostrar sección si no hay medallas
+  }
 
   return (
     <section className="profile-section-card" aria-labelledby="profile-medals-title">

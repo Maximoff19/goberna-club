@@ -10,7 +10,6 @@ import SkillsSection from './SkillsSection';
 import ContactSection from './ContactSection';
 import CertificatesSection from './CertificatesSection';
 import GallerySection from './GallerySection';
-import PROFILE_DIRECTORY from './profileDirectory';
 import { addProfileSectionItem, openProfileSectionEditor, removeProfileSectionItem } from '../../../utils/profileSearchNavigation';
 import './profilePage.css';
 
@@ -18,52 +17,42 @@ const PROFILE_STORAGE_KEY = 'goberna.profileDirectory';
 
 function ProfilePage({ initialProfile }) {
   const [isEditMode, setIsEditMode] = useState(false);
-  // Inicializar con valor por defecto para evitar null checks en el render
-  const [currentProfile, setCurrentProfile] = useState(PROFILE_DIRECTORY[0]);
+  const [currentProfile, setCurrentProfile] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Función para cargar el perfil desde localStorage
     const loadProfile = () => {
       try {
+        const lastCreatedId = localStorage.getItem('goberna.lastCreatedProfileId');
         const storedProfiles = window.localStorage.getItem(PROFILE_STORAGE_KEY);
         
         if (storedProfiles) {
           const parsedProfiles = JSON.parse(storedProfiles);
           if (Array.isArray(parsedProfiles) && parsedProfiles.length > 0) {
-            // Usar el último perfil creado o el primero por defecto
-            setCurrentProfile(parsedProfiles[parsedProfiles.length - 1]);
+            // Prioridad: perfil por lastCreatedId > último perfil creado
+            let profileToLoad;
+            if (lastCreatedId) {
+              profileToLoad = parsedProfiles.find(p => p.id === lastCreatedId);
+            }
+            if (!profileToLoad) {
+              profileToLoad = parsedProfiles[parsedProfiles.length - 1];
+            }
+            setCurrentProfile(profileToLoad);
+            setIsLoading(false);
             return;
           }
         }
         
-        // Si no hay perfiles guardados, usar el de PROFILE_DIRECTORY
-        setCurrentProfile(PROFILE_DIRECTORY[0]);
+        // Si no hay perfiles guardados, usar initialProfile o null
+        setCurrentProfile(initialProfile || null);
+        setIsLoading(false);
       } catch (e) {
         console.error('Error loading profile:', e);
-        setCurrentProfile(PROFILE_DIRECTORY[0]);
+        setCurrentProfile(initialProfile || null);
+        setIsLoading(false);
       }
     };
     
-    // Primero intentar cargar el último perfil creado por ID
-    const lastCreatedId = localStorage.getItem('goberna.lastCreatedProfileId');
-    
-    if (lastCreatedId) {
-      try {
-        const storedProfiles = window.localStorage.getItem(PROFILE_STORAGE_KEY);
-        if (storedProfiles) {
-          const parsedProfiles = JSON.parse(storedProfiles);
-          const lastProfile = parsedProfiles.find(p => p.id === lastCreatedId);
-          if (lastProfile) {
-            setCurrentProfile(lastProfile);
-            return;
-          }
-        }
-      } catch (e) {
-        console.error('Error loading last created profile:', e);
-      }
-    }
-    
-    // Si no se encontró por ID, cargar el más reciente o el por defecto
     loadProfile();
 
     const syncProfileFromController = (event) => {
@@ -72,7 +61,6 @@ function ProfilePage({ initialProfile }) {
         setCurrentProfile(nextProfile);
         return;
       }
-
       loadProfile();
     };
 
@@ -91,7 +79,36 @@ function ProfilePage({ initialProfile }) {
       window.removeEventListener('app:profile-data-updated', syncProfileFromController);
       window.removeEventListener('app:profile-edit-mode-toggle', onEditModeToggle);
     };
-  }, []);
+  }, [initialProfile]);
+
+  if (isLoading) {
+    return (
+      <section className="profile-page" aria-labelledby="profile-name">
+        <div className="profile-page__safe-area">
+          <div className="profile-page__loading">
+            <div className="profile-page__loading-spinner"></div>
+            <p>Cargando perfil...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!currentProfile) {
+    return (
+      <section className="profile-page" aria-labelledby="profile-name">
+        <div className="profile-page__safe-area">
+          <div className="profile-page__empty">
+            <h2>No has creado tu perfil todavía</h2>
+            <p>Crea tu perfil para comenzar a mostrar tu información.</p>
+            <a href="#crear-perfil" className="profile-page__empty-cta">
+              Crear perfil
+            </a>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="profile-page" aria-labelledby="profile-name">
@@ -100,7 +117,7 @@ function ProfilePage({ initialProfile }) {
 
         <div className="profile-page__layout">
           <aside className="profile-page__column profile-page__column--left">
-            <ProfileIdentitySection />
+            <ProfileIdentitySection profile={currentProfile} />
             <LanguagesSection showEdit={isEditMode} onEdit={() => openProfileSectionEditor('languages')} languages={currentProfile.languages} />
             <EducationSection
               showEdit={isEditMode}
@@ -113,7 +130,7 @@ function ProfilePage({ initialProfile }) {
           </aside>
 
           <div className="profile-page__column profile-page__column--center">
-            <ProfessionalSummarySection showEdit={isEditMode} onEdit={() => openProfileSectionEditor('summary')} summary={currentProfile.summary} />
+            <ProfessionalSummarySection showEdit={isEditMode} onEdit={() => openProfileSectionEditor('summary')} profile={currentProfile} />
             <ExperienceSection
               showEdit={isEditMode}
               onAddItem={() => addProfileSectionItem('experience')}

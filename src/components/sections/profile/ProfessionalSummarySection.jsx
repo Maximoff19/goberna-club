@@ -1,7 +1,7 @@
 import { Pencil } from 'lucide-react';
 import ProfileHeaderInfo from './ProfileHeaderInfo';
 
-function ProfessionalSummarySection({ showEdit, onEdit, summary }) {
+function ProfessionalSummarySection({ showEdit, onEdit, profile }) {
   return (
     <section className="profile-section-card" aria-labelledby="profile-summary-title">
       <div className="profile-section-heading">
@@ -14,7 +14,11 @@ function ProfessionalSummarySection({ showEdit, onEdit, summary }) {
           </button>
         )}
       </div>
-      <ProfileHeaderInfo variant="summary" summary={summary} />
+      {profile?.summary ? (
+        <ProfileHeaderInfo variant="summary" profile={profile} />
+      ) : !showEdit && (
+        <p className="profile-section-empty">No hay resumen profesional.</p>
+      )}
     </section>
   );
 }

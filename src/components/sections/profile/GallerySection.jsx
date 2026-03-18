@@ -3,15 +3,6 @@ import { ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import GalleryImageItem from './GalleryImageItem';
 
-const GALLERY = [
-  { id: 'gl-1', src: '/galeria/1c0ca2ea0f7ad3da8f9a68ae161cc016.jpg', alt: 'Consultores en mesa de estrategia' },
-  { id: 'gl-2', src: '/galeria/333abe6e88c2beb8786d1cda08813aaf.jpg', alt: 'Consultora en sesión de análisis político' },
-  { id: 'gl-3', src: '/galeria/c1784dd2a85d12fec367250aa4aeeb04.jpg', alt: 'Ponencia en evento de consultoría política' },
-  { id: 'gl-4', src: '/galeria/f115905a7713cb696e78db53b258c952.jpg', alt: 'Retrato de consultor político' },
-  { id: 'gl-5', src: '/galeria/9f4c9cd0b18de367d05e2edde51b6b79.jpg', alt: 'Sesión de análisis con equipo de campaña' },
-  { id: 'gl-6', src: '/galeria/d857395d717c4d9b6813f0f9a040864d.jpg', alt: 'Encuentro de trabajo en consultoría política' },
-];
-
 function GallerySection({ showEdit, gallery }) {
   const [activeImageIndex, setActiveImageIndex] = useState(null);
   const [replaceImageIndex, setReplaceImageIndex] = useState(null);
@@ -20,10 +11,13 @@ function GallerySection({ showEdit, gallery }) {
   const currentGallery =
     Array.isArray(gallery) && gallery.length > 0
       ? gallery.map((src, index) => ({ id: `gl-dynamic-${index + 1}`, src, alt: `Imagen de galeria ${index + 1}` }))
-      : GALLERY;
+      : [];
 
   const isLightboxOpen = activeImageIndex !== null;
   const activeImage = isLightboxOpen ? currentGallery[activeImageIndex] : null;
+
+  // No mostrar nada si no hay imágenes y no está en modo edición
+  const isEmpty = currentGallery.length === 0 && !showEdit;
 
   const closeLightbox = () => {
     setActiveImageIndex(null);
@@ -189,6 +183,10 @@ function GallerySection({ showEdit, gallery }) {
         </div>
       </div>
     ) : null;
+
+  if (isEmpty) {
+    return null;
+  }
 
   return (
     <section className="profile-section-card profile-section-card--plain" aria-labelledby="profile-gallery-title">

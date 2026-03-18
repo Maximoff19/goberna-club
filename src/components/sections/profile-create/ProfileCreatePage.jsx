@@ -193,27 +193,56 @@ function ProfileCreatePage({ onProfileCreated }) {
     // Generar ID único
     const profileId = `pf-${Date.now()}`;
     
-    // Preparar datos del perfil
-    const profileData = {
-      id: profileId,
-      name: formData.name,
-      specialization: formData.specialization,
-      country: formData.country,
-      imageSrc: formData.imageSrc || '/perfiles/default.png',
-      avatarSrc: formData.avatarSrc || '/fotoperfil.png',
-      summary: formData.summary,
-      phone: formData.phone,
-      email: formData.email,
-      website: formData.website,
-      socials: Object.entries(formData.socials)
-        .filter(([_, url]) => url)
-        .map(([network, url]) => ({ network, url })),
-      experiences: formData.experiences.filter(exp => exp.company && exp.role),
-      educations: formData.educations.filter(edu => edu.institution && edu.program),
-      languages: formData.languages,
-      skills: formData.skills,
-      gallery: formData.gallery,
-    };
+      // Generar período unificado para experiencias y educations
+      const formatPeriod = (start, end) => {
+        if (!start && !end) return '';
+        const formatDate = (date) => {
+          if (!date) return '';
+          const [year, month] = date.split('-');
+          const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+          return month ? `${monthNames[parseInt(month, 10) - 1]} ${year}` : year;
+        };
+        const startFormatted = formatDate(start);
+        const endFormatted = end ? formatDate(end) : 'Actualidad';
+        return startFormatted ? `${startFormatted} - ${endFormatted}` : endFormatted;
+      };
+
+      // Preparar datos del perfil
+      const profileData = {
+        id: profileId,
+        name: formData.name,
+        specialization: formData.specialization,
+        country: formData.country,
+        imageSrc: formData.imageSrc || '/perfiles/default.png',
+        avatarSrc: formData.avatarSrc || '/fotoperfil.png',
+        summary: formData.summary,
+        phone: formData.phone,
+        email: formData.email,
+        website: formData.website,
+        socials: Object.entries(formData.socials)
+          .filter(([_, url]) => url)
+          .map(([network, url]) => ({ network, url })),
+        experiences: formData.experiences
+          .filter(exp => exp.company || exp.role)
+          .map(exp => ({
+            company: exp.company,
+            role: exp.role,
+            mode: exp.mode,
+            period: formatPeriod(exp.periodStart, exp.periodEnd),
+            country: exp.country,
+            summary: exp.summary,
+          })),
+        educations: formData.educations
+          .filter(edu => edu.institution || edu.program)
+          .map(edu => ({
+            institution: edu.institution,
+            program: edu.program,
+            period: formatPeriod(edu.periodStart, edu.periodEnd),
+          })),
+        languages: formData.languages,
+        skills: formData.skills,
+        gallery: formData.gallery,
+      };
 
     try {
       // Guardar en localStorage

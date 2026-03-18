@@ -1,10 +1,8 @@
 import { Plus } from 'lucide-react';
 import SkillTag from './SkillTag';
 
-const SKILLS = ['Empatía', 'Gestión del tiempo', 'Habilidades técnicas diseño', 'Trabajo en equipo'];
-
 function SkillsSection({ showEdit, onEdit, skills }) {
-  const currentSkills = (skills || SKILLS.join(', '))
+  const currentSkills = (skills || '')
     .split(',')
     .map((item) => item.trim())
     .filter(Boolean);
@@ -22,11 +20,15 @@ function SkillsSection({ showEdit, onEdit, skills }) {
         )}
       </div>
 
-      <div className="profile-pill-list">
-        {currentSkills.map((skill) => (
-          <SkillTag key={skill} label={skill} />
-        ))}
-      </div>
+      {currentSkills.length > 0 ? (
+        <div className="profile-pill-list">
+          {currentSkills.map((skill) => (
+            <SkillTag key={skill} label={skill} />
+          ))}
+        </div>
+      ) : !showEdit && (
+        <p className="profile-section-empty">No hay habilidades registradas.</p>
+      )}
     </section>
   );
 }

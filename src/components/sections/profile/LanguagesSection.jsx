@@ -1,9 +1,7 @@
 import { Plus } from 'lucide-react';
 
-const LANGUAGES = ['Inglés', 'Español'];
-
 function LanguagesSection({ showEdit, onEdit, languages }) {
-  const currentLanguages = (languages || LANGUAGES.join(', '))
+  const currentLanguages = (languages || '')
     .split(',')
     .map((item) => item.trim())
     .filter(Boolean);
@@ -20,13 +18,17 @@ function LanguagesSection({ showEdit, onEdit, languages }) {
           </button>
         )}
       </div>
-      <div className="profile-pill-list">
-        {currentLanguages.map((language) => (
-          <span key={language} className="profile-pill">
-            {language}
-          </span>
-        ))}
-      </div>
+      {currentLanguages.length > 0 ? (
+        <div className="profile-pill-list">
+          {currentLanguages.map((language) => (
+            <span key={language} className="profile-pill">
+              {language}
+            </span>
+          ))}
+        </div>
+      ) : !showEdit && (
+        <p className="profile-section-empty">No hay idiomas registrados.</p>
+      )}
     </section>
   );
 }

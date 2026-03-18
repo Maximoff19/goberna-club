@@ -66,7 +66,7 @@ const PRICING_PLANS = [
 
 function PricingSection() {
   return (
-    <section className="pricing" aria-labelledby="pricing-title">
+    <section id="precios" className="pricing" aria-labelledby="pricing-title">
       <div className="pricing__safe-area">
         <SectionTitle id="pricing-title" className="pricing__title" color="#0F1923">
           <ScrollReveal

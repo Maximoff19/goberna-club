@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FaLock, FaLockOpen, FaShieldHalved, FaCheck } from 'react-icons/fa6';
+import { FaLock, FaLockOpen, FaCheck } from 'react-icons/fa6';
 import PrimaryButton from '../../ui/PrimaryButton';
 import HeroNetworkBackground from '../home/hero/HeroNetworkBackground';
 import './paymentVerification.css';
@@ -42,7 +42,7 @@ function PaymentVerificationPage({ onVerified }) {
       <div className="payment-verification__content">
         {/* Icono de seguridad */}
         <div className="payment-verification__shield">
-          <FaShieldHalved size={48} />
+          <FaLock size={48} />
         </div>
 
         {/* Título */}
@@ -104,12 +104,6 @@ function PaymentVerificationPage({ onVerified }) {
             </p>
           </div>
         )}
-
-        {/* Información de seguridad */}
-        <div className="payment-verification__security-info">
-          <FaShieldHalved size={14} />
-          <span>Conexión segura SSL · 256-bit encryption</span>
-        </div>
       </div>
     </section>
   );
