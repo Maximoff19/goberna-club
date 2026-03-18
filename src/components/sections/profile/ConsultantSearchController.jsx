@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import ProfileSearchOverlay from './ProfileSearchOverlay';
 import ProfileSectionEditorModal from './ProfileSectionEditorModal';
-import PROFILE_DIRECTORY from './profileDirectory';
 
 const PROFILE_STORAGE_KEY = 'goberna.profileDirectory';
 
@@ -10,23 +9,40 @@ function ConsultantSearchController() {
   const [activeSectionKey, setActiveSectionKey] = useState('');
   const [activeSectionItemIndex, setActiveSectionItemIndex] = useState(null);
   const [query, setQuery] = useState('');
-  const [profiles, setProfiles] = useState(PROFILE_DIRECTORY);
+  const [profiles, setProfiles] = useState([]);
+
+  // Obtener el ID del último perfil creado
+  const getLastCreatedProfileId = () => {
+    return localStorage.getItem('goberna.lastCreatedProfileId');
+  };
+
+  // Obtener el perfil activo (el último creado o el primero disponible)
+  const getActiveProfile = () => {
+    const lastId = getLastCreatedProfileId();
+    if (lastId) {
+      const found = profiles.find(p => p.id === lastId);
+      if (found) return found;
+    }
+    return profiles.length > 0 ? profiles[profiles.length - 1] : null;
+  };
 
   useEffect(() => {
     try {
       const storedProfiles = window.localStorage.getItem(PROFILE_STORAGE_KEY);
       if (!storedProfiles) {
+        setProfiles([]);
         return;
       }
 
       const parsedProfiles = JSON.parse(storedProfiles);
       if (!Array.isArray(parsedProfiles) || parsedProfiles.length === 0) {
+        setProfiles([]);
         return;
       }
 
       setProfiles(parsedProfiles);
     } catch {
-      // Ignore invalid local storage values.
+      setProfiles([]);
     }
   }, []);
 
@@ -37,13 +53,24 @@ function ConsultantSearchController() {
       // Ignore write failures.
     }
 
-    const currentProfile = profiles.find((profile) => profile.id === 'pf-1') || profiles[0];
-    window.dispatchEvent(
-      new CustomEvent('app:profile-data-updated', {
-        detail: { profile: currentProfile },
-      })
-    );
+    const currentProfile = getActiveProfile();
+    if (currentProfile) {
+      window.dispatchEvent(
+        new CustomEvent('app:profile-data-updated', {
+          detail: { profile: currentProfile },
+        })
+      );
+    }
   }, [profiles]);
+
+  // Obtener el ID del perfil activo
+  const getActiveProfileId = () => {
+    const lastId = getLastCreatedProfileId();
+    if (lastId && profiles.some(p => p.id === lastId)) {
+      return lastId;
+    }
+    return profiles.length > 0 ? profiles[profiles.length - 1].id : null;
+  };
 
   useEffect(() => {
     const openOverlay = () => {
@@ -78,9 +105,15 @@ function ConsultantSearchController() {
       setActiveSectionItemIndex(Number.isInteger(itemIndex) ? itemIndex : null);
     };
 
+    const activeProfileId = getActiveProfileId();
+    
     const addSectionItem = (event) => {
       const sectionKey = event.detail?.sectionKey;
       if (sectionKey !== 'education' && sectionKey !== 'experience') {
+        return;
+      }
+      
+      if (!activeProfileId) {
         return;
       }
 
@@ -88,7 +121,7 @@ function ConsultantSearchController() {
 
       setProfiles((currentProfiles) =>
         currentProfiles.map((profile) => {
-          if (profile.id !== 'pf-1') {
+          if (profile.id !== activeProfileId) {
             return profile;
           }
 
@@ -107,7 +140,7 @@ function ConsultantSearchController() {
             ...profile,
             experiences: [
               ...currentItems,
-              { company: '', role: '', mode: 'Tiempo completo', period: '', country: '', summary: '' },
+              { company: '', role: '', mode: '', period: '', country: '', summary: '' },
             ],
           };
         })
@@ -128,10 +161,14 @@ function ConsultantSearchController() {
         return;
       }
 
+      if (!activeProfileId) {
+        return;
+      }
+
       if (sectionKey === 'education') {
         setProfiles((currentProfiles) =>
           currentProfiles.map((profile) => {
-            if (profile.id !== 'pf-1') {
+            if (profile.id !== activeProfileId) {
               return profile;
             }
 
@@ -159,7 +196,7 @@ function ConsultantSearchController() {
       if (sectionKey === 'experience') {
         setProfiles((currentProfiles) =>
           currentProfiles.map((profile) => {
-            if (profile.id !== 'pf-1') {
+            if (profile.id !== activeProfileId) {
               return profile;
             }
 
@@ -190,9 +227,13 @@ function ConsultantSearchController() {
         return;
       }
 
+      if (!activeProfileId) {
+        return;
+      }
+
       setProfiles((currentProfiles) =>
         currentProfiles.map((profile) => {
-          if (profile.id !== 'pf-1') {
+          if (profile.id !== activeProfileId) {
             return profile;
           }
 
@@ -211,9 +252,13 @@ function ConsultantSearchController() {
         return;
       }
 
+      if (!activeProfileId) {
+        return;
+      }
+
       setProfiles((currentProfiles) =>
         currentProfiles.map((profile) => {
-          if (profile.id !== 'pf-1') {
+          if (profile.id !== activeProfileId) {
             return profile;
           }
 
@@ -231,9 +276,13 @@ function ConsultantSearchController() {
         return;
       }
 
+      if (!activeProfileId) {
+        return;
+      }
+
       setProfiles((currentProfiles) =>
         currentProfiles.map((profile) => {
-          if (profile.id !== 'pf-1') {
+          if (profile.id !== activeProfileId) {
             return profile;
           }
 
@@ -268,9 +317,14 @@ function ConsultantSearchController() {
   }, []);
 
   const mergeProfileDetails = (nextProfileDetails) => {
+    const activeId = getActiveProfileId();
+    if (!activeId) {
+      return;
+    }
+
     setProfiles((currentProfiles) =>
       currentProfiles.map((profile) => {
-        if (profile.id !== 'pf-1') {
+        if (profile.id !== activeId) {
           return profile;
         }
 
@@ -280,8 +334,6 @@ function ConsultantSearchController() {
 
         return {
           ...profile,
-          name: (pick('name') || profile.name).trim(),
-          specialization: (pick('specialization') || profile.specialization).trim(),
           summary: pick('summary'),
           languages: pick('languages'),
           skills: pick('skills'),
@@ -353,9 +405,12 @@ function ConsultantSearchController() {
 
     if (sectionKey === 'experience') {
       if (Number.isInteger(payload.itemIndex)) {
+        const activeId = getActiveProfileId();
+        if (!activeId) return;
+
         setProfiles((currentProfiles) =>
           currentProfiles.map((profile) => {
-            if (profile.id !== 'pf-1') {
+            if (profile.id !== activeId) {
               return profile;
             }
 
@@ -376,9 +431,12 @@ function ConsultantSearchController() {
 
     if (sectionKey === 'education') {
       if (Number.isInteger(payload.itemIndex)) {
+        const activeId = getActiveProfileId();
+        if (!activeId) return;
+
         setProfiles((currentProfiles) =>
           currentProfiles.map((profile) => {
-            if (profile.id !== 'pf-1') {
+            if (profile.id !== activeId) {
               return profile;
             }
 
@@ -403,7 +461,7 @@ function ConsultantSearchController() {
   };
 
   const resetProfiles = () => {
-    setProfiles(PROFILE_DIRECTORY);
+    setProfiles([]);
   };
 
   return (
@@ -421,7 +479,7 @@ function ConsultantSearchController() {
         isOpen={Boolean(activeSectionKey)}
         sectionKey={activeSectionKey}
         itemIndex={activeSectionItemIndex}
-        profile={profiles.find((profile) => profile.id === 'pf-1') || profiles[0]}
+        profile={getActiveProfile() || {}}
         onClose={() => {
           setActiveSectionKey('');
           setActiveSectionItemIndex(null);

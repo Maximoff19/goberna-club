@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { Camera } from 'lucide-react';
 
-function ProfileAvatar({ src = '/fotoperfil.png', editable = false }) {
+function ProfileAvatar({ src, name, editable = false }) {
   const fileInputRef = useRef(null);
 
   const onSelectAvatar = async (event) => {
@@ -25,9 +25,28 @@ function ProfileAvatar({ src = '/fotoperfil.png', editable = false }) {
     event.target.value = '';
   };
 
+  // Obtener iniciales del nombre
+  const getInitials = (nameStr) => {
+    if (!nameStr) return '?';
+    const parts = nameStr.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return (parts[0][0] || '?').toUpperCase();
+  };
+
+  const initials = getInitials(name);
+  const hasImage = src && src.trim() !== '';
+
   return (
     <div className={`profile-hero__avatar-wrap ${editable ? 'is-editable' : ''}`}>
-      <img className="profile-hero__avatar" src={src} alt="Fotografia del consultor" loading="eager" decoding="async" />
+      {hasImage ? (
+        <img className="profile-hero__avatar" src={src} alt="Fotografia del consultor" loading="eager" decoding="async" />
+      ) : (
+        <div className="profile-hero__avatar profile-hero__avatar--placeholder" aria-label="Sin foto de perfil">
+          {initials}
+        </div>
+      )}
 
       {editable && (
         <>

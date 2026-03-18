@@ -48,7 +48,7 @@ function ProfileHero({ profile, isEditMode }) {
         </button>
       </div>
 
-      <ProfileAvatar src={profile?.avatarSrc || profile?.imageSrc || '/fotoperfil.png'} editable={isEditMode} />
+      <ProfileAvatar src={profile?.avatarSrc || profile?.imageSrc} name={profile?.name} editable={isEditMode} />
     </section>
   );
 }
