@@ -1,22 +1,22 @@
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
-import Footer from './components/sections/home/footer/Footer';
-import ConsultantSearchController from './components/sections/profile/ConsultantSearchController';
-import PaymentVerificationPage from './components/sections/payment-verification/PaymentVerificationPage';
-import ProfileCreatePage from './components/sections/profile-create/ProfileCreatePage';
+import Footer from './domains/marketing/home/footer/Footer';
+import ConsultantSearchController from './domains/consultants/profile/ConsultantSearchController';
+import PaymentVerificationPage from './domains/billing/verification/PaymentVerificationPage';
+import ProfileCreatePage from './domains/consultants/onboarding/ProfileCreatePage';
 import './App.css';
 
-const Hero = lazy(() => import('./components/sections/home/hero/Hero'));
-const PopularProfiles = lazy(() => import('./components/sections/home/popular-profiles/PopularProfiles'));
-const AboutIntro = lazy(() => import('./components/sections/home/about-intro/AboutIntro'));
-const Methodology = lazy(() => import('./components/sections/home/methodology/Methodology'));
-const Values = lazy(() => import('./components/sections/home/values/Values'));
-const WantToBeConsultant = lazy(() => import('./components/sections/home/want-to-be-consultant/WantToBeConsultant'));
-const PricingSection = lazy(() => import('./components/sections/home/pricing/PricingSection'));
-const BenefitsSection = lazy(() => import('./components/sections/home/benefits/BenefitsSection'));
-const RequirementsInfoBlock = lazy(() => import('./components/sections/home/requirements/RequirementsInfoBlock'));
-const ReferralSection = lazy(() => import('./components/sections/home/referral/ReferralSection'));
-const ProfilePage = lazy(() => import('./components/sections/profile/ProfilePage'));
-const ConsultantsExplorePage = lazy(() => import('./components/sections/explore/ConsultantsExplorePage'));
+const Hero = lazy(() => import('./domains/marketing/home/hero/Hero'));
+const PopularProfiles = lazy(() => import('./domains/marketing/home/popular-profiles/PopularProfiles'));
+const AboutIntro = lazy(() => import('./domains/marketing/home/about-intro/AboutIntro'));
+const Methodology = lazy(() => import('./domains/marketing/home/methodology/Methodology'));
+const Values = lazy(() => import('./domains/marketing/home/values/Values'));
+const WantToBeConsultant = lazy(() => import('./domains/marketing/home/want-to-be-consultant/WantToBeConsultant'));
+const PricingSection = lazy(() => import('./domains/marketing/home/pricing/PricingSection'));
+const BenefitsSection = lazy(() => import('./domains/marketing/home/benefits/BenefitsSection'));
+const RequirementsInfoBlock = lazy(() => import('./domains/marketing/home/requirements/RequirementsInfoBlock'));
+const ReferralSection = lazy(() => import('./domains/marketing/home/referral/ReferralSection'));
+const ProfilePage = lazy(() => import('./domains/consultants/profile/ProfilePage'));
+const ConsultantsExplorePage = lazy(() => import('./domains/consultants/explore/ConsultantsExplorePage'));
 
 function resolveViewFromHash(hashValue) {
   if (hashValue === '#perfil') {

@@ -1,0 +1,17 @@
+import ConsultantResultCard from './ConsultantResultCard';
+
+function ConsultantsResultsList({ consultants }) {
+  if (consultants.length === 0) {
+    return <p className="consultants-results__empty">No encontramos consultores con los filtros actuales.</p>;
+  }
+
+  return (
+    <div className="consultants-results-list">
+      {consultants.map((consultant) => (
+        <ConsultantResultCard key={consultant.id} consultant={consultant} />
+      ))}
+    </div>
+  );
+}
+
+export default ConsultantsResultsList;

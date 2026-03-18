@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import Hero from './components/sections/home/hero/Hero';
+import Hero from './domains/marketing/home/hero/Hero';
 
 test('renders hero title', () => {
   render(<Hero />);

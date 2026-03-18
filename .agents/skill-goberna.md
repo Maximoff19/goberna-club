@@ -320,7 +320,7 @@ reutilizar inputs
 reutilizar estilos
 
 1. ANIMACIONES
-    PERMITIDO
+   PERMITIDO
 
 micro-interacciones
 
@@ -341,7 +341,7 @@ bounce innecesario
 efectos distractores
 
 1. EFECTOS AVANZADOS
-    USAR CUANDO APLIQUE
+   USAR CUANDO APLIQUE
 
 glass / blur sutil
 

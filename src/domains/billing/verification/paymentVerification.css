@@ -1,0 +1,343 @@
+.payment-verification {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: #000000;
+  opacity: 0;
+  transition: opacity 600ms ease-out;
+}
+
+.payment-verification--visible {
+  opacity: 1;
+}
+
+/* Background con particles links */
+.payment-verification__background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.payment-verification__particles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.payment-verification__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0.8) 100%);
+}
+
+@keyframes bgFloat {
+  0%, 100% {
+    transform: translateX(0) scale(1);
+  }
+  50% {
+    transform: translateX(-5%) scale(1.02);
+  }
+}
+
+/* Contenido principal */
+.payment-verification__content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 24px;
+  max-width: 480px;
+  width: 100%;
+}
+
+/* Shield icon */
+.payment-verification__shield {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: rgba(255, 197, 2, 0.1);
+  border: 2px solid rgba(255, 197, 2, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFC502;
+  margin-bottom: 32px;
+  animation: shieldPulse 2s ease-in-out infinite;
+}
+
+@keyframes shieldPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 197, 2, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 20px rgba(255, 197, 2, 0);
+  }
+}
+
+/* Título */
+.payment-verification__title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  color: #FFFFFF;
+  margin: 0 0 12px 0;
+  letter-spacing: -0.5px;
+}
+
+/* Subtítulo */
+.payment-verification__subtitle {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 40px 0;
+}
+
+/* Estado */
+.payment-verification__status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  margin-bottom: 24px;
+  transition: all 400ms ease;
+}
+
+.payment-verification__status--verified {
+  /* Sin fondo cuando está verificado */
+}
+
+/* Lock container */
+.payment-verification__lock-container {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFC502;
+  transition: all 400ms ease;
+}
+
+.payment-verification__lock-icon {
+  font-size: 24px;
+  transition: all 400ms ease;
+}
+
+.payment-verification__lock-icon--open {
+  color: #00C853;
+  animation: lockOpen 500ms ease forwards;
+}
+
+@keyframes lockOpen {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-15deg);
+  }
+}
+
+.payment-verification__lock-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(255, 197, 2, 0.2);
+  border-top-color: #FFC502;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Status text */
+.payment-verification__status-text {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #FFFFFF;
+  letter-spacing: 0.5px;
+}
+
+/* Transfer info */
+.payment-verification__transfer-info {
+  margin-bottom: 32px;
+}
+
+.payment-verification__transfer-label {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: #FFFFFF;
+  margin: 0 0 8px 0;
+}
+
+.payment-verification__transfer-label strong {
+  color: #FFC502;
+}
+
+.payment-verification__transfer-hint {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
+
+/* Actions */
+.payment-verification__actions {
+  margin-bottom: 32px;
+}
+
+.payment-verification__button {
+  min-width: 220px;
+  padding: 16px 32px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.payment-verification__button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.payment-verification__button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.payment-verification__button-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(15, 25, 35, 0.2);
+  border-top-color: #0F1923;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Success */
+.payment-verification__success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 48px;
+  animation: successAppear 500ms ease forwards;
+}
+
+@keyframes successAppear {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.payment-verification__success-text {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #00C853;
+  margin: 0;
+}
+
+.payment-verification__success-hint {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.payment-verification__success-arrow {
+  color: #FFC502;
+  font-size: 20px;
+  margin-top: 16px;
+  animation: arrowBounce 1s ease-in-out infinite;
+}
+
+@keyframes arrowBounce {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(8px);
+  }
+}
+
+/* Security info */
+.payment-verification__security-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: absolute;
+  bottom: 40px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.payment-verification__security-info svg {
+  color: rgba(255, 197, 2, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .payment-verification__content {
+    padding: 24px 16px;
+  }
+
+  .payment-verification__title {
+    font-size: 26px;
+  }
+
+  .payment-verification__shield {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 24px;
+  }
+
+  .payment-verification__shield svg {
+    font-size: 36px;
+  }
+
+  .payment-verification__status {
+    padding: 24px 32px;
+  }
+
+  .payment-verification__lock-container {
+    width: 56px;
+    height: 56px;
+  }
+
+  .payment-verification__lock-icon {
+    font-size: 20px;
+  }
+
+  .payment-verification__button {
+    min-width: 200px;
+    padding: 14px 28px;
+  }
+
+  .payment-verification__security-info {
+    position: relative;
+    bottom: auto;
+    margin-top: 24px;
+  }
+}
