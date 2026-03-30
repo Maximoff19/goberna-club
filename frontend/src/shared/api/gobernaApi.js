@@ -5,6 +5,7 @@ import {
   loginWithCredentials,
   registerWithCredentials,
   resetApiSession,
+  uploadFile,
 } from './client';
 
 function formatDateRange(startDate, endDate, isCurrent) {
@@ -421,6 +422,21 @@ export async function updateMyAvatar(avatarUrl) {
   });
 }
 
+export async function uploadProfileAvatar(profileId, file) {
+  return uploadFile(`/profiles/${profileId}/avatar`, file);
+}
+
+export async function uploadProfileGalleryImage(profileId, file) {
+  return uploadFile(`/profiles/${profileId}/gallery`, file);
+}
+
+export async function deleteProfileAsset(profileId, assetId) {
+  return apiRequest(`/profiles/${profileId}/assets/${assetId}`, {
+    method: 'DELETE',
+    auth: true,
+  });
+}
+
 export function getCurrentSession() {
   return getStoredSession();
 }
@@ -589,11 +605,8 @@ export async function createProfile(formData) {
       body: {
         firstName: accountName.firstName,
         lastName: accountName.lastName,
-        avatarUrl: optionalText(formData.avatarSrc),
       },
     });
-  } else if (formData.avatarSrc) {
-    await updateMyAvatar(formData.avatarSrc);
   }
 
   const created = await apiRequest('/profiles', {

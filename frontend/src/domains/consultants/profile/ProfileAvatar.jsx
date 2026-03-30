@@ -1,45 +1,6 @@
 import { Camera } from 'lucide-react';
 
-function readImageAsDataUrl(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(new Error('No pudimos leer la imagen seleccionada.'));
-    reader.readAsDataURL(file);
-  });
-}
-
-function loadImage(dataUrl) {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error('No pudimos procesar la imagen seleccionada.'));
-    image.src = dataUrl;
-  });
-}
-
-async function optimizeAvatarFile(file) {
-  const dataUrl = await readImageAsDataUrl(file);
-  const image = await loadImage(dataUrl);
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
-
-  if (!context) {
-    return dataUrl;
-  }
-
-  const maxSize = 320;
-  const cropSize = Math.min(image.width, image.height);
-  const sourceX = Math.max(0, Math.round((image.width - cropSize) / 2));
-  const sourceY = Math.max(0, Math.round((image.height - cropSize) / 2));
-  canvas.width = maxSize;
-  canvas.height = maxSize;
-  context.drawImage(image, sourceX, sourceY, cropSize, cropSize, 0, 0, maxSize, maxSize);
-
-  return canvas.toDataURL('image/jpeg', 0.82);
-}
-
-function ProfileAvatar({ src, name, countryFlag = '', countryCode = '', countryLabel = '', editable = false }) {
+function ProfileAvatar({ src, name, countryFlag = '', countryCode = '', countryLabel = '', editable = false, profileId = '' }) {
   const inputId = 'profile-avatar-input';
 
   const onSelectAvatar = async (event) => {
@@ -48,11 +9,9 @@ function ProfileAvatar({ src, name, countryFlag = '', countryCode = '', countryL
       return;
     }
 
-    const nextAvatar = await optimizeAvatarFile(selectedFile);
-
     window.dispatchEvent(
-      new CustomEvent('app:update-profile-photo', {
-        detail: { avatarSrc: nextAvatar },
+      new CustomEvent('app:upload-profile-avatar', {
+        detail: { file: selectedFile, profileId },
       })
     );
 

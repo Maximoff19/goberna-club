@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import GalleryImageItem from './GalleryImageItem';
 
-function GallerySection({ showEdit, gallery }) {
+function GallerySection({ showEdit, gallery, profileId = '' }) {
   const [activeImageIndex, setActiveImageIndex] = useState(null);
   const [replaceImageIndex, setReplaceImageIndex] = useState(null);
   const replaceImageInputRef = useRef(null);
@@ -23,29 +23,28 @@ function GallerySection({ showEdit, gallery }) {
     setActiveImageIndex(null);
   };
 
-  const updateGallery = (nextGalleryItems) => {
-    window.dispatchEvent(
-      new CustomEvent('app:update-profile-gallery', {
-        detail: { gallery: nextGalleryItems },
-      })
-    );
-  };
-
   const onSelectReplacementImage = async (event) => {
     const selectedFile = event.target.files?.[0];
     if (!selectedFile || replaceImageIndex === null) {
       return;
     }
 
-    const nextImage = await new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.readAsDataURL(selectedFile);
-    });
+    // Upload the replacement as a new image
+    window.dispatchEvent(
+      new CustomEvent('app:upload-profile-gallery', {
+        detail: { files: [selectedFile], profileId },
+      })
+    );
 
-    const nextGallery = currentGallery.map((item) => item.src);
-    nextGallery[replaceImageIndex] = nextImage;
-    updateGallery(nextGallery);
+    // Remove old image at that index
+    const oldImage = currentGallery[replaceImageIndex];
+    if (oldImage) {
+      window.dispatchEvent(
+        new CustomEvent('app:remove-profile-gallery-image', {
+          detail: { imageUrl: oldImage.src, profileId },
+        })
+      );
+    }
 
     setReplaceImageIndex(null);
     event.target.value = '';
@@ -57,24 +56,24 @@ function GallerySection({ showEdit, gallery }) {
       return;
     }
 
-    const nextImages = await Promise.all(
-      selectedFiles.map(
-        (file) =>
-          new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.readAsDataURL(file);
-          })
-      )
+    window.dispatchEvent(
+      new CustomEvent('app:upload-profile-gallery', {
+        detail: { files: selectedFiles, profileId },
+      })
     );
 
-    updateGallery([...currentGallery.map((item) => item.src), ...nextImages]);
     event.target.value = '';
   };
 
   const removeImage = (imageIndex) => {
-    const nextGallery = currentGallery.map((item) => item.src).filter((_, index) => index !== imageIndex);
-    updateGallery(nextGallery);
+    const image = currentGallery[imageIndex];
+    if (image) {
+      window.dispatchEvent(
+        new CustomEvent('app:remove-profile-gallery-image', {
+          detail: { imageUrl: image.src, profileId },
+        })
+      );
+    }
   };
 
   const goToNextImage = () => {

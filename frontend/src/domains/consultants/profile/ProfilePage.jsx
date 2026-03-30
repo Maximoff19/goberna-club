@@ -11,7 +11,7 @@ import ContactSection from './ContactSection';
 import CertificatesSection from './CertificatesSection';
 import GallerySection from './GallerySection';
 import ProfileSectionEditorModal from './ProfileSectionEditorModal';
-import { deleteProfilePermanently, fetchConsultantBySlug, fetchOwnProfileById, fetchOwnProfiles, fetchProfileCatalogs, getCurrentSession, isAdminSession, updateMyAvatar, updateOwnProfile } from '../../../shared/api/gobernaApi';
+import { deleteProfilePermanently, fetchConsultantBySlug, fetchOwnProfileById, fetchOwnProfiles, fetchProfileCatalogs, getCurrentSession, isAdminSession, updateMyAvatar, updateOwnProfile, uploadProfileAvatar, uploadProfileGalleryImage, deleteProfileAsset } from '../../../shared/api/gobernaApi';
 import './profilePage.css';
 
 function ProfilePage({ initialProfile, selectedProfileSlug, selectedProfileId }) {
@@ -185,27 +185,32 @@ function ProfilePage({ initialProfile, selectedProfileSlug, selectedProfileId })
       }
     };
 
-    const onUpdateProfilePhoto = (event) => {
-      const nextAvatar = event.detail?.avatarSrc;
-      if (!nextAvatar) {
+    const onUploadProfileAvatar = async (event) => {
+      const file = event.detail?.file;
+      const targetProfileId = event.detail?.profileId || editableProfileId;
+      if (!file || !targetProfileId) {
         return;
       }
 
+      // Show local preview immediately
+      const previewUrl = URL.createObjectURL(file);
       setCurrentProfile((current) => {
-        if (!current) {
-          return current;
-        }
-
-        return {
-          ...current,
-          avatarSrc: nextAvatar,
-          imageSrc: nextAvatar,
-        };
+        if (!current) return current;
+        return { ...current, avatarSrc: previewUrl, imageSrc: previewUrl };
       });
 
-      void updateMyAvatar(nextAvatar).catch((error) => {
+      try {
+        const asset = await uploadProfileAvatar(targetProfileId, file);
+        const serverUrl = asset.publicUrl;
+        setCurrentProfile((current) => {
+          if (!current) return current;
+          return { ...current, avatarSrc: serverUrl, imageSrc: serverUrl };
+        });
+      } catch (error) {
         setErrorMessage(error instanceof Error ? error.message : 'No pudimos guardar la foto de perfil.');
-      });
+      } finally {
+        URL.revokeObjectURL(previewUrl);
+      }
     };
 
     const onUpdateProfileSocials = (event) => {
@@ -215,32 +220,68 @@ function ProfilePage({ initialProfile, selectedProfileSlug, selectedProfileId })
       }));
     };
 
-    const onUpdateProfileGallery = (event) => {
-      updateProfile(
-        (current) => ({
-          ...current,
-          gallery: Array.isArray(event.detail?.gallery) ? event.detail.gallery : current.gallery,
-        }),
-        true,
-      );
+    const onUploadProfileGalleryImages = async (event) => {
+      const files = event.detail?.files;
+      const targetProfileId = event.detail?.profileId || editableProfileId;
+      if (!Array.isArray(files) || files.length === 0 || !targetProfileId) {
+        return;
+      }
+
+      try {
+        const uploadedUrls = [];
+        for (const file of files) {
+          const asset = await uploadProfileGalleryImage(targetProfileId, file);
+          uploadedUrls.push(asset.publicUrl);
+        }
+
+        setCurrentProfile((current) => {
+          if (!current) return current;
+          return { ...current, gallery: [...(current.gallery || []), ...uploadedUrls] };
+        });
+      } catch (error) {
+        setErrorMessage(error instanceof Error ? error.message : 'No pudimos subir las imagenes.');
+      }
+    };
+
+    const onRemoveProfileGalleryImage = async (event) => {
+      const assetId = event.detail?.assetId;
+      const imageUrl = event.detail?.imageUrl;
+      const targetProfileId = event.detail?.profileId || editableProfileId;
+
+      if (imageUrl) {
+        setCurrentProfile((current) => {
+          if (!current) return current;
+          return { ...current, gallery: (current.gallery || []).filter((url) => url !== imageUrl) };
+        });
+      }
+
+      if (assetId && targetProfileId) {
+        try {
+          await deleteProfileAsset(targetProfileId, assetId);
+        } catch (error) {
+          setErrorMessage(error instanceof Error ? error.message : 'No pudimos eliminar la imagen.');
+        }
+      }
     };
 
     window.addEventListener('app:toggle-profile-edit-mode', onToggleEditMode);
     window.addEventListener('app:open-profile-section-editor', onOpenProfileSectionEditor);
     window.addEventListener('app:add-profile-section-item', onAddProfileSectionItem);
     window.addEventListener('app:remove-profile-section-item', onRemoveProfileSectionItem);
-    window.addEventListener('app:update-profile-photo', onUpdateProfilePhoto);
+    window.addEventListener('app:upload-profile-avatar', onUploadProfileAvatar);
     window.addEventListener('app:update-profile-socials', onUpdateProfileSocials);
-    window.addEventListener('app:update-profile-gallery', onUpdateProfileGallery);
+    window.addEventListener('app:upload-profile-gallery', onUploadProfileGalleryImages);
+    window.addEventListener('app:remove-profile-gallery-image', onRemoveProfileGalleryImage);
 
     return () => {
       window.removeEventListener('app:toggle-profile-edit-mode', onToggleEditMode);
       window.removeEventListener('app:open-profile-section-editor', onOpenProfileSectionEditor);
       window.removeEventListener('app:add-profile-section-item', onAddProfileSectionItem);
       window.removeEventListener('app:remove-profile-section-item', onRemoveProfileSectionItem);
-      window.removeEventListener('app:update-profile-photo', onUpdateProfilePhoto);
+      window.removeEventListener('app:upload-profile-avatar', onUploadProfileAvatar);
       window.removeEventListener('app:update-profile-socials', onUpdateProfileSocials);
-      window.removeEventListener('app:update-profile-gallery', onUpdateProfileGallery);
+      window.removeEventListener('app:upload-profile-gallery', onUploadProfileGalleryImages);
+      window.removeEventListener('app:remove-profile-gallery-image', onRemoveProfileGalleryImage);
     };
   }, [canEdit, editableProfileId]);
 
@@ -459,7 +500,7 @@ function ProfilePage({ initialProfile, selectedProfileSlug, selectedProfileId })
               }}
             />
             <CertificatesSection certificates={currentProfile.certificates} />
-            <GallerySection showEdit={showEditControls} gallery={currentProfile.gallery} />
+            <GallerySection showEdit={showEditControls} gallery={currentProfile.gallery} profileId={currentProfile.id} />
           </div>
 
           <aside className="profile-page__column profile-page__column--right">

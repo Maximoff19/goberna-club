@@ -1,47 +1,8 @@
 import { useEffect, useState } from 'react';
 import { FaPlus, FaTrash, FaUpload, FaBriefcase, FaGraduationCap, FaMedal, FaCheck, FaUser, FaEnvelope, FaCircleExclamation } from 'react-icons/fa6';
 import Footer from '../../marketing/home/footer/Footer';
-import { createProfile, fetchProfileCatalogs } from '../../../shared/api/gobernaApi';
+import { createProfile, fetchProfileCatalogs, uploadProfileAvatar } from '../../../shared/api/gobernaApi';
 import './profileCreate.css';
-
-function readImageAsDataUrl(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(new Error('No pudimos leer la imagen seleccionada.'));
-    reader.readAsDataURL(file);
-  });
-}
-
-function loadImage(dataUrl) {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error('No pudimos procesar la imagen seleccionada.'));
-    image.src = dataUrl;
-  });
-}
-
-async function optimizeAvatarFile(file) {
-  const dataUrl = await readImageAsDataUrl(file);
-  const image = await loadImage(dataUrl);
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
-
-  if (!context) {
-    return dataUrl;
-  }
-
-  const maxSize = 320;
-  const cropSize = Math.min(image.width, image.height);
-  const sourceX = Math.max(0, Math.round((image.width - cropSize) / 2));
-  const sourceY = Math.max(0, Math.round((image.height - cropSize) / 2));
-  canvas.width = maxSize;
-  canvas.height = maxSize;
-  context.drawImage(image, sourceX, sourceY, cropSize, cropSize, 0, 0, maxSize, maxSize);
-
-  return canvas.toDataURL('image/jpeg', 0.82);
-}
 
 const MODES = [
   'Tiempo completo',
@@ -268,10 +229,12 @@ function ProfileCreatePage({ onProfileCreated }) {
     }
 
     try {
-      const fileUrl = await optimizeAvatarFile(file);
+      // Store the raw File for server upload, plus a local preview
+      const previewUrl = URL.createObjectURL(file);
       setFormData(prev => ({
         ...prev,
-        [field]: fileUrl,
+        [field]: previewUrl,
+        [`${field}File`]: file,
       }));
     } catch (error) {
       const nextMessage = error instanceof Error ? error.message : 'No pudimos procesar la imagen.';
@@ -364,6 +327,16 @@ function ProfileCreatePage({ onProfileCreated }) {
 
     try {
       const profileData = await createProfile(formData);
+
+      // Upload avatar file to server if one was selected
+      if (formData.avatarSrcFile && profileData?.id) {
+        try {
+          await uploadProfileAvatar(profileData.id, formData.avatarSrcFile);
+        } catch {
+          // Avatar upload failed but profile was created, continue
+        }
+      }
+
       if (onProfileCreated) {
         onProfileCreated(profileData);
       }

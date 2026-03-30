@@ -129,6 +129,30 @@ export async function apiRequest(path, options = {}) {
   }
 }
 
+export async function uploadFile(path, file) {
+  const session = await requireSession();
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${session.accessToken}`,
+    },
+    body: formData,
+  });
+
+  const isJson = response.headers.get('content-type')?.includes('application/json');
+  const payload = isJson ? await response.json() : null;
+
+  if (!response.ok) {
+    const message = payload?.error?.message || payload?.message || 'Upload failed';
+    throw new Error(Array.isArray(message) ? message.join(', ') : message);
+  }
+
+  return payload;
+}
+
 export function resetApiSession() {
   clearSession();
 }

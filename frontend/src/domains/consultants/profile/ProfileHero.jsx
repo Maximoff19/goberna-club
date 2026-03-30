@@ -67,6 +67,7 @@ function ProfileHero({ profile, canEdit = false, canDelete = false, isEditing = 
         countryCode={profile?.countryCode}
         countryLabel={profile?.countryLabel}
         editable={canEdit && isEditing}
+        profileId={profile?.id}
       />
     </section>
   );

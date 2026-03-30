@@ -348,9 +348,15 @@ function ProfileSectionEditorModal({ isOpen, sectionKey, itemIndex, profile, cat
     }
 
     if (sectionKey === 'gallery') {
-      onSave(sectionKey, {
-        gallery: draft.gallery.map((item) => item.value).filter((item) => item.trim().length > 0),
-      });
+      // Upload any new files that were added during editing
+      const newFiles = (draft.gallery || []).filter((item) => item.file).map((item) => item.file);
+      if (newFiles.length > 0) {
+        window.dispatchEvent(
+          new CustomEvent('app:upload-profile-gallery', {
+            detail: { files: newFiles, profileId: profile?.id },
+          })
+        );
+      }
       onClose();
     }
   };
@@ -361,22 +367,18 @@ function ProfileSectionEditorModal({ isOpen, sectionKey, itemIndex, profile, cat
       return;
     }
 
-    const imageUrls = await Promise.all(
-      files.map(
-        (file) =>
-          new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.readAsDataURL(file);
-          })
-      )
-    );
+    // Preview locally with object URLs
+    const previews = files.map((file) => ({
+      id: createId('gallery'),
+      value: URL.createObjectURL(file),
+      file,
+    }));
 
     setDraft((current) => ({
       ...current,
       gallery: [
         ...(current.gallery || []),
-        ...imageUrls.map((item) => ({ id: createId('gallery'), value: item })),
+        ...previews,
       ],
     }));
 
