@@ -1,0 +1,334 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  CONSULTANT
+  VISITOR
+}
+
+enum ConsultantPlan {
+  CONSULTOR_POLITICO
+  CONSULTOR_POLITICO_SENIOR
+  CONSULTOR_POLITICO_MASTER
+  CONSULTOR_POLITICO_INTERNACIONAL
+}
+
+enum ProfileStatus {
+  DRAFT
+  IN_REVIEW
+  PUBLISHED
+  REJECTED
+  ARCHIVED
+}
+
+enum ProfileAssetType {
+  AVATAR
+  GALLERY_IMAGE
+  CERTIFICATE_FILE
+  SUPPORTING_DOC
+}
+
+enum ReviewDecision {
+  SUBMITTED
+  APPROVED
+  REJECTED
+  CHANGES_REQUESTED
+  UNPUBLISHED
+  ARCHIVED
+}
+
+model User {
+  id                String               @id @default(cuid())
+  email             String               @unique @db.VarChar(191)
+  passwordHash      String               @db.VarChar(255)
+  role              UserRole             @default(CONSULTANT)
+  plan              ConsultantPlan?
+  firstName         String               @db.VarChar(100)
+  lastName          String               @db.VarChar(100)
+  avatarUrl         String?              @db.Text
+  isActive          Boolean              @default(true)
+  lastLoginAt       DateTime?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  deactivatedAt     DateTime?
+  profiles          ConsultantProfile[]
+  refreshSessions   RefreshSession[]
+  resetTokens       PasswordResetToken[]
+  auditLogs         AuditLog[]
+  reviews           ProfileReview[]      @relation("ReviewAuthor")
+  adminComments     AdminComment[]
+
+  @@index([role])
+  @@index([isActive])
+}
+
+model ConsultantProfile {
+  id                     String               @id @default(cuid())
+  userId                 String
+  slug                   String               @unique @db.VarChar(191)
+  status                 ProfileStatus        @default(DRAFT)
+  professionalHeadline   String?              @db.VarChar(180)
+  specialtyId            String?
+  countryId              String?
+  bio                    String?              @db.Text
+  country                String?              @db.VarChar(100)
+  city                   String?              @db.VarChar(100)
+  modalities             String?              @db.VarChar(255)
+  yearsOfExperience      Int?                 @db.UnsignedInt
+  publicEmail            String?              @db.VarChar(191)
+  publicPhone            String?              @db.VarChar(40)
+  websiteUrl             String?              @db.VarChar(500)
+  facebookUrl            String?              @db.VarChar(500)
+  linkedinUrl            String?              @db.VarChar(500)
+  xUrl                   String?              @db.VarChar(500)
+  instagramUrl           String?              @db.VarChar(500)
+  featuredFlag           Boolean              @default(false)
+  publishedAt            DateTime?
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  archivedAt             DateTime?
+  submittedForReviewAt   DateTime?
+  lastReviewedAt         DateTime?
+  owner                  User                 @relation(fields: [userId], references: [id])
+  specialty              Specialty?           @relation(fields: [specialtyId], references: [id])
+  countryRef             Country?             @relation(fields: [countryId], references: [id])
+  experiences            ProfileExperience[]
+  educations             ProfileEducation[]
+  languages              ProfileLanguage[]
+  skills                 ProfileSkill[]
+  certificates           ProfileCertificate[]
+  awards                 ProfileAward[]
+  assets                 ProfileMediaAsset[]
+  reviews                ProfileReview[]
+  adminComments          AdminComment[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([country])
+  @@index([countryId])
+  @@index([specialtyId])
+  @@index([featuredFlag])
+}
+
+model ProfileExperience {
+  id          String            @id @default(cuid())
+  profileId   String
+  company     String            @db.VarChar(191)
+  roleTitle   String            @db.VarChar(191)
+  employmentMode String?        @db.VarChar(80)
+  country     String?           @db.VarChar(100)
+  startDate   DateTime?
+  endDate     DateTime?
+  isCurrent   Boolean           @default(false)
+  description String?           @db.Text
+  orderIndex  Int               @default(0)
+  profile     ConsultantProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId, orderIndex])
+}
+
+model ProfileEducation {
+  id           String            @id @default(cuid())
+  profileId    String
+  institution  String            @db.VarChar(191)
+  degree       String?           @db.VarChar(191)
+  fieldOfStudy String?           @db.VarChar(191)
+  startDate    DateTime?
+  endDate      DateTime?
+  description  String?           @db.Text
+  orderIndex   Int               @default(0)
+  profile      ConsultantProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId, orderIndex])
+}
+
+model ProfileLanguage {
+  id               String            @id @default(cuid())
+  profileId        String
+  languageCode     String            @db.VarChar(20)
+  proficiencyLevel String            @db.VarChar(40)
+  profile          ConsultantProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@index([languageCode])
+}
+
+model ProfileSkill {
+  id        String            @id @default(cuid())
+  profileId String
+  skillId   String?
+  name      String            @db.VarChar(120)
+  category  String?           @db.VarChar(120)
+  years     Int?              @db.UnsignedInt
+  profile   ConsultantProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  skill     Skill?            @relation(fields: [skillId], references: [id])
+
+  @@index([profileId])
+  @@index([name])
+  @@index([skillId])
+}
+
+model Country {
+  id        String              @id @default(cuid())
+  code      String              @unique @db.VarChar(3)
+  slug      String              @unique @db.VarChar(120)
+  name      String              @unique @db.VarChar(120)
+  isActive  Boolean             @default(true)
+  profiles  ConsultantProfile[]
+
+  @@index([isActive])
+}
+
+model Specialty {
+  id        String              @id @default(cuid())
+  slug      String              @unique @db.VarChar(120)
+  name      String              @unique @db.VarChar(120)
+  isActive  Boolean             @default(true)
+  profiles  ConsultantProfile[]
+
+  @@index([isActive])
+}
+
+model Skill {
+  id            String         @id @default(cuid())
+  slug          String         @unique @db.VarChar(120)
+  name          String         @unique @db.VarChar(120)
+  isActive      Boolean        @default(true)
+  profileSkills ProfileSkill[]
+
+  @@index([isActive])
+}
+
+model ProfileCertificate {
+  id            String            @id @default(cuid())
+  profileId     String
+  title         String            @db.VarChar(191)
+  issuer        String?           @db.VarChar(191)
+  issueDate     DateTime?
+  credentialUrl String?           @db.VarChar(500)
+  assetId       String?
+  profile       ConsultantProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  asset         ProfileMediaAsset? @relation(fields: [assetId], references: [id])
+
+  @@index([profileId])
+}
+
+model ProfileAward {
+  id          String            @id @default(cuid())
+  profileId   String
+  title       String            @db.VarChar(191)
+  issuer      String?           @db.VarChar(191)
+  year        Int?
+  description String?           @db.Text
+  profile     ConsultantProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+}
+
+model ProfileMediaAsset {
+  id               String             @id @default(cuid())
+  profileId        String
+  type             ProfileAssetType
+  storageKey       String             @db.VarChar(255)
+  mimeType         String             @db.VarChar(120)
+  sizeBytes        BigInt
+  originalFilename String             @db.VarChar(255)
+  publicUrl        String?            @db.VarChar(500)
+  createdAt        DateTime           @default(now())
+  deletedAt        DateTime?
+  profile          ConsultantProfile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  certificates     ProfileCertificate[]
+
+  @@index([profileId, type])
+}
+
+model ProfileReview {
+  id             String            @id @default(cuid())
+  profileId      String
+  reviewerUserId String?
+  fromStatus     ProfileStatus
+  toStatus       ProfileStatus
+  decision       ReviewDecision
+  comment        String?           @db.Text
+  createdAt      DateTime          @default(now())
+  profile        ConsultantProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  reviewer       User?             @relation("ReviewAuthor", fields: [reviewerUserId], references: [id])
+
+  @@index([profileId, createdAt])
+}
+
+model AdminComment {
+  id          String            @id @default(cuid())
+  profileId   String
+  adminUserId String
+  message     String            @db.Text
+  isInternal  Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  profile     ConsultantProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  admin       User              @relation(fields: [adminUserId], references: [id])
+
+  @@index([profileId, createdAt])
+}
+
+model AuditLog {
+  id           String    @id @default(cuid())
+  actorUserId  String?
+  actorRole    UserRole?
+  action       String    @db.VarChar(120)
+  resourceType String    @db.VarChar(120)
+  resourceId   String    @db.VarChar(120)
+  metadataJson Json?
+  ip           String?   @db.VarChar(100)
+  userAgent    String?   @db.VarChar(255)
+  createdAt    DateTime  @default(now())
+  actor        User?     @relation(fields: [actorUserId], references: [id])
+
+  @@index([resourceType, resourceId])
+  @@index([action])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId     String
+  tokenHash  String   @db.VarChar(255)
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model RefreshSession {
+  id         String   @id @default(cuid())
+  userId      String
+  tokenHash   String   @db.VarChar(255)
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  createdAt   DateTime @default(now())
+  userAgent   String?  @db.VarChar(255)
+  ip          String?  @db.VarChar(100)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Client {
+  id        String   @id @default(cuid())
+  fullName  String   @db.VarChar(191)
+  email     String   @db.VarChar(191)
+  phone     String   @db.VarChar(60)
+  country   String   @db.VarChar(100)
+  message   String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([createdAt])
+}

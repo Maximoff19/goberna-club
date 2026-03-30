@@ -1,0 +1,55 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: goberna-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: goberna_club
+      MYSQL_ROOT_PASSWORD: Daniela08+
+    ports:
+      - '3306:3306'
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  redis:
+    image: redis:7-alpine
+    container_name: goberna-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+
+  minio:
+    image: minio/minio:latest
+    container_name: goberna-minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ':9001'
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - minio_data:/data
+
+  backend:
+    build:
+      context: ./backend
+    container_name: goberna-backend
+    depends_on:
+      - mysql
+      - redis
+      - minio
+    env_file:
+      - ./backend/.env.example
+    ports:
+      - '4000:4000'
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: npm run start:dev
+
+volumes:
+  mysql_data:
+  minio_data:
