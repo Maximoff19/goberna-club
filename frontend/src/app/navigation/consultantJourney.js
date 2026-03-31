@@ -3,6 +3,7 @@
 // Keep this path simple so marketing CTAs always land in the same place.
 // One route, less confusion.
 // Frontend deploy nudge.
+// Small no-op comment to force another frontend build.
 export function openConsultantJourney() {
   window.location.hash = '#acceso-consultor';
   window.scrollTo(0, 0);
