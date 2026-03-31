@@ -18,6 +18,7 @@ import { adminRouter } from './modules/admin/admin.router';
 import { healthRouter } from './modules/health/health.router';
 import { billingRouter } from './modules/billing/billing.router';
 import { clientsRouter } from './modules/clients/clients.router';
+import { integrationsRouter } from './modules/integrations/integrations.router';
 
 export const app = express();
 const generatedAssetsDirectory = path.resolve(process.cwd(), 'generated');
@@ -33,6 +34,8 @@ const allowedOrigins = [
   'http://127.0.0.1:3000',
   'http://localhost:3002',
   'http://127.0.0.1:3002',
+  'https://grupogoberna.com',
+  'https://www.grupogoberna.com',
 ];
 
 app.use(helmet());
@@ -69,4 +72,5 @@ app.use('/api/admin', adminRouter);
 app.use('/api/health', healthRouter);
 app.use('/api/billing', billingRouter);
 app.use('/api/clients', clientsRouter);
+app.use('/api/integrations', integrationsRouter);
 app.use(errorHandler);

@@ -58,6 +58,7 @@ function ConsultantsExplorePage() {
   const [visibleCount, setVisibleCount] = useState(10);
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedFilters, setSelectedFilters] = useState(EMPTY_FILTERS);
   const [isFiltersCollapsedMobile, setIsFiltersCollapsedMobile] = useState(true);
   const [catalogs, setCatalogs] = useState({ countries: [], specialties: [], skills: [] });
@@ -65,15 +66,20 @@ function ConsultantsExplorePage() {
   const [pagination, setPagination] = useState({ page: 1, limit: 25, total: 0, totalPages: 1, hasMore: false });
   const revealMoreRef = useRef(null);
 
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(searchQuery), 350);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   const requestParams = useMemo(() => ({
     page,
     limit: 25,
-    q: searchQuery.trim(),
+    q: debouncedQuery.trim(),
     countries: selectedFilters.countries,
     languages: selectedFilters.languages,
     specialties: selectedFilters.specialties,
     skills: selectedFilters.skills,
-  }), [page, searchQuery, selectedFilters]);
+  }), [page, debouncedQuery, selectedFilters]);
 
   useEffect(() => {
     let ignore = false;

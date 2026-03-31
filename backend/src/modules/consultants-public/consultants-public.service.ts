@@ -47,8 +47,11 @@ export async function listConsultants(query: ConsultantsQuery) {
   if (query.q) {
     andFilters.push({
       OR: [
-      { professionalHeadline: { contains: query.q } },
-      { bio: { contains: query.q } },
+        { professionalHeadline: { contains: query.q } },
+        { bio: { contains: query.q } },
+        { owner: { firstName: { contains: query.q } } },
+        { owner: { lastName: { contains: query.q } } },
+        { slug: { contains: query.q.toLowerCase().replace(/\s+/g, '-') } },
       ],
     });
   }

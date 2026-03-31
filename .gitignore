@@ -15,3 +15,10 @@ backend/dist/
 backend/.env
 backend/coverage/
 *.log
+
+# Playwright MCP artifacts
+.playwright-mcp/
+
+# Screenshots
+*.png
+*.jpg

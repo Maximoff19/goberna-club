@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import { verifyAccessToken } from '../lib/jwt';
+import { env } from '../config/env';
 import { HttpError } from '../modules/common/http-error';
 import { USER_ROLE, type AuthenticatedUser, type UserRole } from '../modules/common/types';
 
@@ -47,4 +48,13 @@ export function allowAdminOrOwner(ownerId: string | null | undefined, user: Auth
   if (!ownerId || ownerId != user.id) {
     throw new HttpError(403, 'Forbidden');
   }
+}
+
+export function requireApiKey(request: Request, _response: Response, next: NextFunction) {
+  const apiKey = request.header('x-api-key');
+  if (!apiKey || apiKey !== env.INTEGRATION_API_KEY) {
+    throw new HttpError(401, 'Invalid or missing API key');
+  }
+
+  next();
 }
