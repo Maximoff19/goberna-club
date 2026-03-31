@@ -1,7 +1,6 @@
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import Footer from './domains/marketing/home/footer/Footer';
 import ConsultantSearchController from './domains/consultants/profile/ConsultantSearchController';
-// Payment verification removed — consultant journey goes directly to auth
 import ProfileCreatePage from './domains/consultants/onboarding/ProfileCreatePage';
 import ConsultantAuthPage from './domains/consultants/auth/ConsultantAuthPage';
 import './App.css';
@@ -47,14 +46,6 @@ function resolveRouteFromHash(hashValue) {
   if (hashValue === '#explorar-consultores') {
     return {
       viewMode: 'explore',
-      profileSlug: '',
-      profileId: '',
-    };
-  }
-
-  if (hashValue === '#crear-perfil') {
-    return {
-      viewMode: 'consultant-auth',
       profileSlug: '',
       profileId: '',
     };

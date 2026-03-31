@@ -74,7 +74,7 @@ function ConsultantAuthPage() {
             Entrá a Goberna Club y continuá con tu acreditación profesional.
           </h1>
           <p className="consultant-auth__copy">
-            Después de la verificación, necesitás una cuenta para resguardar tu perfil, tus avances editoriales y tu presencia pública dentro de la red.
+            Ingresá con tu cuenta para gestionar tu perfil profesional y tu presencia pública dentro de la red.
           </p>
         </div>
 
@@ -86,7 +86,7 @@ function ConsultantAuthPage() {
 
           <div className="consultant-auth__form-wrap">
             <p className="consultant-auth__form-kicker">
-              Ya verificaste tu proceso, ahora entrá a tu cuenta.
+              Ingresá a tu cuenta para continuar.
             </p>
 
             {errorMessage && <p className="consultant-auth__error">{errorMessage}</p>}

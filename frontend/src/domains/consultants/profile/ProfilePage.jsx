@@ -392,7 +392,7 @@ function ProfilePage({ initialProfile, selectedProfileSlug, selectedProfileId })
           <div className="profile-page__empty">
             <h2>No encontramos un perfil disponible</h2>
             <p>{errorMessage || 'Crea tu perfil para comenzar a mostrar tu información.'}</p>
-            <a href="#crear-perfil" className="profile-page__empty-cta">
+            <a href="#acceso-consultor" className="profile-page__empty-cta">
               Crear perfil
             </a>
           </div>
