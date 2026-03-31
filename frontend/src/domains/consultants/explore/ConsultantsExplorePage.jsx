@@ -8,6 +8,7 @@ import ConsultantsResultsList from './ConsultantsResultsList';
 import { fetchConsultantsPage, fetchProfileCatalogs } from '../../../shared/api/gobernaApi';
 import './explore.css';
 
+// Default empty state for all filter categories
 const EMPTY_FILTERS = {
   specialties: [],
   languages: [],
