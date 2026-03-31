@@ -1,8 +1,18 @@
+import { useState } from 'react';
 import { MousePointer2, Star, Users } from 'lucide-react';
 import VerifiedIcon from '../../../shared/ui/VerifiedIcon';
 import PrimaryButton from '../../../shared/ui/PrimaryButton';
 
+function getInitials(name) {
+  const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '?';
+  if (parts.length === 1) return (parts[0][0] || '?').toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 function ConsultantResultCard({ consultant }) {
+  const [imageFailed, setImageFailed] = useState(false);
+
   const goToProfile = () => {
     window.location.hash = consultant.slug ? `#perfil/${consultant.slug}` : '#explorar-consultores';
     window.scrollTo(0, 0);
@@ -15,15 +25,24 @@ function ConsultantResultCard({ consultant }) {
         .map((item) => item.trim())
         .filter(Boolean);
 
+  const showImage = consultant.imageSrc && !imageFailed;
+
   return (
     <article className="consultant-result-card">
-      <img
-        className="consultant-result-card__photo"
-        src={consultant.imageSrc}
-        alt={consultant.name}
-        loading="lazy"
-        decoding="async"
-      />
+      {showImage ? (
+        <img
+          className="consultant-result-card__photo"
+          src={consultant.imageSrc}
+          alt={consultant.name}
+          loading="lazy"
+          decoding="async"
+          onError={() => setImageFailed(true)}
+        />
+      ) : (
+        <div className="consultant-result-card__photo consultant-result-card__photo--initials" role="img" aria-label={consultant.name}>
+          {getInitials(consultant.name)}
+        </div>
+      )}
 
       <div className="consultant-result-card__main">
         <div className="consultant-result-card__name-row">

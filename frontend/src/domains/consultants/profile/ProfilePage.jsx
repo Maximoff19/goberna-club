@@ -500,7 +500,10 @@ function ProfilePage({ initialProfile, selectedProfileSlug, selectedProfileId })
               }}
             />
             <CertificatesSection certificates={currentProfile.certificates} />
-            <GallerySection showEdit={showEditControls} gallery={currentProfile.gallery} profileId={currentProfile.id} />
+            {/* Gallery temporarily hidden from public view — data preserved in DB */}
+            {showEditControls && (
+              <GallerySection showEdit={showEditControls} gallery={currentProfile.gallery} profileId={currentProfile.id} />
+            )}
           </div>
 
           <aside className="profile-page__column profile-page__column--right">

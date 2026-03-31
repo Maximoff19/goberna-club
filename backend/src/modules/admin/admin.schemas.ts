@@ -1,6 +1,16 @@
 import { z } from 'zod';
 import { PROFILE_STATUS } from '../common/types';
 
+export const createAdminUserSchema = z.object({
+  email: z.email().transform((value) => value.trim().toLowerCase()),
+  password: z.string().min(8).max(72),
+  firstName: z.string().min(1).max(100),
+  lastName: z.string().min(1).max(100),
+  role: z.enum(['ADMIN', 'CONSULTANT', 'VISITOR']).default('ADMIN'),
+});
+
+export type CreateAdminUserInput = z.infer<typeof createAdminUserSchema>;
+
 export const updateAdminStatusSchema = z.object({
   status: z.enum([
     PROFILE_STATUS.DRAFT,

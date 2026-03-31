@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ArrowUpRight, MousePointer2, Users } from 'lucide-react';
 import VerifiedIcon from '../../../../shared/ui/VerifiedIcon';
 
@@ -10,21 +11,33 @@ function compactProfileName(name) {
   return parts.slice(0, -1).join(' ');
 }
 
+function getInitials(name) {
+  const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '?';
+  if (parts.length === 1) return (parts[0][0] || '?').toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 function ProfileCard({ profile }) {
+  const [imageFailed, setImageFailed] = useState(false);
+
   const goToProfile = () => {
     window.location.hash = profile.slug ? `#perfil/${profile.slug}` : '#explorar-consultores';
     window.scrollTo(0, 0);
   };
 
   const displayName = compactProfileName(profile.name);
+  const showImage = profile.imageSrc && !imageFailed;
 
   return (
     <article className="profile-card">
       <div className="profile-card__image-wrap">
-        {profile.imageSrc ? (
-          <img className="profile-card__image" src={profile.imageSrc} alt={profile.name} loading="lazy" decoding="async" />
+        {showImage ? (
+          <img className="profile-card__image" src={profile.imageSrc} alt={profile.name} loading="lazy" decoding="async" onError={() => setImageFailed(true)} />
         ) : (
-          <div className="profile-card__image profile-card__image--empty" aria-hidden="true" />
+          <div className="profile-card__image profile-card__image--initials" role="img" aria-label={profile.name}>
+            {getInitials(profile.name)}
+          </div>
         )}
       </div>
 

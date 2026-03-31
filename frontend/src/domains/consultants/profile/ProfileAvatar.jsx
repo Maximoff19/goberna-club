@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { Camera } from 'lucide-react';
 
 function ProfileAvatar({ src, name, countryFlag = '', countryCode = '', countryLabel = '', editable = false, profileId = '' }) {
+  const [imageFailed, setImageFailed] = useState(false);
   const inputId = 'profile-avatar-input';
 
   const onSelectAvatar = async (event) => {
@@ -29,12 +31,12 @@ function ProfileAvatar({ src, name, countryFlag = '', countryCode = '', countryL
   };
 
   const initials = getInitials(name);
-  const hasImage = src && src.trim() !== '';
+  const hasImage = src && src.trim() !== '' && !imageFailed;
 
   return (
     <div className={`profile-hero__avatar-wrap ${editable ? 'is-editable' : ''}`}>
       {hasImage ? (
-        <img className="profile-hero__avatar" src={src} alt="Fotografia del consultor" loading="eager" decoding="async" />
+        <img className="profile-hero__avatar" src={src} alt="Fotografia del consultor" loading="eager" decoding="async" onError={() => setImageFailed(true)} />
       ) : (
         <div className="profile-hero__avatar profile-hero__avatar--placeholder" aria-label="Sin foto de perfil" role="img">
           {initials}

@@ -124,6 +124,18 @@
   background: #ffffff;
 }
 
+.profile-card__image--initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  color: #ffffff;
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: 64px;
+  font-weight: 700;
+  user-select: none;
+}
+
 .profile-card__content {
   margin-top: 9px;
   color: #ffffff;

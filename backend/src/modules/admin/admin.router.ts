@@ -5,9 +5,10 @@ import { USER_ROLE, type ProfileStatus } from '../common/types';
 import { prisma } from '../../lib/prisma';
 import { HttpError } from '../common/http-error';
 import { validateBody } from '../../middleware/validate';
-import { adminCommentSchema, updateAdminStatusSchema } from './admin.schemas';
+import { adminCommentSchema, createAdminUserSchema, updateAdminStatusSchema } from './admin.schemas';
 import { recordAudit } from '../audit/audit.service';
 import { emitNotification, NOTIFICATION_EVENT } from '../notifications/notifications.service';
+import { hashPassword } from '../../lib/password';
 
 export const adminRouter = Router();
 
@@ -120,6 +121,38 @@ adminRouter.post('/profiles/:id/comment', validateBody(adminCommentSchema), asyn
   });
   await recordAudit({ action: 'admin.profile.comment', resourceType: 'profile', resourceId: profileId, actor: request.user! });
   response.status(201).json(comment);
+}));
+
+adminRouter.post('/users', validateBody(createAdminUserSchema), asyncHandler(async (request, response) => {
+  const { email, password, firstName, lastName, role } = request.body;
+
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) {
+    throw new HttpError(400, 'Email already in use');
+  }
+
+  const user = await prisma.user.create({
+    data: {
+      email,
+      passwordHash: await hashPassword(password),
+      firstName,
+      lastName,
+      role,
+      plan: null,
+    },
+  });
+
+  await recordAudit({ action: 'admin.user.create', resourceType: 'user', resourceId: user.id, actor: request.user! });
+
+  response.status(201).json({
+    id: user.id,
+    email: user.email,
+    role: user.role,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    isActive: user.isActive,
+    createdAt: user.createdAt,
+  });
 }));
 
 adminRouter.patch('/users/:id/block', asyncHandler(async (request, response) => {

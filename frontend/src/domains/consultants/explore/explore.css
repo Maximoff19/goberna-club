@@ -453,6 +453,19 @@
   display: block;
 }
 
+.consultant-result-card__photo--initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  color: #ffffff;
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  user-select: none;
+  flex-shrink: 0;
+}
+
 .consultant-result-card__main {
   min-width: 0;
   display: flex;
