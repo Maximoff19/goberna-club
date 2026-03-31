@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import ProfileCard from './ProfileCard';
-import GradualBlur from '../../../../components/GradualBlur.jsx';
+
 import ScrollReveal from '../../../../components/ScrollReveal.jsx';
 import SectionTitle from '../../../../shared/ui/SectionTitle';
 import { fetchConsultants } from '../../../../shared/api/gobernaApi';
@@ -227,21 +227,6 @@ function PopularProfiles() {
         </SectionTitle>
 
         <div className="popular-profiles__carousel">
-          <GradualBlur
-            position="left"
-            width="clamp(130px, 15vw, 220px)"
-            divCount={9}
-            strength={1.15}
-            className="popular-profiles__edge-blur popular-profiles__edge-blur--left"
-          />
-          <GradualBlur
-            position="right"
-            width="clamp(130px, 15vw, 220px)"
-            divCount={9}
-            strength={1.15}
-            className="popular-profiles__edge-blur popular-profiles__edge-blur--right"
-          />
-
           <div ref={carouselRef} className="popular-profiles__cards-row">
             {popularProfiles.map((profile) => (
               <ProfileCard key={profile.id} profile={profile} />
