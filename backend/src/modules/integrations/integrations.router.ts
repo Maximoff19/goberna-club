@@ -1,4 +1,4 @@
-// Integration endpoints for external systems (WordPress, etc.)
+// Integration endpoints for external systems (WordPress, etc.) — v2
 import { Router } from 'express';
 import { z } from 'zod';
 import { asyncHandler } from '../common/async-handler';
