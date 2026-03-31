@@ -1,4 +1,5 @@
 // Navigates directly to consultant auth (login/register)
+// Payment verification was removed from the public consultant journey.
 export function openConsultantJourney() {
   window.location.hash = '#acceso-consultor';
   window.scrollTo(0, 0);

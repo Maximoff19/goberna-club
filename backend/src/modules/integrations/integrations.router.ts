@@ -1,4 +1,5 @@
 // Integration endpoints for external systems (WordPress, etc.) — v2
+// Kept minimal on purpose so external clients can create users safely via API key.
 import { Router } from 'express';
 import { z } from 'zod';
 import { asyncHandler } from '../common/async-handler';
