@@ -71,15 +71,16 @@ function ConsultantsExplorePage() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
+  // Backend search does not support name search yet, so we fetch without q
+  // and filter client-side by name, specialization, skills and bio
   const requestParams = useMemo(() => ({
     page,
     limit: 25,
-    q: debouncedQuery.trim(),
     countries: selectedFilters.countries,
     languages: selectedFilters.languages,
     specialties: selectedFilters.specialties,
     skills: selectedFilters.skills,
-  }), [page, debouncedQuery, selectedFilters]);
+  }), [page, selectedFilters]);
 
   useEffect(() => {
     let ignore = false;
@@ -114,9 +115,22 @@ function ConsultantsExplorePage() {
     };
   }, [requestParams]);
 
+  const filteredConsultants = useMemo(() => {
+    const query = debouncedQuery.trim().toLowerCase();
+    if (!query) return loadedConsultants;
+
+    return loadedConsultants.filter((consultant) => {
+      const name = (consultant.name || '').toLowerCase();
+      const specialization = (consultant.specialization || '').toLowerCase();
+      const bio = (consultant.bio || '').toLowerCase();
+      const skills = (consultant.skills || []).join(' ').toLowerCase();
+      return name.includes(query) || specialization.includes(query) || bio.includes(query) || skills.includes(query);
+    });
+  }, [loadedConsultants, debouncedQuery]);
+
   useEffect(() => {
     const node = revealMoreRef.current;
-    if (!node || isLoading || visibleCount >= loadedConsultants.length) {
+    if (!node || isLoading || visibleCount >= filteredConsultants.length) {
       return undefined;
     }
 
@@ -126,7 +140,7 @@ function ConsultantsExplorePage() {
         return;
       }
 
-      setVisibleCount((current) => Math.min(current + 5, loadedConsultants.length));
+      setVisibleCount((current) => Math.min(current + 5, filteredConsultants.length));
     }, { rootMargin: '220px 0px' });
 
     observer.observe(node);
@@ -134,7 +148,7 @@ function ConsultantsExplorePage() {
     return () => {
       observer.disconnect();
     };
-  }, [isLoading, loadedConsultants.length, visibleCount]);
+  }, [isLoading, filteredConsultants.length, visibleCount]);
 
   const filterGroups = useMemo(() => buildFilterGroups(catalogs, loadedConsultants), [catalogs, loadedConsultants]);
 
@@ -168,11 +182,11 @@ function ConsultantsExplorePage() {
 
             <section className="explore-results" aria-label="Listado de consultores">
               <ExploreSearchBar value={searchQuery} onChange={(value) => {
-                setPage(1);
+                setVisibleCount(10);
                 setSearchQuery(value);
               }} />
-              <ConsultantsResultsList consultants={loadedConsultants.slice(0, visibleCount)} isLoading={isLoading} />
-              {!isLoading && visibleCount < loadedConsultants.length ? <div ref={revealMoreRef} className="explore-loading-sentinel" aria-hidden="true" /> : null}
+              <ConsultantsResultsList consultants={filteredConsultants.slice(0, visibleCount)} isLoading={isLoading} />
+              {!isLoading && visibleCount < filteredConsultants.length ? <div ref={revealMoreRef} className="explore-loading-sentinel" aria-hidden="true" /> : null}
               <ExplorePagination page={pagination.page} totalPages={pagination.totalPages} totalItems={pagination.total} onChange={setPage} />
             </section>
           </div>
