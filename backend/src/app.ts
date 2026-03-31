@@ -20,6 +20,7 @@ import { billingRouter } from './modules/billing/billing.router';
 import { clientsRouter } from './modules/clients/clients.router';
 import { integrationsRouter } from './modules/integrations/integrations.router';
 
+// Main Express application
 export const app = express();
 const generatedAssetsDirectory = path.resolve(process.cwd(), 'generated');
 const authLimiter = rateLimit({
