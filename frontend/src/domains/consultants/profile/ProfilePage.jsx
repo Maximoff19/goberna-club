@@ -9,9 +9,10 @@ import ProfessionalSummarySection from './ProfessionalSummarySection';
 import SkillsSection from './SkillsSection';
 import ContactSection from './ContactSection';
 import CertificatesSection from './CertificatesSection';
-import GallerySection from './GallerySection';
+// GallerySection intentionally removed from view — component preserved for future use
+// import GallerySection from './GallerySection';
 import ProfileSectionEditorModal from './ProfileSectionEditorModal';
-import { deleteProfilePermanently, fetchConsultantBySlug, fetchOwnProfileById, fetchOwnProfiles, fetchProfileCatalogs, getCurrentSession, isAdminSession, updateMyAvatar, updateOwnProfile, uploadProfileAvatar, uploadProfileGalleryImage, deleteProfileAsset } from '../../../shared/api/gobernaApi';
+import { deleteProfilePermanently, fetchConsultantBySlug, fetchOwnProfileById, fetchOwnProfiles, fetchProfileCatalogs, getCurrentSession, isAdminSession, updateMyAvatar, updateOwnProfile, uploadProfileAvatar } from '../../../shared/api/gobernaApi';
 import './profilePage.css';
 
 function ProfilePage({ initialProfile, selectedProfileSlug, selectedProfileId }) {
@@ -220,58 +221,12 @@ function ProfilePage({ initialProfile, selectedProfileSlug, selectedProfileId })
       }));
     };
 
-    const onUploadProfileGalleryImages = async (event) => {
-      const files = event.detail?.files;
-      const targetProfileId = event.detail?.profileId || editableProfileId;
-      if (!Array.isArray(files) || files.length === 0 || !targetProfileId) {
-        return;
-      }
-
-      try {
-        const uploadedUrls = [];
-        for (const file of files) {
-          const asset = await uploadProfileGalleryImage(targetProfileId, file);
-          uploadedUrls.push(asset.publicUrl);
-        }
-
-        setCurrentProfile((current) => {
-          if (!current) return current;
-          return { ...current, gallery: [...(current.gallery || []), ...uploadedUrls] };
-        });
-      } catch (error) {
-        setErrorMessage(error instanceof Error ? error.message : 'No pudimos subir las imagenes.');
-      }
-    };
-
-    const onRemoveProfileGalleryImage = async (event) => {
-      const assetId = event.detail?.assetId;
-      const imageUrl = event.detail?.imageUrl;
-      const targetProfileId = event.detail?.profileId || editableProfileId;
-
-      if (imageUrl) {
-        setCurrentProfile((current) => {
-          if (!current) return current;
-          return { ...current, gallery: (current.gallery || []).filter((url) => url !== imageUrl) };
-        });
-      }
-
-      if (assetId && targetProfileId) {
-        try {
-          await deleteProfileAsset(targetProfileId, assetId);
-        } catch (error) {
-          setErrorMessage(error instanceof Error ? error.message : 'No pudimos eliminar la imagen.');
-        }
-      }
-    };
-
     window.addEventListener('app:toggle-profile-edit-mode', onToggleEditMode);
     window.addEventListener('app:open-profile-section-editor', onOpenProfileSectionEditor);
     window.addEventListener('app:add-profile-section-item', onAddProfileSectionItem);
     window.addEventListener('app:remove-profile-section-item', onRemoveProfileSectionItem);
     window.addEventListener('app:upload-profile-avatar', onUploadProfileAvatar);
     window.addEventListener('app:update-profile-socials', onUpdateProfileSocials);
-    window.addEventListener('app:upload-profile-gallery', onUploadProfileGalleryImages);
-    window.addEventListener('app:remove-profile-gallery-image', onRemoveProfileGalleryImage);
 
     return () => {
       window.removeEventListener('app:toggle-profile-edit-mode', onToggleEditMode);
@@ -280,8 +235,6 @@ function ProfilePage({ initialProfile, selectedProfileSlug, selectedProfileId })
       window.removeEventListener('app:remove-profile-section-item', onRemoveProfileSectionItem);
       window.removeEventListener('app:upload-profile-avatar', onUploadProfileAvatar);
       window.removeEventListener('app:update-profile-socials', onUpdateProfileSocials);
-      window.removeEventListener('app:upload-profile-gallery', onUploadProfileGalleryImages);
-      window.removeEventListener('app:remove-profile-gallery-image', onRemoveProfileGalleryImage);
     };
   }, [canEdit, editableProfileId]);
 
@@ -372,11 +325,6 @@ function ProfilePage({ initialProfile, selectedProfileSlug, selectedProfileId })
             ...currentProfile,
             educations: payload.educations || [],
           };
-    }
-
-    if (sectionKey === 'gallery') {
-      nextProfile = { ...currentProfile, gallery: payload.gallery || [] };
-      skipRemote = true;
     }
 
     setCurrentProfile(nextProfile);
@@ -500,10 +448,6 @@ function ProfilePage({ initialProfile, selectedProfileSlug, selectedProfileId })
               }}
             />
             <CertificatesSection certificates={currentProfile.certificates} />
-            {/* Gallery temporarily hidden from public view — data preserved in DB */}
-            {showEditControls && (
-              <GallerySection showEdit={showEditControls} gallery={currentProfile.gallery} profileId={currentProfile.id} />
-            )}
           </div>
 
           <aside className="profile-page__column profile-page__column--right">
