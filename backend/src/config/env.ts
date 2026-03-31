@@ -23,5 +23,5 @@ export const env = {
   DEMO_CONSULTANT_PASSWORD: requireValue('DEMO_CONSULTANT_PASSWORD', 'ChangeMe123!'),
   DEMO_ADMIN_EMAIL: requireValue('DEMO_ADMIN_EMAIL', 'admin@goberna.club'),
   DEMO_ADMIN_PASSWORD: requireValue('DEMO_ADMIN_PASSWORD', 'ChangeMe123!'),
-  INTEGRATION_API_KEY: requireValue('INTEGRATION_API_KEY', 'gc-integration-default-key-change-me'),
+  INTEGRATION_API_KEY: requireValue('INTEGRATION_API_KEY', 'gc-int-0PazlvADCIaVg87Rv-nl1OQdKISSyPGc'),
 } as const;
