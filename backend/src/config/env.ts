@@ -19,9 +19,9 @@ export const env = {
   JWT_REFRESH_SECRET: requireValue('JWT_REFRESH_SECRET'),
   JWT_ACCESS_TTL: requireValue('JWT_ACCESS_TTL', '15m'),
   JWT_REFRESH_TTL: requireValue('JWT_REFRESH_TTL', '30d'),
-  DEMO_CONSULTANT_EMAIL: requireValue('DEMO_CONSULTANT_EMAIL', 'consultant@goberna.club'),
-  DEMO_CONSULTANT_PASSWORD: requireValue('DEMO_CONSULTANT_PASSWORD', 'ChangeMe123!'),
-  DEMO_ADMIN_EMAIL: requireValue('DEMO_ADMIN_EMAIL', 'admin@goberna.club'),
-  DEMO_ADMIN_PASSWORD: requireValue('DEMO_ADMIN_PASSWORD', 'ChangeMe123!'),
+  DEMO_CONSULTANT_EMAIL: requireValue('DEMO_CONSULTANT_EMAIL'),
+  DEMO_CONSULTANT_PASSWORD: requireValue('DEMO_CONSULTANT_PASSWORD'),
+  DEMO_ADMIN_EMAIL: requireValue('DEMO_ADMIN_EMAIL'),
+  DEMO_ADMIN_PASSWORD: requireValue('DEMO_ADMIN_PASSWORD'),
   INTEGRATION_API_KEY: requireValue('INTEGRATION_API_KEY'),
 } as const;
