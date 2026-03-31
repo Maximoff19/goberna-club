@@ -1,7 +1,6 @@
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import Footer from './domains/marketing/home/footer/Footer';
 import ConsultantSearchController from './domains/consultants/profile/ConsultantSearchController';
-import PaymentVerificationPage from './domains/billing/verification/PaymentVerificationPage';
 import ProfileCreatePage from './domains/consultants/onboarding/ProfileCreatePage';
 import ConsultantAuthPage from './domains/consultants/auth/ConsultantAuthPage';
 import './App.css';
@@ -54,7 +53,7 @@ function resolveRouteFromHash(hashValue) {
 
   if (hashValue === '#crear-perfil') {
     return {
-      viewMode: 'create-profile-verification',
+      viewMode: 'consultant-auth',
       profileSlug: '',
       profileId: '',
     };
@@ -227,10 +226,6 @@ function App() {
     };
   }, [viewMode]);
 
-  const handleVerificationComplete = () => {
-    window.location.hash = 'acceso-consultor';
-  };
-
   const handleProfileCreated = (profileData) => {
     setCreatedProfile(profileData);
     setSelectedProfileSlug('');
@@ -249,8 +244,6 @@ function App() {
         <Suspense fallback={null}>
           <ConsultantsExplorePage />
         </Suspense>
-      ) : viewMode === 'create-profile-verification' ? (
-        <PaymentVerificationPage onVerified={handleVerificationComplete} />
       ) : viewMode === 'consultant-auth' ? (
         <ConsultantAuthPage />
       ) : viewMode === 'create-profile-form' ? (
