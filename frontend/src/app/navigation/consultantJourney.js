@@ -4,6 +4,7 @@
 // One route, less confusion.
 // Frontend deploy nudge.
 // Small no-op comment to force another frontend build.
+// Another harmless comment for deploy triggering.
 export function openConsultantJourney() {
   window.location.hash = '#acceso-consultor';
   window.scrollTo(0, 0);
