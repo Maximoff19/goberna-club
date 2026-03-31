@@ -366,6 +366,18 @@
   flex: 0 0 auto;
 }
 
+.profile-search-card__image--initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  color: #ffffff;
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  user-select: none;
+}
+
 .profile-search-card__content {
   display: flex;
   flex-direction: column;

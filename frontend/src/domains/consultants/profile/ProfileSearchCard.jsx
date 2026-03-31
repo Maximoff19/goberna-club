@@ -1,9 +1,26 @@
+import { useState } from 'react';
 import { ArrowRight, Star } from 'lucide-react';
 
+function getInitials(name) {
+  const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '?';
+  if (parts.length === 1) return (parts[0][0] || '?').toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 function ProfileSearchCard({ profile, onOpenProfile }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = profile.imageSrc && !imageFailed;
+
   return (
     <article className="profile-search-card">
-      <img className="profile-search-card__image" src={profile.imageSrc} alt={profile.name} loading="lazy" decoding="async" />
+      {showImage ? (
+        <img className="profile-search-card__image" src={profile.imageSrc} alt={profile.name} loading="lazy" decoding="async" onError={() => setImageFailed(true)} />
+      ) : (
+        <div className="profile-search-card__image profile-search-card__image--initials" role="img" aria-label={profile.name}>
+          {getInitials(profile.name)}
+        </div>
+      )}
       <div className="profile-search-card__content">
         <h4 className="profile-search-card__name">{profile.name}</h4>
         <p className="profile-search-card__specialization">{profile.specialization}</p>
