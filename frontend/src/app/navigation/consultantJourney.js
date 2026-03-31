@@ -1,4 +1,4 @@
 export function openConsultantJourney() {
-  window.location.hash = '#crear-perfil';
+  window.location.hash = '#acceso-consultor';
   window.scrollTo(0, 0);
 }
