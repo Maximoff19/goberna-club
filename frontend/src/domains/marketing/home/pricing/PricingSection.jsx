@@ -10,6 +10,7 @@ const PRICING_PLANS = [
     price: '$99.00',
     before: '$199.00',
     featured: false,
+    paymentUrl: 'https://grupogoberna.com/suscripcion-anual-a-la-red-internacional-plan-consultor-politico/',
     benefits: [
       'Certificado de Consultor Político',
       'Validación de su experiencia y hoja de vida',
@@ -24,6 +25,7 @@ const PRICING_PLANS = [
     price: '$199.00',
     before: '$299.00',
     featured: true,
+    paymentUrl: 'https://grupogoberna.com/suscripcion-anual-a-la-red-internacional-plan-consultor-politico-senior/',
     benefits: [
       'Todos los beneficios del plan del consultor político',
       'Publicar libros en nuestra librería Goberna',
@@ -39,6 +41,7 @@ const PRICING_PLANS = [
     price: '$299.00',
     before: '$599.00',
     featured: false,
+    paymentUrl: 'https://grupogoberna.com/suscripcion-anual-a-la-red-internacional-plan-consultor-politico-master/',
     benefits: [
       'Todos los beneficios del plan del consultor político senior',
       'Asesoría especializada en su imagen digital cada 6 meses',
@@ -53,6 +56,7 @@ const PRICING_PLANS = [
     price: '$599.00',
     before: '$899.00',
     featured: false,
+    paymentUrl: 'https://grupogoberna.com/suscripcion-anual-a-la-red-internacional-master/',
     benefits: [
       'Todos los beneficios del plan del consultor político master',
       'Asesoría especializada en su imagen digital cada 3 meses',
@@ -95,7 +99,7 @@ function PricingSection() {
 
         <div className="pricing__cards-row">
           {PRICING_PLANS.map((plan) => (
-            <PricingCard key={plan.id} plan={plan} onSelectPlan={() => { window.location.hash = '#acceso-consultor'; }} />
+            <PricingCard key={plan.id} plan={plan} onSelectPlan={() => { window.open(plan.paymentUrl, '_blank', 'noopener,noreferrer'); }} />
           ))}
         </div>
       </div>
