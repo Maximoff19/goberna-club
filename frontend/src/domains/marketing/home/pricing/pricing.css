@@ -219,6 +219,10 @@
     display: block;
   }
 
+  .pricing__title-reveal .scroll-reveal__word {
+    will-change: auto;
+  }
+
   .pricing__cards-row {
     margin-top: 22px;
     align-items: stretch;

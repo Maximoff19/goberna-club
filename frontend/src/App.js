@@ -106,6 +106,7 @@ function App() {
     }
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isMobile = window.matchMedia('(max-width: 1120px)').matches || 'ontouchstart' in window;
 
     currentScrollRef.current = window.scrollY;
     targetScrollRef.current = window.scrollY;
@@ -162,8 +163,8 @@ function App() {
         return;
       }
 
-      if (prefersReducedMotion) {
-        targetNode.scrollIntoView({ behavior: 'auto', block: 'start' });
+      if (prefersReducedMotion || isMobile) {
+        targetNode.scrollIntoView({ behavior: 'smooth', block: 'start' });
         return;
       }
 
@@ -201,11 +202,13 @@ function App() {
         observer.observe(section);
       });
 
-      window.addEventListener('wheel', onWheel, { passive: false });
+      if (!isMobile) {
+        window.addEventListener('wheel', onWheel, { passive: false });
+      }
     }
 
     return () => {
-      if (!prefersReducedMotion) {
+      if (!prefersReducedMotion && !isMobile) {
         window.removeEventListener('wheel', onWheel);
       }
       window.removeEventListener('app:smooth-scroll-to', onProgrammaticScroll);

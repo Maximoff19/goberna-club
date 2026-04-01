@@ -28,6 +28,9 @@ function BlurText({
   stepDuration = 0.35,
 }) {
   const isTestEnv = process.env.NODE_ENV === 'test';
+  const [isMobile] = useState(
+    () => typeof window !== 'undefined' && (window.matchMedia('(max-width: 1120px)').matches || 'ontouchstart' in window)
+  );
   const segments = animateBy === 'words' ? text.split(' ') : text.split('');
   const [inView, setInView] = useState(false);
   const ref = useRef(null);
@@ -96,7 +99,7 @@ function BlurText({
         const { segment, key } = item;
         const animateKeyframes = buildKeyframes(fromSnapshot, toSnapshots);
 
-        if (isTestEnv) {
+        if (isTestEnv || isMobile) {
           return (
             <span key={key} style={{ display: 'inline-block' }}>
               {segment === ' ' ? '\u00A0' : segment}

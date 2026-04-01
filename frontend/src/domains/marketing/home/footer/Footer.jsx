@@ -80,7 +80,8 @@ function Footer({ enableReveal = true }) {
       return undefined;
     }
 
-    if (!enableReveal || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const isMobile = window.matchMedia('(max-width: 1120px)').matches || 'ontouchstart' in window;
+    if (!enableReveal || window.matchMedia('(prefers-reduced-motion: reduce)').matches || isMobile) {
       footerNode.style.setProperty('--footer-reveal-progress', '1');
       return undefined;
     }

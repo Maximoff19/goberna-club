@@ -134,6 +134,14 @@ function createFallbackAvatar(profile) {
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 
+function hasRealAvatar(profile) {
+  const avatarAsset = Array.isArray(profile.assets)
+    ? profile.assets.find((asset) => asset.type === 'AVATAR' && !asset.deletedAt && asset.publicUrl)
+    : null;
+
+  return Boolean(avatarAsset?.publicUrl || profile.owner?.avatarUrl);
+}
+
 function extractAvatar(profile) {
   const avatarAsset = Array.isArray(profile.assets)
     ? profile.assets.find((asset) => asset.type === 'AVATAR' && !asset.deletedAt && asset.publicUrl)
@@ -191,6 +199,7 @@ function normalizeSharedProfile(profile) {
     specialtyId: profile.specialty?.id || '',
     imageSrc: avatar,
     avatarSrc: avatar,
+    hasRealPhoto: hasRealAvatar(profile),
     summary: profile.bio || '',
     countryId: profile.countryRef?.id || '',
     country: countryValue,

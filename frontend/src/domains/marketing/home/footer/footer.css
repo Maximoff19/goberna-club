@@ -221,6 +221,19 @@
   }
 }
 
+@media (max-width: 1120px) {
+  .footer-main__safe-area {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    transform: none;
+    will-change: auto;
+  }
+
+  .footer-main {
+    --footer-reveal-progress: 1;
+  }
+}
+
 .footer-main__bottom-row {
   z-index: 2;
   display: flex;

@@ -48,6 +48,17 @@ function ScrollReveal({
       return undefined;
     }
 
+    const isMobile = window.matchMedia('(max-width: 1120px)').matches || 'ontouchstart' in window;
+    if (isMobile) {
+      const wordElements = node.querySelectorAll('.scroll-reveal__word');
+      wordElements.forEach((word) => {
+        word.style.opacity = '1';
+        word.style.filter = 'none';
+      });
+      node.style.transform = 'none';
+      return undefined;
+    }
+
     let cancelled = false;
     let ctx;
 

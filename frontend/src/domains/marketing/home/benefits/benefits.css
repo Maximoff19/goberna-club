@@ -230,6 +230,10 @@
   .benefits__title-reveal--mobile .scroll-reveal__word {
     display: block;
   }
+
+  .benefits__title-reveal .scroll-reveal__word {
+    will-change: auto;
+  }
 }
 
 @media (max-width: 1120px) {

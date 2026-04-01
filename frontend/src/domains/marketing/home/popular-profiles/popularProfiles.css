@@ -56,21 +56,6 @@
   overflow: visible;
 }
 
-.popular-profiles__edge-blur {
-  top: -14%;
-  bottom: -14%;
-  height: auto;
-  border-radius: 999px;
-}
-
-.popular-profiles__edge-blur--left {
-  left: -26px;
-}
-
-.popular-profiles__edge-blur--right {
-  right: -26px;
-}
-
 .popular-profiles__cards-row {
   display: flex;
   align-items: stretch;
@@ -266,9 +251,14 @@
     display: block;
   }
 
+  .popular-profiles__title-reveal .scroll-reveal__word {
+    will-change: auto;
+  }
+
   .popular-profiles__cards-row {
     gap: 20px;
     padding: 0 16px;
+    will-change: auto;
   }
 }
 
@@ -305,10 +295,6 @@
     gap: 18px;
     padding: 0 14px;
   }
-
-  .popular-profiles__edge-blur {
-    width: 74px !important;
-  }
 }
 
 @media (max-width: 560px) {
@@ -320,5 +306,113 @@
 
   .popular-profiles__description {
     font-size: 18px;
+  }
+}
+
+/* ── Mobile: compact cards, two-row horizontal scroll ── */
+@media (max-width: 768px) {
+  .popular-profiles__carousel {
+    overflow: hidden;
+  }
+
+  .popular-profiles__cards-row {
+    display: grid;
+    grid-template-rows: auto auto;
+    grid-auto-flow: column;
+    grid-auto-columns: 152px;
+    gap: 10px;
+    padding: 0 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .profile-card {
+    width: 152px;
+    height: auto;
+    border-radius: 16px;
+    padding: 5px 5px 8px;
+    scroll-snap-align: start;
+  }
+
+  .profile-card__image-wrap {
+    width: 100%;
+    height: 130px;
+    border-radius: 12px;
+  }
+
+  .profile-card__image-wrap::after {
+    border-radius: 12px;
+    box-shadow: inset 0 -40px 44px -18px rgba(15, 25, 35, 0.78);
+  }
+
+  .profile-card__image {
+    width: 100%;
+    height: 130px;
+    border-radius: 12px;
+  }
+
+  .profile-card__image--initials {
+    font-size: 36px;
+  }
+
+  .profile-card__content {
+    margin-top: 6px;
+  }
+
+  .profile-card__name {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .profile-card__name-row {
+    gap: 4px;
+  }
+
+  .profile-card__name-row .verified-icon,
+  .profile-card__name-row svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .profile-card__description {
+    font-size: 10px;
+    line-height: 1.25;
+    min-height: 0;
+    margin-top: 3px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .profile-card__bottom-row {
+    margin-top: 6px;
+  }
+
+  .profile-card__metrics {
+    gap: 8px;
+    margin-left: 0;
+  }
+
+  .profile-card__metric-item {
+    font-size: 9px;
+    gap: 2px;
+  }
+
+  .profile-card__metric-item svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  .profile-card__connect-button {
+    min-height: 24px;
+    padding: 0 8px;
+    font-size: 10px;
+    gap: 3px;
+  }
+
+  .profile-card__connect-button svg {
+    width: 10px;
+    height: 10px;
   }
 }

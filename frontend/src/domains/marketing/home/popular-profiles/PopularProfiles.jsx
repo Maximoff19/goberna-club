@@ -7,7 +7,9 @@ import { fetchConsultants } from '../../../../shared/api/gobernaApi';
 import './popularProfiles.css';
 
 function pickPopularProfiles(consultants) {
-  const sorted = [...consultants].sort((left, right) => {
+  const withPhoto = consultants.filter((consultant) => consultant.hasRealPhoto);
+
+  const sorted = [...withPhoto].sort((left, right) => {
     if (left.featured !== right.featured) {
       return left.featured ? -1 : 1;
     }
