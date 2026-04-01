@@ -602,6 +602,38 @@ async function syncCreatedProfile(profileId, payload, expectedHeadline) {
   return profile;
 }
 
+const CERTIFICACIONES_API_BASE = 'https://certificaciones.goberna.us/cursos/api/certificados';
+
+async function fetchExternalCertificates(email) {
+  if (!email) {
+    return [];
+  }
+
+  try {
+    const url = `${CERTIFICACIONES_API_BASE}/?email=${encodeURIComponent(email)}&activo=1&limit=100`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      return [];
+    }
+
+    const payload = await response.json();
+
+    if (!payload.ok || !Array.isArray(payload.data) || payload.data.length === 0) {
+      return [];
+    }
+
+    return payload.data.map((cert) => ({
+      title: String(cert.cert_name || cert.course_name || 'Certificado Goberna').slice(0, 191),
+      issuer: String(cert.course_name || cert.cert_name || 'Campus Goberna').slice(0, 191),
+      issueDate: cert.fecha_emision ? cert.fecha_emision.split(' ')[0].split('/').reverse().join('-') : undefined,
+      credentialUrl: cert.download_url || cert.url_verificacion || undefined,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export async function createProfile(formData) {
   const accountName = splitFullName(formData.name);
   const updatePayload = mapProfileFormToBackend(formData);
@@ -625,6 +657,15 @@ export async function createProfile(formData) {
       professionalHeadline: profileHeadline,
     },
   });
+
+  const session = getStoredSession();
+  const authEmail = session?.user?.email || '';
+  const externalCertificates = await fetchExternalCertificates(authEmail);
+
+  if (externalCertificates.length > 0) {
+    const existingCerts = Array.isArray(updatePayload.certificates) ? updatePayload.certificates : [];
+    updatePayload.certificates = [...existingCerts, ...externalCertificates];
+  }
 
   await apiRequest(`/profiles/${created.id}`, {
     method: 'PATCH',
