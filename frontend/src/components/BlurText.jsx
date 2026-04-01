@@ -1,8 +1,11 @@
-import { motion } from 'motion/react';
-import { useEffect, useMemo, useRef, useState } from 'react';
-
+import { motion } from "motion/react";
+import { useEffect, useMemo, useRef, useState } from "react";
+//hola
 function buildKeyframes(from, steps) {
-  const keys = new Set([...Object.keys(from), ...steps.flatMap((step) => Object.keys(step))]);
+  const keys = new Set([
+    ...Object.keys(from),
+    ...steps.flatMap((step) => Object.keys(step)),
+  ]);
 
   const keyframes = {};
   keys.forEach((key) => {
@@ -13,25 +16,28 @@ function buildKeyframes(from, steps) {
 }
 
 function BlurText({
-  text = '',
-  as = 'span',
+  text = "",
+  as = "span",
   delay = 200,
-  className = '',
-  animateBy = 'words',
-  direction = 'top',
+  className = "",
+  animateBy = "words",
+  direction = "top",
   threshold = 0.1,
-  rootMargin = '0px',
+  rootMargin = "0px",
   animationFrom,
   animationTo,
   easing = (value) => value,
   onAnimationComplete,
   stepDuration = 0.35,
 }) {
-  const isTestEnv = process.env.NODE_ENV === 'test';
+  const isTestEnv = process.env.NODE_ENV === "test";
   const [isMobile] = useState(
-    () => typeof window !== 'undefined' && (window.matchMedia('(max-width: 1120px)').matches || 'ontouchstart' in window)
+    () =>
+      typeof window !== "undefined" &&
+      (window.matchMedia("(max-width: 1120px)").matches ||
+        "ontouchstart" in window),
   );
-  const segments = animateBy === 'words' ? text.split(' ') : text.split('');
+  const segments = animateBy === "words" ? text.split(" ") : text.split("");
   const [inView, setInView] = useState(false);
   const ref = useRef(null);
   const RootTag = as;
@@ -41,7 +47,7 @@ function BlurText({
       return undefined;
     }
 
-    if (typeof IntersectionObserver === 'undefined') {
+    if (typeof IntersectionObserver === "undefined") {
       setInView(true);
       return undefined;
     }
@@ -53,7 +59,7 @@ function BlurText({
           observer.unobserve(ref.current);
         }
       },
-      { threshold, rootMargin }
+      { threshold, rootMargin },
     );
 
     observer.observe(ref.current);
@@ -61,20 +67,23 @@ function BlurText({
   }, [threshold, rootMargin]);
 
   const defaultFrom = useMemo(
-    () => (direction === 'top' ? { filter: 'blur(10px)', opacity: 0, y: -50 } : { filter: 'blur(10px)', opacity: 0, y: 50 }),
-    [direction]
+    () =>
+      direction === "top"
+        ? { filter: "blur(10px)", opacity: 0, y: -50 }
+        : { filter: "blur(10px)", opacity: 0, y: 50 },
+    [direction],
   );
 
   const defaultTo = useMemo(
     () => [
       {
-        filter: 'blur(5px)',
+        filter: "blur(5px)",
         opacity: 0.5,
-        y: direction === 'top' ? 5 : -5,
+        y: direction === "top" ? 5 : -5,
       },
-      { filter: 'blur(0px)', opacity: 1, y: 0 },
+      { filter: "blur(0px)", opacity: 1, y: 0 },
     ],
-    [direction]
+    [direction],
   );
 
   const fromSnapshot = animationFrom || defaultFrom;
@@ -91,7 +100,9 @@ function BlurText({
 
   const stepCount = toSnapshots.length + 1;
   const totalDuration = stepDuration * (stepCount - 1);
-  const times = Array.from({ length: stepCount }, (_, index) => (stepCount === 1 ? 0 : index / (stepCount - 1)));
+  const times = Array.from({ length: stepCount }, (_, index) =>
+    stepCount === 1 ? 0 : index / (stepCount - 1),
+  );
 
   return (
     <RootTag ref={ref} className={`blur-text ${className}`}>
@@ -101,9 +112,9 @@ function BlurText({
 
         if (isTestEnv || isMobile) {
           return (
-            <span key={key} style={{ display: 'inline-block' }}>
-              {segment === ' ' ? '\u00A0' : segment}
-              {animateBy === 'words' && index < segments.length - 1 && '\u00A0'}
+            <span key={key} style={{ display: "inline-block" }}>
+              {segment === " " ? "\u00A0" : segment}
+              {animateBy === "words" && index < segments.length - 1 && "\u00A0"}
             </span>
           );
         }
@@ -119,14 +130,16 @@ function BlurText({
               delay: (index * delay) / 1000,
               ease: easing,
             }}
-            onAnimationComplete={index === segments.length - 1 ? onAnimationComplete : undefined}
+            onAnimationComplete={
+              index === segments.length - 1 ? onAnimationComplete : undefined
+            }
             style={{
-              display: 'inline-block',
-              willChange: 'transform, filter, opacity',
+              display: "inline-block",
+              willChange: "transform, filter, opacity",
             }}
           >
-            {segment === ' ' ? '\u00A0' : segment}
-            {animateBy === 'words' && index < segments.length - 1 && '\u00A0'}
+            {segment === " " ? "\u00A0" : segment}
+            {animateBy === "words" && index < segments.length - 1 && "\u00A0"}
           </motion.span>
         );
       })}
