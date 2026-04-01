@@ -1,4 +1,4 @@
-// Trigger deployment – Apr 01 2026
+// Trigger frontend build – Apr 01 2026 v2
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import Footer from './domains/marketing/home/footer/Footer';
 import ConsultantSearchController from './domains/consultants/profile/ConsultantSearchController';
