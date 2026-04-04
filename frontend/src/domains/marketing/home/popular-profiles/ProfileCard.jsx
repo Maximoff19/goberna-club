@@ -30,7 +30,7 @@ function ProfileCard({ profile }) {
   const showImage = profile.imageSrc && !imageFailed;
 
   return (
-    <article className="profile-card">
+    <article className="profile-card" onClick={goToProfile} onKeyDown={(event) => event.key === 'Enter' && goToProfile()}>
       <div className="profile-card__image-wrap">
         {showImage ? (
           <img className="profile-card__image" src={profile.imageSrc} alt={profile.name} loading="lazy" decoding="async" onError={() => setImageFailed(true)} />
@@ -41,8 +41,8 @@ function ProfileCard({ profile }) {
         )}
       </div>
 
-        <div className="profile-card__content">
-          <div className="profile-card__name-row">
+      <div className="profile-card__content">
+        <div className="profile-card__name-row">
           <h3 className="profile-card__name">{displayName}</h3>
           <VerifiedIcon size={16} />
         </div>
@@ -61,7 +61,7 @@ function ProfileCard({ profile }) {
             </div>
           </div>
 
-          <button type="button" className="profile-card__connect-button" onClick={goToProfile}>
+          <button type="button" className="profile-card__connect-button" onClick={(event) => { event.stopPropagation(); goToProfile(); }}>
             Conectar
             <ArrowUpRight size={13} strokeWidth={2.4} aria-hidden="true" />
           </button>
