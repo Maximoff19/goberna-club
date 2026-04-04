@@ -1,18 +1,13 @@
-//deploy
-import { Router } from "express";
-import { asyncHandler } from "../common/async-handler";
-import { prisma } from "../../lib/prisma";
+import { Router } from 'express';
+import { asyncHandler } from '../common/async-handler';
+import { checkHealth } from './health.service';
 
 export const healthRouter = Router();
 
 healthRouter.get(
-  "/",
+  '/',
   asyncHandler(async (_request, response) => {
-    await prisma.$queryRawUnsafe("SELECT 1");
-    response.json({
-      status: "ok",
-      database: "up",
-      timestamp: new Date().toISOString(),
-    });
+    const result = await checkHealth();
+    response.json(result);
   }),
 );
