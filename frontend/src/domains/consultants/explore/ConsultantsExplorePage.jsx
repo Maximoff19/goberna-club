@@ -72,16 +72,15 @@ function ConsultantsExplorePage() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Backend search does not support name search yet, so we fetch without q
-  // and filter client-side by name, specialization, skills and bio
   const requestParams = useMemo(() => ({
     page,
     limit: 25,
+    q: debouncedQuery.trim() || undefined,
     countries: selectedFilters.countries,
     languages: selectedFilters.languages,
     specialties: selectedFilters.specialties,
     skills: selectedFilters.skills,
-  }), [page, selectedFilters]);
+  }), [page, debouncedQuery, selectedFilters]);
 
   useEffect(() => {
     let ignore = false;
@@ -116,18 +115,7 @@ function ConsultantsExplorePage() {
     };
   }, [requestParams]);
 
-  const filteredConsultants = useMemo(() => {
-    const query = debouncedQuery.trim().toLowerCase();
-    if (!query) return loadedConsultants;
-
-    return loadedConsultants.filter((consultant) => {
-      const name = (consultant.name || '').toLowerCase();
-      const specialization = (consultant.specialization || '').toLowerCase();
-      const bio = (consultant.bio || '').toLowerCase();
-      const skills = (consultant.skills || []).join(' ').toLowerCase();
-      return name.includes(query) || specialization.includes(query) || bio.includes(query) || skills.includes(query);
-    });
-  }, [loadedConsultants, debouncedQuery]);
+  const filteredConsultants = loadedConsultants;
 
   useEffect(() => {
     const node = revealMoreRef.current;
@@ -184,6 +172,7 @@ function ConsultantsExplorePage() {
             <section className="explore-results" aria-label="Listado de consultores">
               <ExploreSearchBar value={searchQuery} onChange={(value) => {
                 setVisibleCount(10);
+                setPage(1);
                 setSearchQuery(value);
               }} />
               <ConsultantsResultsList consultants={filteredConsultants.slice(0, visibleCount)} isLoading={isLoading} />
