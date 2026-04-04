@@ -7,9 +7,22 @@ import { fetchConsultants } from '../../../../shared/api/gobernaApi';
 import './popularProfiles.css';
 
 function pickPopularProfiles(consultants) {
-  const withPhoto = consultants.filter((consultant) => consultant.hasRealPhoto);
+  const seen = new Set();
+  const unique = consultants.filter((consultant) => {
+    if (!consultant.hasRealPhoto) {
+      return false;
+    }
 
-  const sorted = [...withPhoto].sort((left, right) => {
+    const ownerKey = consultant.ownerId || consultant.id;
+    if (seen.has(ownerKey)) {
+      return false;
+    }
+
+    seen.add(ownerKey);
+    return true;
+  });
+
+  const sorted = [...unique].sort((left, right) => {
     if (left.featured !== right.featured) {
       return left.featured ? -1 : 1;
     }

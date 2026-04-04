@@ -132,6 +132,7 @@ export async function listConsultants(query: ConsultantsQuery) {
         include: {
           owner: {
             select: {
+            id: true,
             firstName: true,
             lastName: true,
             avatarUrl: true,

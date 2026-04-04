@@ -23,5 +23,5 @@ export const env = {
   DEMO_CONSULTANT_PASSWORD: requireValue('DEMO_CONSULTANT_PASSWORD'),
   DEMO_ADMIN_EMAIL: requireValue('DEMO_ADMIN_EMAIL'),
   DEMO_ADMIN_PASSWORD: requireValue('DEMO_ADMIN_PASSWORD'),
-  INTEGRATION_API_KEY: requireValue('INTEGRATION_API_KEY'),
+  INTEGRATION_API_KEY: requireValue('INTEGRATION_API_KEY', 'dev-local-key'),
 } as const;

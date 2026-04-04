@@ -9,7 +9,6 @@
 }
 
 .pricing__title {
-  --section-title-color: #0f1923;
   margin: 0;
   width: 100vw;
   margin-left: calc(50% - 50vw);
@@ -22,13 +21,16 @@
   line-height: 0.94;
   letter-spacing: 0;
   text-transform: uppercase;
-  color: #0f1923;
+  color: transparent;
   white-space: nowrap;
+  background: none;
+  background-clip: initial;
+  -webkit-background-clip: initial;
 }
 
 .pricing__title-reveal {
   display: inline-block;
-  background: linear-gradient(180deg, #0f1923 0%, #0f1923 48%, #ffffff 100%);
+  background: linear-gradient(180deg, #ffc502 0%, #ffc502 48%, #ffffff 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

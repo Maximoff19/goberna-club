@@ -72,7 +72,7 @@ function PricingSection() {
   return (
     <section id="precios" className="pricing" aria-labelledby="pricing-title">
       <div className="pricing__safe-area">
-        <SectionTitle id="pricing-title" className="pricing__title" color="#0F1923">
+        <SectionTitle id="pricing-title" className="pricing__title" color="#FFC502">
           <ScrollReveal
             text="NUESTROS PRECIOS"
             className="pricing__title-reveal pricing__title-reveal--desktop"

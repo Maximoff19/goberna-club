@@ -1,11 +1,12 @@
-import { Router } from 'express';
+//hola
+import { Router } from "express";
 
 export const billingRouter = Router();
 
-billingRouter.get('/', (_request, response) => {
+billingRouter.get("/", (_request, response) => {
   response.json({
-    module: 'billing',
+    module: "billing",
     enabled: false,
-    reason: 'Payments are intentionally out of scope for this phase.',
+    reason: "Payments are intentionally out of scope for this phase.",
   });
 });
