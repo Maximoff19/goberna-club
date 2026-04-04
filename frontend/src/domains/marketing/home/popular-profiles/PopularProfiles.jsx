@@ -9,7 +9,7 @@ import './popularProfiles.css';
 function pickPopularProfiles(consultants) {
   const seen = new Set();
   const unique = consultants.filter((consultant) => {
-    if (!consultant.hasRealPhoto) {
+    if (!consultant.hasUploadedPhoto) {
       return false;
     }
 

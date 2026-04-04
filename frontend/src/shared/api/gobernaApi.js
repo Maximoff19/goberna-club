@@ -200,6 +200,7 @@ function normalizeSharedProfile(profile) {
     imageSrc: avatar,
     avatarSrc: avatar,
     hasRealPhoto: hasRealAvatar(profile),
+    hasUploadedPhoto: Boolean(Array.isArray(profile.assets) && profile.assets.find((asset) => asset.type === 'AVATAR' && !asset.deletedAt && asset.publicUrl)),
     summary: profile.bio || '',
     countryId: profile.countryRef?.id || '',
     country: countryValue,

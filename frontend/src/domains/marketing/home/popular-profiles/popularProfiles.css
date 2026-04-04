@@ -392,14 +392,16 @@
   }
 
   .profile-card__bottom-row {
+    display: flex;
     margin-top: 4px;
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
     gap: 4px;
   }
 
   .profile-card__metrics {
-    gap: 6px;
+    gap: 4px;
     margin-left: 0;
   }
 
@@ -414,16 +416,15 @@
   }
 
   .profile-card__connect-button {
-    min-height: 22px;
-    padding: 0 0;
-    font-size: 9px;
-    gap: 3px;
-    justify-content: center;
-    width: 100%;
+    min-height: 20px;
+    padding: 0 6px;
+    font-size: 8px;
+    gap: 2px;
+    flex-shrink: 0;
   }
 
   .profile-card__connect-button svg {
-    width: 9px;
-    height: 9px;
+    width: 8px;
+    height: 8px;
   }
 }
