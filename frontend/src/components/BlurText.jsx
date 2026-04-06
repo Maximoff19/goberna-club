@@ -7,7 +7,7 @@ function buildKeyframes(from, steps) {
     ...Object.keys(from),
     ...steps.flatMap((step) => Object.keys(step)),
   ]);
-
+  //hola
   const keyframes = {};
   keys.forEach((key) => {
     keyframes[key] = [from[key], ...steps.map((step) => step[key])];
