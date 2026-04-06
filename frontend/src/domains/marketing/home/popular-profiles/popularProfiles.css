@@ -333,6 +333,8 @@
     padding: 4px 4px 6px;
     scroll-snap-align: start;
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
   }
 
   .profile-card__image-wrap {
@@ -359,6 +361,9 @@
   .profile-card__content {
     margin-top: 4px;
     padding: 0 2px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
   }
 
   .profile-card__name {
@@ -393,16 +398,16 @@
 
   .profile-card__bottom-row {
     display: flex;
-    margin-top: 4px;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
+    margin-top: auto;
+    flex-direction: column;
+    align-items: stretch;
     gap: 4px;
   }
 
   .profile-card__metrics {
     gap: 4px;
     margin-left: 0;
+    justify-content: center;
   }
 
   .profile-card__metric-item {
@@ -416,11 +421,15 @@
   }
 
   .profile-card__connect-button {
-    min-height: 20px;
+    min-height: 22px;
     padding: 0 6px;
     font-size: 8px;
     gap: 2px;
     flex-shrink: 0;
+    width: 100%;
+    justify-content: center;
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.32), inset 0 -6px 10px rgba(255, 255, 255, 0.12);
   }
 
   .profile-card__connect-button svg {
