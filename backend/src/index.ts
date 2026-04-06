@@ -1,13 +1,18 @@
 import dotenv from 'dotenv';
 import { app } from './app';
 import { env } from './config/env';
-import { prepareDatabase } from './bootstrap/prepare-database';
 import { prisma } from './lib/prisma';
 
 dotenv.config();
 
 async function bootstrap() {
-  await prepareDatabase();
+  // In development, prepare the database (create, push schema, seed).
+  // In production the database must already be provisioned.
+  if (env.NODE_ENV !== 'production') {
+    const { prepareDatabase } = await import('./bootstrap/prepare-database');
+    await prepareDatabase();
+  }
+
   const server = app.listen(env.PORT, () => {
     console.log(`[goberna-api] running on ${env.APP_URL}`);
   });
