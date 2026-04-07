@@ -1,9 +1,9 @@
-import type { Prisma } from '@prisma/client';
-import { prisma } from '../../lib/prisma';
-import { PROFILE_STATUS } from '../common/types';
-import type { z } from 'zod';
-import type { consultantsQuerySchema } from './consultants-public.schemas';
-import { HttpError } from '../common/http-error';
+import type { Prisma } from "@prisma/client";
+import { PROFILE_STATUS } from "../common/index.js";
+import { prisma } from "../../lib/prisma";
+import type { z } from "zod";
+import type { consultantsQuerySchema } from "./consultants-public.schemas";
+import { HttpError } from "../common/http-error";
 
 type ConsultantsQuery = z.infer<typeof consultantsQuerySchema>;
 
@@ -14,14 +14,18 @@ function serializeAsset<T extends { sizeBytes: bigint }>(asset: T) {
   };
 }
 
-function serializeProfile<T extends { assets: Array<{ sizeBytes: bigint }> }>(profile: T) {
+function serializeProfile<T extends { assets: Array<{ sizeBytes: bigint }> }>(
+  profile: T,
+) {
   return {
     ...profile,
     assets: profile.assets.map(serializeAsset),
   };
 }
 
-function serializeCertificate<T extends { asset: { sizeBytes: bigint } | null }>(certificate: T) {
+function serializeCertificate<
+  T extends { asset: { sizeBytes: bigint } | null },
+>(certificate: T) {
   return {
     ...certificate,
     asset: certificate.asset ? serializeAsset(certificate.asset) : null,
@@ -29,7 +33,10 @@ function serializeCertificate<T extends { asset: { sizeBytes: bigint } | null }>
 }
 
 function serializeProfileWithCertificates<
-  T extends { assets: Array<{ sizeBytes: bigint }>; certificates: Array<{ asset: { sizeBytes: bigint } | null }> },
+  T extends {
+    assets: Array<{ sizeBytes: bigint }>;
+    certificates: Array<{ asset: { sizeBytes: bigint } | null }>;
+  },
 >(profile: T) {
   return {
     ...serializeProfile(profile),
@@ -51,19 +58,19 @@ export async function listConsultants(query: ConsultantsQuery) {
         { bio: { contains: query.q } },
         { owner: { firstName: { contains: query.q } } },
         { owner: { lastName: { contains: query.q } } },
-        { slug: { contains: query.q.toLowerCase().replace(/\s+/g, '-') } },
+        { slug: { contains: query.q.toLowerCase().replace(/\s+/g, "-") } },
       ],
     });
   }
 
   if (query.countries.length > 0) {
     andFilters.push({
-      OR: query.countries.flatMap((country) => ([
+      OR: query.countries.flatMap((country) => [
         { countryRef: { slug: country } },
         { countryRef: { code: country.toUpperCase() } },
         { countryRef: { name: { contains: country } } },
         { country: { contains: country } },
-      ])),
+      ]),
     });
   }
 
@@ -75,7 +82,7 @@ export async function listConsultants(query: ConsultantsQuery) {
     where.yearsOfExperience = { gte: query.minExperience };
   }
 
-  if (query.featured === 'true') {
+  if (query.featured === "true") {
     where.featuredFlag = true;
   }
 
@@ -83,7 +90,9 @@ export async function listConsultants(query: ConsultantsQuery) {
     andFilters.push({
       languages: {
         some: {
-          OR: query.languages.map((language) => ({ languageCode: { contains: language } })),
+          OR: query.languages.map((language) => ({
+            languageCode: { contains: language },
+          })),
         },
       },
     });
@@ -91,11 +100,11 @@ export async function listConsultants(query: ConsultantsQuery) {
 
   if (query.specialties.length > 0) {
     andFilters.push({
-      OR: query.specialties.flatMap((specialty) => ([
+      OR: query.specialties.flatMap((specialty) => [
         { specialty: { slug: specialty } },
         { specialty: { name: { contains: specialty } } },
         { professionalHeadline: { contains: specialty } },
-      ])),
+      ]),
     });
   }
 
@@ -103,11 +112,11 @@ export async function listConsultants(query: ConsultantsQuery) {
     andFilters.push({
       skills: {
         some: {
-          OR: query.skills.flatMap((skill) => ([
+          OR: query.skills.flatMap((skill) => [
             { name: { contains: skill } },
             { skill: { name: { contains: skill } } },
             { skill: { slug: skill } },
-          ])),
+          ]),
         },
       },
     });
@@ -117,11 +126,12 @@ export async function listConsultants(query: ConsultantsQuery) {
     where.AND = andFilters;
   }
 
-  const orderBy: Prisma.ConsultantProfileOrderByWithRelationInput = query.sort === 'experience'
-    ? { yearsOfExperience: 'desc' }
-    : query.sort === 'publishedAt'
-      ? { publishedAt: 'desc' }
-      : { featuredFlag: 'desc' };
+  const orderBy: Prisma.ConsultantProfileOrderByWithRelationInput =
+    query.sort === "experience"
+      ? { yearsOfExperience: "desc" }
+      : query.sort === "publishedAt"
+        ? { publishedAt: "desc" }
+        : { featuredFlag: "desc" };
 
   const [items, total] = await prisma.$transaction([
     prisma.consultantProfile.findMany({
@@ -129,25 +139,25 @@ export async function listConsultants(query: ConsultantsQuery) {
       skip: (query.page - 1) * query.limit,
       take: query.limit,
       orderBy,
-        include: {
-          owner: {
-            select: {
+      include: {
+        owner: {
+          select: {
             id: true,
             firstName: true,
             lastName: true,
             avatarUrl: true,
           },
-          },
-          specialty: true,
-          countryRef: true,
-          languages: true,
-          skills: {
-            include: {
-              skill: true,
-            },
-          },
-          assets: true,
         },
+        specialty: true,
+        countryRef: true,
+        languages: true,
+        skills: {
+          include: {
+            skill: true,
+          },
+        },
+        assets: true,
+      },
     }),
     prisma.consultantProfile.count({ where }),
   ]);
@@ -202,7 +212,7 @@ export async function getConsultantBySlug(slug: string) {
   });
 
   if (!consultant) {
-    throw new HttpError(404, 'Consultant not found');
+    throw new HttpError(404, "Consultant not found");
   }
 
   return serializeProfileWithCertificates(consultant);
