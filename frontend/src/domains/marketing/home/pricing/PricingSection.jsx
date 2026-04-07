@@ -10,7 +10,7 @@ const PRICING_PLANS = [
     price: '$99.00',
     before: '$199.00',
     featured: false,
-    paymentUrl: 'https://grupogoberna.com/suscripcion-anual-a-la-red-internacional-plan-consultor-politico/',
+    paymentUrl: 'https://grupogoberna.com/checkout/?add-to-cart=89500',
     benefits: [
       'Certificado de Consultor Político',
       'Validación de su experiencia y hoja de vida',
@@ -25,7 +25,7 @@ const PRICING_PLANS = [
     price: '$199.00',
     before: '$299.00',
     featured: true,
-    paymentUrl: 'https://grupogoberna.com/suscripcion-anual-a-la-red-internacional-plan-consultor-politico-senior/',
+    paymentUrl: 'https://grupogoberna.com/checkout/?add-to-cart=89634',
     benefits: [
       'Todos los beneficios del plan del consultor político',
       'Publicar libros en nuestra librería Goberna',
@@ -41,7 +41,7 @@ const PRICING_PLANS = [
     price: '$299.00',
     before: '$599.00',
     featured: false,
-    paymentUrl: 'https://grupogoberna.com/suscripcion-anual-a-la-red-internacional-plan-consultor-politico-master/',
+    paymentUrl: 'https://grupogoberna.com/checkout/?add-to-cart=89637',
     benefits: [
       'Todos los beneficios del plan del consultor político senior',
       'Asesoría especializada en su imagen digital cada 6 meses',
@@ -56,7 +56,7 @@ const PRICING_PLANS = [
     price: '$599.00',
     before: '$899.00',
     featured: false,
-    paymentUrl: 'https://grupogoberna.com/suscripcion-anual-a-la-red-internacional-master/',
+    paymentUrl: 'https://grupogoberna.com/checkout/?add-to-cart=89635',
     benefits: [
       'Todos los beneficios del plan del consultor político master',
       'Asesoría especializada en su imagen digital cada 3 meses',
