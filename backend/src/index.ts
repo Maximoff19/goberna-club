@@ -6,12 +6,11 @@ import { prisma } from './lib/prisma';
 dotenv.config();
 
 async function bootstrap() {
-  // In development, prepare the database (create, push schema, seed).
-  // In production the database must already be provisioned.
-  if (env.NODE_ENV !== 'production') {
-    const { prepareDatabase } = await import('./bootstrap/prepare-database');
-    await prepareDatabase();
-  }
+  // Ensure the database exists and schema is up-to-date.
+  // Safe for all environments — CREATE DATABASE IF NOT EXISTS is idempotent,
+  // migrations only apply pending ones, and seeding only runs in development.
+  const { prepareDatabase } = await import('./bootstrap/prepare-database.js');
+  await prepareDatabase();
 
   const server = app.listen(env.PORT, () => {
     console.log(`[goberna-api] running on ${env.APP_URL}`);

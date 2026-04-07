@@ -1,7 +1,8 @@
 import { prisma } from '../../lib/prisma';
 
 export async function checkHealth() {
-  await prisma.$queryRawUnsafe('SELECT 1');
+  // Use Prisma's built-in method instead of raw SQL
+  await prisma.$queryRaw`SELECT 1`;
   return {
     status: 'ok' as const,
     database: 'up' as const,
