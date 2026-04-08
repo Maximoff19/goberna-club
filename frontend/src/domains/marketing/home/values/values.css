@@ -149,7 +149,14 @@
 
   .values__media-wrap {
     height: 340px;
-    border-radius: 28px;
+    width: 100vw;
+    max-width: none;
+    margin-left: calc(50% - 50vw);
+    border-radius: 0;
+  }
+
+  .values__media {
+    border-radius: 0;
   }
 
   .values__item {
