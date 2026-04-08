@@ -139,13 +139,14 @@
 
   .about-intro__media-wrap {
     height: 340px;
-    margin-left: 0;
-    width: 100%;
-    border-radius: 28px;
+    width: 100vw;
+    max-width: none;
+    margin-left: calc(50% - 50vw);
+    border-radius: 0;
   }
 
   .about-intro__media {
-    border-radius: 28px;
+    border-radius: 0;
   }
 
   .about-intro__panel {
