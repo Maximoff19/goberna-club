@@ -18,20 +18,63 @@ const NAV_ITEMS: readonly NavItem[] = [
   { label: 'Precios', selector: '#precios' },
   { label: 'Contacto', selector: '#contacto' },
 ];
-const ACTIVE_INDEX = 0;
+const DEFAULT_ACTIVE_INDEX = 0;
 const MOBILE_NAV_BREAKPOINT = 1120;
 
 function HeroTopNav() {
-  const [highlightedIndex, setHighlightedIndex] = useState(ACTIVE_INDEX);
+  const [activeIndex, setActiveIndex] = useState(DEFAULT_ACTIVE_INDEX);
+  const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
   const [bubbleStyle, setBubbleStyle] = useState<BubbleStyle>({ width: 0, x: 0 });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
-  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const desktopItemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const bubbleIndex = highlightedIndex ?? activeIndex;
+
+  useEffect(() => {
+    const resolveActiveIndex = () => {
+      const sectionEntries = NAV_ITEMS.map((item, index) => {
+        const sectionNode = document.querySelector(item.selector) as HTMLElement | null;
+
+        if (!sectionNode) {
+          return null;
+        }
+
+        return {
+          index,
+          top: sectionNode.getBoundingClientRect().top,
+        };
+      }).filter((entry): entry is { index: number; top: number } => entry !== null);
+
+      if (sectionEntries.length === 0) {
+        return;
+      }
+
+      const activationOffset = window.innerHeight * 0.28;
+      let nextActiveIndex = sectionEntries[0].index;
+
+      for (const entry of sectionEntries) {
+        if (entry.top <= activationOffset) {
+          nextActiveIndex = entry.index;
+        }
+      }
+
+      setActiveIndex((currentValue) => (currentValue === nextActiveIndex ? currentValue : nextActiveIndex));
+    };
+
+    resolveActiveIndex();
+    window.addEventListener('scroll', resolveActiveIndex, { passive: true });
+    window.addEventListener('resize', resolveActiveIndex);
+
+    return () => {
+      window.removeEventListener('scroll', resolveActiveIndex);
+      window.removeEventListener('resize', resolveActiveIndex);
+    };
+  }, []);
 
   useEffect(() => {
     const updateBubble = (index: number) => {
       const navNode = navRef.current;
-      const itemNode = itemRefs.current[index];
+      const itemNode = desktopItemRefs.current[index];
 
       if (!navNode || !itemNode) {
         return;
@@ -43,13 +86,13 @@ function HeroTopNav() {
       });
     };
 
-    updateBubble(highlightedIndex);
+    updateBubble(bubbleIndex);
 
-    const onResize = () => updateBubble(highlightedIndex);
+    const onResize = () => updateBubble(bubbleIndex);
     window.addEventListener('resize', onResize);
 
     return () => window.removeEventListener('resize', onResize);
-  }, [highlightedIndex]);
+  }, [bubbleIndex]);
 
   useEffect(() => {
     const closeMenuOnDesktop = () => {
@@ -93,15 +136,13 @@ function HeroTopNav() {
       {NAV_ITEMS.map((item, index) => (
         <button
           key={item.label}
-          ref={(node) => {
-            itemRefs.current[index] = node;
-          }}
           type="button"
-          className={`hero-top-nav__item ${index === highlightedIndex ? 'hero-top-nav__item--highlighted' : ''} ${index === ACTIVE_INDEX ? 'hero-top-nav__item--active' : ''}`}
+          className={`hero-top-nav__item ${index === activeIndex ? 'hero-top-nav__item--active hero-top-nav__item--highlighted' : ''}`}
           onMouseEnter={() => setHighlightedIndex(index)}
           onFocus={() => setHighlightedIndex(index)}
           onClick={() => {
-            setHighlightedIndex(index);
+            setActiveIndex(index);
+            setHighlightedIndex(null);
             setIsMobileMenuOpen(false);
             window.dispatchEvent(new CustomEvent('app:smooth-scroll-to', { detail: { selector: item.selector } }));
           }}
@@ -128,7 +169,7 @@ function HeroTopNav() {
       ref={navRef}
       className={`hero-top-nav ${isMobileMenuOpen ? 'hero-top-nav--open' : ''}`}
       aria-label="Accesos institucionales"
-      onMouseLeave={() => setHighlightedIndex(ACTIVE_INDEX)}
+      onMouseLeave={() => setHighlightedIndex(null)}
     >
       <button
         type="button"
@@ -151,13 +192,14 @@ function HeroTopNav() {
           <button
             key={item.label}
             ref={(node) => {
-              itemRefs.current[index] = node;
+              desktopItemRefs.current[index] = node;
             }}
             type="button"
-            className={`hero-top-nav__item ${index === highlightedIndex ? 'hero-top-nav__item--highlighted' : ''} ${index === ACTIVE_INDEX ? 'hero-top-nav__item--active' : ''}`}
+            className={`hero-top-nav__item ${index === bubbleIndex ? 'hero-top-nav__item--highlighted' : ''} ${index === activeIndex ? 'hero-top-nav__item--active' : ''}`}
             onMouseEnter={() => setHighlightedIndex(index)}
             onFocus={() => setHighlightedIndex(index)}
             onClick={() => {
+              setActiveIndex(index);
               setHighlightedIndex(index);
               setIsMobileMenuOpen(false);
               window.dispatchEvent(new CustomEvent('app:smooth-scroll-to', { detail: { selector: item.selector } }));
