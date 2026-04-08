@@ -32,14 +32,14 @@
 .popular-profiles__cards-row {
   display: flex;
   align-items: stretch;
-  gap: 18px;
+  gap: 34px;
   overflow-x: auto;
   scroll-behavior: smooth;
   scrollbar-width: none;
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
-  padding: 10px 90px;
+  padding: 14px 108px;
 }
 
 .popular-profiles__cards-row::-webkit-scrollbar {
@@ -47,7 +47,7 @@
 }
 
 .popular-profiles__cards-row--second {
-  padding-left: 196px;
+  padding-left: 228px;
 }
 
 .popular-profiles__row-arrow {
@@ -87,7 +87,7 @@
   box-shadow: inset -4px -9px 16.5px rgba(255, 255, 255, 0.25);
   display: flex;
   align-items: center;
-  padding: 18px 24px 18px 74px;
+  padding: 18px 22px 18px 96px;
   overflow: visible;
 }
 
@@ -95,9 +95,9 @@
   position: absolute;
   left: 0;
   top: 50%;
-  transform: translate(-38%, -50%);
-  width: 110px;
-  height: 110px;
+  transform: translate(-28%, -50%);
+  width: 126px;
+  height: 126px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -108,7 +108,7 @@
   height: 100%;
   border-radius: 999px;
   background: linear-gradient(90deg, #ffffff 0%, #fff2bd 50%, #ffc502 100%);
-  padding: 4px;
+  padding: 2px;
   box-shadow: 0 12px 24px rgba(15, 25, 35, 0.18);
 }
 
@@ -135,14 +135,12 @@
 .popular-profile-wide-card__content {
   width: 100%;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
+  align-items: flex-start;
 }
 
 .popular-profile-wide-card__identity {
   min-width: 0;
-  flex: 1 1 auto;
+  width: 100%;
 }
 
 .popular-profile-wide-card__name-row {
@@ -158,9 +156,9 @@
   font-weight: 700;
   line-height: 1.1;
   color: #ffffff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: initial;
 }
 
 .popular-profile-wide-card__specialization {
@@ -184,11 +182,11 @@
 }
 
 .popular-profile-wide-card__metrics {
-  flex: 0 0 auto;
-  min-width: 92px;
+  margin-top: 8px;
+  min-width: 0;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 10px 14px;
 }
 
 .popular-profile-wide-card__metric-item {
@@ -198,6 +196,7 @@
   row-gap: 1px;
   align-items: center;
   color: rgba(255, 255, 255, 0.82);
+  min-width: 72px;
 }
 
 .popular-profile-wide-card__metric-item svg {
@@ -256,16 +255,17 @@
   }
 
   .popular-profiles__cards-row {
-    padding: 10px 72px;
+    gap: 28px;
+    padding: 14px 88px;
   }
 
   .popular-profiles__cards-row--second {
-    padding-left: 148px;
+    padding-left: 176px;
   }
 
   .popular-profile-wide-card {
     width: 360px;
-    padding: 18px 20px 18px 68px;
+    padding: 18px 18px 18px 86px;
   }
 }
 
@@ -301,11 +301,12 @@
   }
 
   .popular-profiles__cards-row {
-    padding: 10px 54px;
+    gap: 22px;
+    padding: 14px 64px;
   }
 
   .popular-profiles__cards-row--second {
-    padding-left: 118px;
+    padding-left: 138px;
   }
 
   .popular-profile-wide-card {
@@ -330,25 +331,25 @@
   }
 
   .popular-profiles__cards-row {
-    gap: 14px;
-    padding: 10px 44px;
+    gap: 18px;
+    padding: 14px 50px;
   }
 
   .popular-profiles__cards-row--second {
-    padding-left: 92px;
+    padding-left: 104px;
   }
 
   .popular-profile-wide-card {
     width: min(84vw, 320px);
     min-height: 120px;
-    padding: 16px 16px 16px 58px;
+    padding: 16px 14px 16px 78px;
     border-radius: 24px;
   }
 
   .popular-profile-wide-card__avatar-shell {
-    width: 90px;
-    height: 90px;
-    transform: translate(-34%, -50%);
+    width: 104px;
+    height: 104px;
+    transform: translate(-24%, -50%);
   }
 
   .popular-profile-wide-card__name {
@@ -360,8 +361,7 @@
   }
 
   .popular-profile-wide-card__metrics {
-    min-width: 78px;
-    gap: 7px;
+    gap: 8px 10px;
   }
 
   .popular-profile-wide-card__metric-value {

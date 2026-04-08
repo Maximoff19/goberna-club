@@ -75,19 +75,19 @@ function PopularProfileWideCard({ profile }: PopularProfileWideCardProps) {
               <Star key={`${profile.id}-star-${star}`} size={12} fill="#FFC502" color="#FFC502" strokeWidth={1.8} />
             ))}
           </div>
-        </div>
 
-        <div className="popular-profile-wide-card__metrics">
-          <div className="popular-profile-wide-card__metric-item">
-            <MousePointer2 size={15} strokeWidth={2.2} aria-hidden="true" />
-            <span className="popular-profile-wide-card__metric-value">{formatMetric(profile.clicks)}</span>
-            <span className="popular-profile-wide-card__metric-label">clicks</span>
-          </div>
+          <div className="popular-profile-wide-card__metrics">
+            <div className="popular-profile-wide-card__metric-item">
+              <MousePointer2 size={15} strokeWidth={2.2} aria-hidden="true" />
+              <span className="popular-profile-wide-card__metric-value">{formatMetric(profile.clicks)}</span>
+              <span className="popular-profile-wide-card__metric-label">clicks</span>
+            </div>
 
-          <div className="popular-profile-wide-card__metric-item">
-            <Users size={15} strokeWidth={2.2} aria-hidden="true" />
-            <span className="popular-profile-wide-card__metric-value">{formatMetric(profile.followers)}</span>
-            <span className="popular-profile-wide-card__metric-label">contactos</span>
+            <div className="popular-profile-wide-card__metric-item">
+              <Users size={15} strokeWidth={2.2} aria-hidden="true" />
+              <span className="popular-profile-wide-card__metric-value">{formatMetric(profile.followers)}</span>
+              <span className="popular-profile-wide-card__metric-label">contactos</span>
+            </div>
           </div>
         </div>
       </div>
