@@ -81,13 +81,13 @@
   position: relative;
   flex: 0 0 auto;
   width: 413px;
-  height: 126px;
+  height: 118px;
   border-radius: 30px;
   background: #0f1923;
   box-shadow: inset -4px -9px 16.5px rgba(255, 255, 255, 0.25);
   display: flex;
   align-items: center;
-  padding: 18px 22px 18px 96px;
+  padding: 12px 18px 12px 94px;
   overflow: visible;
 }
 
@@ -109,7 +109,6 @@
   border-radius: 999px;
   background: linear-gradient(90deg, #ffffff 0%, #fff2bd 50%, #ffc502 100%);
   padding: 2px;
-  box-shadow: 0 12px 24px rgba(15, 25, 35, 0.18);
 }
 
 .popular-profile-wide-card__avatar {
@@ -152,9 +151,9 @@
 .popular-profile-wide-card__name {
   margin: 0;
   font-family: 'Montserrat', sans-serif;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.02;
   color: #ffffff;
   white-space: normal;
   overflow: visible;
@@ -162,31 +161,36 @@
 }
 
 .popular-profile-wide-card__specialization {
-  margin: 8px 0 0;
+  margin: 5px 0 0;
   font-family: 'Montserrat', sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
-  line-height: 1.35;
+  line-height: 1.2;
   color: rgba(255, 255, 255, 0.82);
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
 .popular-profile-wide-card__stars {
-  margin-top: 10px;
+  margin-top: 6px;
   display: inline-flex;
   align-items: center;
   gap: 3px;
 }
 
+.popular-profile-wide-card__stars svg {
+  width: 11px;
+  height: 11px;
+}
+
 .popular-profile-wide-card__metrics {
-  margin-top: 8px;
+  margin-top: 6px;
   min-width: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 14px;
+  gap: 8px 12px;
 }
 
 .popular-profile-wide-card__metric-item {
@@ -265,8 +269,8 @@
 
   .popular-profile-wide-card {
     width: 360px;
-    height: 126px;
-    padding: 18px 18px 18px 86px;
+    height: 118px;
+    padding: 12px 16px 12px 84px;
   }
 }
 
@@ -312,7 +316,7 @@
 
   .popular-profile-wide-card {
     width: min(82vw, 413px);
-    height: 126px;
+    height: 118px;
   }
 
   .popular-profiles__description {
@@ -342,8 +346,8 @@
 
   .popular-profile-wide-card {
     width: min(84vw, 320px);
-    height: 126px;
-    padding: 16px 14px 16px 78px;
+    height: 116px;
+    padding: 12px 12px 12px 74px;
     border-radius: 24px;
   }
 
@@ -354,11 +358,11 @@
   }
 
   .popular-profile-wide-card__name {
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .popular-profile-wide-card__specialization {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .popular-profile-wide-card__metrics {
