@@ -21,6 +21,10 @@ const NAV_ITEMS: readonly NavItem[] = [
 const DEFAULT_ACTIVE_INDEX = 0;
 const MOBILE_NAV_BREAKPOINT = 1120;
 
+function scrollToSelector(selector: string) {
+  window.dispatchEvent(new CustomEvent('app:smooth-scroll-to', { detail: { selector } }));
+}
+
 function HeroTopNav() {
   const [activeIndex, setActiveIndex] = useState(DEFAULT_ACTIVE_INDEX);
   const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
@@ -144,7 +148,9 @@ function HeroTopNav() {
             setActiveIndex(index);
             setHighlightedIndex(null);
             setIsMobileMenuOpen(false);
-            window.dispatchEvent(new CustomEvent('app:smooth-scroll-to', { detail: { selector: item.selector } }));
+            window.setTimeout(() => {
+              scrollToSelector(item.selector);
+            }, 0);
           }}
         >
           {item.label}
@@ -202,7 +208,7 @@ function HeroTopNav() {
               setActiveIndex(index);
               setHighlightedIndex(index);
               setIsMobileMenuOpen(false);
-              window.dispatchEvent(new CustomEvent('app:smooth-scroll-to', { detail: { selector: item.selector } }));
+              scrollToSelector(item.selector);
             }}
           >
             {item.label}

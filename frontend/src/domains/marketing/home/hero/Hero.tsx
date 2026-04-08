@@ -26,30 +26,32 @@ function Hero({ showActions = true, customAction = null }: HeroProps) {
   }, []);
 
   return (
-    <section
-      className="hero"
-      style={{
-        backgroundImage: "url('/imagenhero.webp')",
-      }}
-    >
-      <HeroNetworkBackground />
-
-      <div className="hero__safe-area">
-        <div className={`hero__top-row ${hasScrolled ? 'hero__top-row--scrolled' : ''}`}>
-          <HeroBrand />
-          <HeroTopNav />
-        </div>
-
-        <div className="hero__main-row">
-          <HeroContent showActions={showActions} customAction={customAction} />
-          <div className="hero__image-wrap">
-            <img className="hero__image" src="/imagenhero2.webp" alt="Consultor destacado" />
-          </div>
-        </div>
-
-        <HeroScrollIndicator />
+    <>
+      <div className={`hero__top-row ${hasScrolled ? 'hero__top-row--scrolled' : ''}`}>
+        <HeroBrand />
+        <HeroTopNav />
       </div>
-    </section>
+
+      <section
+        className="hero"
+        style={{
+          backgroundImage: "url('/imagenhero.webp')",
+        }}
+      >
+        <HeroNetworkBackground />
+
+        <div className="hero__safe-area">
+          <div className="hero__main-row">
+            <HeroContent showActions={showActions} customAction={customAction} />
+            <div className="hero__image-wrap">
+              <img className="hero__image" src="/imagenhero2.webp" alt="Consultor destacado" />
+            </div>
+          </div>
+
+          <HeroScrollIndicator />
+        </div>
+      </section>
+    </>
   );
 }
 
