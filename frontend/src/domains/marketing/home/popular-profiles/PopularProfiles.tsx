@@ -137,7 +137,7 @@ function PopularProfiles() {
               ref={(node) => {
                 rowRefs.current[ROW_INDEX.FIRST] = node;
               }}
-              className="popular-profiles__cards-row"
+              className="popular-profiles__cards-row popular-profiles__cards-row--first"
             >
               {firstRowProfiles.map((profile) => (
                 <PopularProfileWideCard key={profile.id} profile={profile} />
@@ -168,7 +168,7 @@ function PopularProfiles() {
               ref={(node) => {
                 rowRefs.current[ROW_INDEX.SECOND] = node;
               }}
-              className="popular-profiles__cards-row"
+              className="popular-profiles__cards-row popular-profiles__cards-row--second"
             >
               {secondRowProfiles.map((profile) => (
                 <PopularProfileWideCard key={profile.id} profile={profile} />
