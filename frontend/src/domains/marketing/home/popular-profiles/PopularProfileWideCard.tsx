@@ -16,6 +16,11 @@ interface PopularProfileWideCardProps {
   profile: PopularProfileWideCardData;
 }
 
+interface NameParts {
+  leading: string;
+  trailing: string;
+}
+
 function getInitials(name: string | undefined): string {
   const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return '?';
@@ -31,9 +36,27 @@ function formatMetric(value: number | string | undefined): string {
   return String(value);
 }
 
+function splitNameParts(name: string | undefined): NameParts {
+  const normalizedName = String(name || 'Consultor acreditado').trim().replace(/\s+/g, ' ');
+  const parts = normalizedName.split(' ').filter(Boolean);
+
+  if (parts.length <= 1) {
+    return {
+      leading: '',
+      trailing: normalizedName,
+    };
+  }
+
+  return {
+    leading: parts.slice(0, -1).join(' '),
+    trailing: parts[parts.length - 1],
+  };
+}
+
 function PopularProfileWideCard({ profile }: PopularProfileWideCardProps) {
   const [imageFailed, setImageFailed] = useState(false);
   const showImage = profile.imageSrc && !imageFailed;
+  const { leading, trailing } = splitNameParts(profile.name);
 
   const goToProfile = () => {
     window.location.hash = profile.slug ? `#perfil/${profile.slug}` : '#explorar-consultores';
@@ -64,9 +87,12 @@ function PopularProfileWideCard({ profile }: PopularProfileWideCardProps) {
       <div className="popular-profile-wide-card__content">
         <div className="popular-profile-wide-card__identity">
           <h3 className="popular-profile-wide-card__name-row">
-            <span className="popular-profile-wide-card__name">{profile.name || 'Consultor acreditado'}</span>
-            <span className="popular-profile-wide-card__verified">
-              <VerifiedIcon size={18} />
+            {leading ? <span className="popular-profile-wide-card__name">{leading}&nbsp;</span> : null}
+            <span className="popular-profile-wide-card__name-tail">
+              <span className="popular-profile-wide-card__name">{trailing}</span>
+              <span className="popular-profile-wide-card__verified">
+                <VerifiedIcon size={18} />
+              </span>
             </span>
           </h3>
 

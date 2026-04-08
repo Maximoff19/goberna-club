@@ -147,12 +147,8 @@
 
 .popular-profile-wide-card__name-row {
   margin: 0;
-  display: inline-flex;
-  align-items: baseline;
+  display: block;
   align-self: flex-start;
-  flex-wrap: wrap;
-  column-gap: 6px;
-  row-gap: 2px;
   max-width: 100%;
 }
 
@@ -160,12 +156,19 @@
   display: inline;
   font-family: 'Montserrat', sans-serif;
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.02;
   color: #ffffff;
   white-space: normal;
   overflow: visible;
   text-overflow: initial;
+}
+
+.popular-profile-wide-card__name-tail {
+  display: inline-flex;
+  align-items: baseline;
+  column-gap: 6px;
+  white-space: nowrap;
 }
 
 .popular-profile-wide-card__verified {
@@ -175,11 +178,11 @@
 }
 
 .popular-profile-wide-card__specialization {
-  margin: 4px 0 0;
+  margin: 3px 0 0;
   font-family: 'Montserrat', sans-serif;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
-  line-height: 1.2;
+  line-height: 1.15;
   color: rgba(255, 255, 255, 0.82);
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -188,7 +191,7 @@
 }
 
 .popular-profile-wide-card__stars {
-  margin-top: 5px;
+  margin-top: 4px;
   display: inline-flex;
   align-items: center;
   gap: 3px;
@@ -200,21 +203,21 @@
 }
 
 .popular-profile-wide-card__metrics {
-  margin-top: 5px;
+  margin-top: 4px;
   min-width: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 7px 12px;
+  gap: 6px 10px;
 }
 
 .popular-profile-wide-card__metric-item {
   display: grid;
   grid-template-columns: 14px 1fr;
   column-gap: 6px;
-  row-gap: 1px;
+  row-gap: 0;
   align-items: center;
   color: rgba(255, 255, 255, 0.82);
-  min-width: 72px;
+  min-width: 66px;
 }
 
 .popular-profile-wide-card__metric-item svg {
@@ -389,16 +392,20 @@
     font-size: 15px;
   }
 
+  .popular-profile-wide-card__name-tail {
+    column-gap: 4px;
+  }
+
   .popular-profile-wide-card__verified {
     transform: translateY(0);
   }
 
   .popular-profile-wide-card__specialization {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .popular-profile-wide-card__metrics {
-    gap: 8px 10px;
+    gap: 6px 8px;
   }
 
   .popular-profile-wide-card__metric-value {
