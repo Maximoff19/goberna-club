@@ -33,10 +33,37 @@
 }
 
 .hero__top-row {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 40;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 24px;
+  padding: 24px clamp(24px, 7vw, 280px);
+  transition: background-color 220ms ease, box-shadow 220ms ease;
+}
+
+.hero__top-row--scrolled {
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(15, 25, 35, 0.12);
+}
+
+.hero__top-row--scrolled .hero-brand__name,
+.hero__top-row--scrolled .hero-top-nav__item,
+.hero__top-row--scrolled .hero-top-nav__toggle {
+  color: #0f1923;
+}
+
+.hero__top-row--scrolled .hero-top-nav__toggle {
+  border-color: rgba(15, 25, 35, 0.12);
+  background: #ffffff;
+}
+
+.hero__top-row--scrolled .hero-top-nav__bubble {
+  background: rgba(15, 25, 35, 0.08);
 }
 
 .hero-brand {
@@ -60,21 +87,10 @@
 }
 
 .hero-top-nav {
-  position: fixed;
-  top: 90px;
-  right: clamp(90px, 7vw, 280px);
-  z-index: 40;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  border-radius: 999px;
-  transition: background-color 220ms ease, box-shadow 220ms ease, padding 220ms ease;
-}
-
-.hero-top-nav--scrolled {
-  background: #ffffff;
-  box-shadow: 0 10px 30px rgba(15, 25, 35, 0.12);
-  padding: 6px;
 }
 
 .hero-top-nav__toggle {
@@ -93,12 +109,6 @@
 .hero-top-nav__toggle:focus-visible {
   outline: 2px solid #ffc502;
   outline-offset: 2px;
-}
-
-.hero-top-nav--scrolled .hero-top-nav__toggle {
-  border-color: rgba(15, 25, 35, 0.12);
-  background: #ffffff;
-  color: #0f1923;
 }
 
 .hero-top-nav__panel {
@@ -124,10 +134,6 @@
     width 320ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.hero-top-nav--scrolled .hero-top-nav__bubble {
-  background: rgba(15, 25, 35, 0.08);
-}
-
 .hero-top-nav__item {
   border: 1px solid transparent;
   border-radius: 999px;
@@ -149,15 +155,6 @@
 }
 
 .hero-top-nav__item--highlighted {
-  color: #0f1923;
-}
-
-.hero-top-nav--scrolled .hero-top-nav__item {
-  color: #0f1923;
-}
-
-.hero-top-nav--scrolled .hero-top-nav__item--highlighted,
-.hero-top-nav--scrolled .hero-top-nav__item--active {
   color: #0f1923;
 }
 
@@ -319,6 +316,7 @@
 @media (max-width: 1120px) {
   .hero__top-row {
     align-items: center;
+    padding: 24px clamp(24px, 6vw, 48px);
   }
 
   .hero-top-nav {
@@ -326,9 +324,7 @@
     flex-direction: column;
     align-items: flex-end;
     gap: 10px;
-    position: fixed;
-    top: 24px;
-    right: clamp(24px, 6vw, 48px);
+    position: relative;
   }
 
   .hero-top-nav__toggle {
@@ -443,6 +439,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    padding: 24px clamp(18px, 6vw, 32px);
   }
 
   .hero-brand__logo {
@@ -458,9 +455,7 @@
     flex-direction: column;
     align-items: flex-end;
     gap: 10px;
-    position: fixed;
-    top: 24px;
-    right: clamp(24px, 6vw, 48px);
+    position: relative;
   }
 
   .hero-top-nav__toggle {
