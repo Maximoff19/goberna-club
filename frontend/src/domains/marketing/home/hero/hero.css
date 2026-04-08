@@ -430,7 +430,7 @@
   .hero__safe-area {
     height: auto;
     min-height: 100svh;
-    padding: 24px clamp(24px, 6vw, 48px) 32px;
+    padding: 112px clamp(24px, 6vw, 48px) 32px;
     gap: 28px;
     overflow: hidden;
   }
@@ -587,7 +587,7 @@
 
 @media (max-width: 560px) {
   .hero__safe-area {
-    padding: 20px clamp(20px, 6vw, 36px) 28px;
+    padding: 108px clamp(20px, 6vw, 36px) 28px;
   }
 
   .hero-content__title {
