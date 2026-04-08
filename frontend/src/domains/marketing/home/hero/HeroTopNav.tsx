@@ -25,7 +25,6 @@ function HeroTopNav() {
   const [highlightedIndex, setHighlightedIndex] = useState(ACTIVE_INDEX);
   const [bubbleStyle, setBubbleStyle] = useState<BubbleStyle>({ width: 0, x: 0 });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [hasScrolled, setHasScrolled] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -62,17 +61,6 @@ function HeroTopNav() {
     window.addEventListener('resize', closeMenuOnDesktop);
 
     return () => window.removeEventListener('resize', closeMenuOnDesktop);
-  }, []);
-
-  useEffect(() => {
-    const updateScrolledState = () => {
-      setHasScrolled(window.scrollY > 8);
-    };
-
-    updateScrolledState();
-    window.addEventListener('scroll', updateScrolledState, { passive: true });
-
-    return () => window.removeEventListener('scroll', updateScrolledState);
   }, []);
 
   useEffect(() => {
@@ -138,7 +126,7 @@ function HeroTopNav() {
   return (
     <nav
       ref={navRef}
-      className={`hero-top-nav ${isMobileMenuOpen ? 'hero-top-nav--open' : ''} ${hasScrolled ? 'hero-top-nav--scrolled' : ''}`}
+      className={`hero-top-nav ${isMobileMenuOpen ? 'hero-top-nav--open' : ''}`}
       aria-label="Accesos institucionales"
       onMouseLeave={() => setHighlightedIndex(ACTIVE_INDEX)}
     >
