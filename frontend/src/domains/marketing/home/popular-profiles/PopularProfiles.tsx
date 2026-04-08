@@ -1,8 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import ProfileCard from './ProfileCard';
-
-import ScrollReveal from '../../../../components/ScrollReveal';
-import SectionTitle from '../../../../shared/ui/SectionTitle';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import PopularProfileWideCard from './PopularProfileWideCard';
 import { fetchConsultants } from '../../../../shared/api/gobernaApi';
 import './popularProfiles.css';
 
@@ -29,6 +27,11 @@ interface PopularProfile {
   clicks?: number | string;
   imageSrc?: string;
 }
+
+const ROW_INDEX = {
+  FIRST: 0,
+  SECOND: 1,
+} as const;
 
 function pickPopularProfiles(consultants: Consultant[]): PopularProfile[] {
   const seen = new Set<string>();
@@ -65,17 +68,15 @@ function pickPopularProfiles(consultants: Consultant[]): PopularProfile[] {
   }));
 }
 
+function splitProfilesIntoRows(profiles: PopularProfile[]): [PopularProfile[], PopularProfile[]] {
+  const firstRow = profiles.filter((_, index) => index % 2 === 0);
+  const secondRow = profiles.filter((_, index) => index % 2 !== 0);
+  return [firstRow, secondRow];
+}
+
 function PopularProfiles() {
   const [consultants, setConsultants] = useState<Consultant[]>([]);
-  const sectionRef = useRef<HTMLElement>(null);
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const autoScrollRef = useRef(0);
-  const manualOffsetRef = useRef(0);
-  const programmaticScrollRef = useRef(false);
-  const isUserInteractingRef = useRef(false);
-  const interactionTimeoutRef = useRef(0);
-  const isSectionActiveRef = useRef(false);
-  const scrollRafRef = useRef(0);
+  const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     let ignore = false;
@@ -97,179 +98,91 @@ function PopularProfiles() {
     };
   }, []);
 
-  const popularProfiles = useMemo(() => pickPopularProfiles(consultants), [consultants]);
+  const popularProfiles = pickPopularProfiles(consultants);
+  const [firstRowProfiles, secondRowProfiles] = splitProfilesIntoRows(popularProfiles);
 
-  useEffect(() => {
-    const sectionNode = sectionRef.current;
-    const carouselNode = carouselRef.current;
+  const scrollRow = (rowIndex: number, direction: 'left' | 'right') => {
+    const rowNode = rowRefs.current[rowIndex];
 
-    if (!sectionNode || !carouselNode) {
-      return undefined;
+    if (!rowNode) {
+      return;
     }
 
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const isMobileOrTablet = window.matchMedia('(max-width: 1120px)').matches;
-
-    if (prefersReducedMotion || isMobileOrTablet) {
-      return undefined;
-    }
-
-    const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
-
-    const markUserInteraction = () => {
-      isUserInteractingRef.current = true;
-      if (interactionTimeoutRef.current) {
-        window.clearTimeout(interactionTimeoutRef.current);
-      }
-      interactionTimeoutRef.current = window.setTimeout(() => {
-        isUserInteractingRef.current = false;
-      }, 160);
-    };
-
-    const updateFromWindowScroll = () => {
-      const maxScrollLeft = Math.max(0, carouselNode.scrollWidth - carouselNode.clientWidth);
-      if (maxScrollLeft === 0) {
-        return;
-      }
-
-      const sectionRect = sectionNode.getBoundingClientRect();
-      const sectionTop = sectionRect.top + window.scrollY;
-      const start = sectionTop - window.innerHeight;
-      const end = sectionTop + sectionRect.height;
-      const range = Math.max(1, end - start);
-
-      const progress = clamp((window.scrollY - start) / range, 0, 1);
-      const autoTarget = progress * maxScrollLeft * 1.45;
-      autoScrollRef.current = autoTarget;
-
-      if (!isUserInteractingRef.current) {
-        manualOffsetRef.current *= 0.92;
-        if (Math.abs(manualOffsetRef.current) < 0.5) {
-          manualOffsetRef.current = 0;
-        }
-      }
-
-      const nextScrollLeft = clamp(autoTarget + manualOffsetRef.current, 0, maxScrollLeft);
-      programmaticScrollRef.current = true;
-      carouselNode.scrollLeft = nextScrollLeft;
-      requestAnimationFrame(() => {
-        programmaticScrollRef.current = false;
-      });
-    };
-
-    const scheduleWindowSync = () => {
-      if (!isSectionActiveRef.current || scrollRafRef.current) {
-        return;
-      }
-
-      scrollRafRef.current = window.requestAnimationFrame(() => {
-        scrollRafRef.current = 0;
-        updateFromWindowScroll();
-      });
-    };
-
-    const startWindowSync = () => {
-      window.addEventListener('scroll', scheduleWindowSync, { passive: true });
-      window.addEventListener('resize', scheduleWindowSync);
-      scheduleWindowSync();
-    };
-
-    const stopWindowSync = () => {
-      window.removeEventListener('scroll', scheduleWindowSync);
-      window.removeEventListener('resize', scheduleWindowSync);
-      window.cancelAnimationFrame(scrollRafRef.current);
-      scrollRafRef.current = 0;
-    };
-
-    const onCarouselScroll = () => {
-      if (programmaticScrollRef.current || !isUserInteractingRef.current) {
-        return;
-      }
-
-      const maxScrollLeft = Math.max(0, carouselNode.scrollWidth - carouselNode.clientWidth);
-      const currentScrollLeft = clamp(carouselNode.scrollLeft, 0, maxScrollLeft);
-      manualOffsetRef.current = currentScrollLeft - autoScrollRef.current;
-    };
-
-    const sectionObserver = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (!entry) {
-          return;
-        }
-
-        if (entry.isIntersecting) {
-          if (!isSectionActiveRef.current) {
-            isSectionActiveRef.current = true;
-            startWindowSync();
-          }
-          return;
-        }
-
-        if (isSectionActiveRef.current) {
-          isSectionActiveRef.current = false;
-          stopWindowSync();
-        }
-      },
-      {
-        threshold: 0.01,
-        rootMargin: '140px 0px',
-      }
-    );
-
-    sectionObserver.observe(sectionNode);
-
-    carouselNode.addEventListener('wheel', markUserInteraction, { passive: true });
-    carouselNode.addEventListener('touchstart', markUserInteraction, { passive: true });
-    carouselNode.addEventListener('pointerdown', markUserInteraction, { passive: true });
-    carouselNode.addEventListener('scroll', onCarouselScroll, { passive: true });
-
-    return () => {
-      if (interactionTimeoutRef.current) {
-        window.clearTimeout(interactionTimeoutRef.current);
-      }
-      sectionObserver.disconnect();
-      stopWindowSync();
-      carouselNode.removeEventListener('wheel', markUserInteraction);
-      carouselNode.removeEventListener('touchstart', markUserInteraction);
-      carouselNode.removeEventListener('pointerdown', markUserInteraction);
-      carouselNode.removeEventListener('scroll', onCarouselScroll);
-    };
-  }, []);
+    const offset = Math.max(260, Math.round(rowNode.clientWidth * 0.82));
+    rowNode.scrollBy({
+      left: direction === 'left' ? -offset : offset,
+      behavior: 'smooth',
+    });
+  };
 
   return (
-    <section ref={sectionRef} id="popular-profiles" className="popular-profiles" aria-labelledby="popular-profiles-title">
+    <section id="popular-profiles" className="popular-profiles" aria-labelledby="popular-profiles-title">
       <div className="popular-profiles__safe-area">
-        <SectionTitle color="#FFC502" className="popular-profiles__title" id="popular-profiles-title">
-          <ScrollReveal
-            text="PERFILES POPULARES"
-            className="popular-profiles__title-reveal popular-profiles__title-reveal--desktop"
-            animateBy="letters"
-            baseOpacity={0.03}
-            baseRotation={5}
-            blurStrength={10}
-            rotationStart="top bottom+=22%"
-            wordAnimationStart="top bottom+=18%"
-            wordAnimationEnd="+=520"
-          />
-          <ScrollReveal
-            text="PERFILES POPULARES"
-            className="popular-profiles__title-reveal popular-profiles__title-reveal--mobile"
-            animateBy="words"
-            baseOpacity={0.03}
-            baseRotation={5}
-            blurStrength={10}
-            rotationStart="top bottom+=22%"
-            wordAnimationStart="top bottom+=18%"
-            wordAnimationEnd="+=520"
-          />
-        </SectionTitle>
+        <h2 className="popular-profiles__title" id="popular-profiles-title">
+          PERFILES POPULARES
+        </h2>
 
-        <div className="popular-profiles__carousel">
-          <div ref={carouselRef} className="popular-profiles__cards-row">
-            {popularProfiles.map((profile) => (
-              <ProfileCard key={profile.id} profile={profile} />
-            ))}
+        <div className="popular-profiles__rows">
+          <div className="popular-profiles__row-block">
+            <button
+              type="button"
+              className="popular-profiles__row-arrow popular-profiles__row-arrow--left"
+              aria-label="Desplazar fila superior hacia la izquierda"
+              onClick={() => scrollRow(ROW_INDEX.FIRST, 'left')}
+            >
+              <ChevronLeft size={22} aria-hidden="true" />
+            </button>
+
+            <div
+              ref={(node) => {
+                rowRefs.current[ROW_INDEX.FIRST] = node;
+              }}
+              className="popular-profiles__cards-row"
+            >
+              {firstRowProfiles.map((profile) => (
+                <PopularProfileWideCard key={profile.id} profile={profile} />
+              ))}
+            </div>
+
+            <button
+              type="button"
+              className="popular-profiles__row-arrow popular-profiles__row-arrow--right"
+              aria-label="Desplazar fila superior hacia la derecha"
+              onClick={() => scrollRow(ROW_INDEX.FIRST, 'right')}
+            >
+              <ChevronRight size={22} aria-hidden="true" />
+            </button>
+          </div>
+
+          <div className="popular-profiles__row-block">
+            <button
+              type="button"
+              className="popular-profiles__row-arrow popular-profiles__row-arrow--left"
+              aria-label="Desplazar fila inferior hacia la izquierda"
+              onClick={() => scrollRow(ROW_INDEX.SECOND, 'left')}
+            >
+              <ChevronLeft size={22} aria-hidden="true" />
+            </button>
+
+            <div
+              ref={(node) => {
+                rowRefs.current[ROW_INDEX.SECOND] = node;
+              }}
+              className="popular-profiles__cards-row"
+            >
+              {secondRowProfiles.map((profile) => (
+                <PopularProfileWideCard key={profile.id} profile={profile} />
+              ))}
+            </div>
+
+            <button
+              type="button"
+              className="popular-profiles__row-arrow popular-profiles__row-arrow--right"
+              aria-label="Desplazar fila inferior hacia la derecha"
+              onClick={() => scrollRow(ROW_INDEX.SECOND, 'right')}
+            >
+              <ChevronRight size={22} aria-hidden="true" />
+            </button>
           </div>
         </div>
 
