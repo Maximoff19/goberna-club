@@ -1,118 +1,161 @@
-import React, { useEffect, useRef, useMemo, ReactNode, RefObject } from 'react';
+import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-gsap.registerPlugin(ScrollTrigger);
+type AnimateByOption = 'words' | 'letters';
 
 interface ScrollRevealProps {
-  children: ReactNode;
-  scrollContainerRef?: RefObject<HTMLElement>;
+  text?: string;
+  animateBy?: AnimateByOption;
   enableBlur?: boolean;
   baseOpacity?: number;
   baseRotation?: number;
   blurStrength?: number;
-  containerClassName?: string;
-  textClassName?: string;
-  rotationEnd?: string;
+  className?: string;
+  rotationStart?: string;
+  wordAnimationStart?: string;
   wordAnimationEnd?: string;
 }
 
-const ScrollReveal: React.FC<ScrollRevealProps> = ({
-  children,
-  scrollContainerRef,
+function ScrollReveal({
+  text = '',
+  animateBy = 'words',
   enableBlur = true,
-  baseOpacity = 0.1,
-  baseRotation = 3,
+  baseOpacity = 0.14,
+  baseRotation = 2,
   blurStrength = 4,
-  containerClassName = '',
-  textClassName = '',
-  rotationEnd = 'bottom bottom',
-  wordAnimationEnd = 'bottom bottom'
-}) => {
-  const containerRef = useRef<HTMLHeadingElement>(null);
+  className = '',
+  rotationStart = 'top bottom',
+  wordAnimationStart = 'top bottom-=20%',
+  wordAnimationEnd = 'bottom bottom',
+}: ScrollRevealProps) {
+  const textRef = useRef<HTMLSpanElement>(null);
 
-  const splitText = useMemo(() => {
-    const text = typeof children === 'string' ? children : '';
-    return text.split(/(\s+)/).map((word, index) => {
-      if (word.match(/^\s+$/)) return word;
-      return (
-        <span className="inline-block word" key={index}>
-          {word}
-        </span>
-      );
-    });
-  }, [children]);
+  const splitText = useMemo(
+    (): ReactNode[] => {
+      const occurrences: Record<string, number> = {};
+
+      const tokens = animateBy === 'letters' ? text.split('') : text.split(/(\s+)/);
+
+      return tokens.map((token) => {
+        if (/^\s+$/.test(token)) {
+          return token;
+        }
+
+        occurrences[token] = (occurrences[token] || 0) + 1;
+
+        return (
+          <span className="scroll-reveal__word" key={`${token}-${occurrences[token]}`}>
+            {token}
+          </span>
+        );
+      });
+    },
+    [animateBy, text]
+  );
 
   useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-
-    const scroller = scrollContainerRef && scrollContainerRef.current ? scrollContainerRef.current : window;
-
-    gsap.fromTo(
-      el,
-      { transformOrigin: '0% 50%', rotate: baseRotation },
-      {
-        ease: 'none',
-        rotate: 0,
-        scrollTrigger: {
-          trigger: el,
-          scroller,
-          start: 'top bottom',
-          end: rotationEnd,
-          scrub: true
-        }
-      }
-    );
-
-    const wordElements = el.querySelectorAll<HTMLElement>('.word');
-
-    gsap.fromTo(
-      wordElements,
-      { opacity: baseOpacity, willChange: 'opacity' },
-      {
-        ease: 'none',
-        opacity: 1,
-        stagger: 0.05,
-        scrollTrigger: {
-          trigger: el,
-          scroller,
-          start: 'top bottom-=20%',
-          end: wordAnimationEnd,
-          scrub: true
-        }
-      }
-    );
-
-    if (enableBlur) {
-      gsap.fromTo(
-        wordElements,
-        { filter: `blur(${blurStrength}px)` },
-        {
-          ease: 'none',
-          filter: 'blur(0px)',
-          stagger: 0.05,
-          scrollTrigger: {
-            trigger: el,
-            scroller,
-            start: 'top bottom-=20%',
-            end: wordAnimationEnd,
-            scrub: true
-          }
-        }
-      );
+    if (process.env.NODE_ENV === 'test') {
+      return undefined;
     }
 
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    const node = textRef.current;
+    if (!node) {
+      return undefined;
+    }
+
+    const isMobile = window.matchMedia('(max-width: 1120px)').matches || 'ontouchstart' in window;
+    if (isMobile) {
+      const wordElements = node.querySelectorAll<HTMLElement>('.scroll-reveal__word');
+      wordElements.forEach((word) => {
+        word.style.opacity = '1';
+        word.style.filter = 'none';
+      });
+      node.style.transform = 'none';
+      return undefined;
+    }
+
+    let cancelled = false;
+    let ctx: gsap.Context | undefined;
+
+    const run = async () => {
+      const module = await import('gsap/ScrollTrigger');
+      if (cancelled || !node.isConnected) {
+        return;
+      }
+
+      const ScrollTrigger = module.ScrollTrigger || module.default;
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      ctx = gsap.context(() => {
+        gsap.fromTo(
+          node,
+          { transformOrigin: '0% 50%', rotate: baseRotation },
+          {
+            ease: 'none',
+            rotate: 0,
+            scrollTrigger: {
+              trigger: node,
+              start: rotationStart,
+              end: wordAnimationEnd,
+              scrub: true,
+            },
+          }
+        );
+
+        const wordElements = node.querySelectorAll('.scroll-reveal__word');
+
+        gsap.fromTo(
+          wordElements,
+          { opacity: baseOpacity, willChange: 'opacity' },
+          {
+            ease: 'none',
+            opacity: 1,
+            stagger: 0.045,
+            scrollTrigger: {
+              trigger: node,
+              start: wordAnimationStart,
+              end: wordAnimationEnd,
+              scrub: true,
+            },
+          }
+        );
+
+        if (enableBlur) {
+          gsap.fromTo(
+            wordElements,
+            { filter: `blur(${blurStrength}px)` },
+            {
+              ease: 'none',
+              filter: 'blur(0px)',
+              stagger: 0.045,
+              scrollTrigger: {
+                trigger: node,
+                start: wordAnimationStart,
+                end: wordAnimationEnd,
+                scrub: true,
+              },
+            }
+          );
+        }
+      }, node);
     };
-  }, [scrollContainerRef, enableBlur, baseRotation, baseOpacity, rotationEnd, wordAnimationEnd, blurStrength]);
+
+    run();
+
+    return () => {
+      cancelled = true;
+      if (ctx) {
+        ctx.revert();
+      }
+    };
+  }, [baseOpacity, baseRotation, blurStrength, enableBlur, rotationStart, wordAnimationEnd, wordAnimationStart]);
 
   return (
-    <h2 ref={containerRef} className={`my-5 ${containerClassName}`}>
-      <p className={`text-[clamp(1.6rem,4vw,3rem)] leading-[1.5] font-semibold ${textClassName}`}>{splitText}</p>
-    </h2>
+    <span ref={textRef} className={`scroll-reveal ${className}`}>
+      {splitText}
+    </span>
   );
-};
+}
 
 export default ScrollReveal;

@@ -1,4 +1,4 @@
-import React from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import './GlareHover.css';
 
 interface GlareHoverProps {
@@ -7,18 +7,38 @@ interface GlareHoverProps {
   background?: string;
   borderRadius?: string;
   borderColor?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
   glareColor?: string;
   glareOpacity?: number;
   glareAngle?: number;
   glareSize?: number;
   transitionDuration?: number;
-  playOnce?: boolean;
+  alwaysActive?: boolean;
   className?: string;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 }
 
-const GlareHover: React.FC<GlareHoverProps> = ({
+function hexToRgba(color: string, opacity: number): string {
+  const hex = color.replace('#', '');
+
+  if (/^[0-9A-Fa-f]{6}$/.test(hex)) {
+    const r = Number.parseInt(hex.slice(0, 2), 16);
+    const g = Number.parseInt(hex.slice(2, 4), 16);
+    const b = Number.parseInt(hex.slice(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  }
+
+  if (/^[0-9A-Fa-f]{3}$/.test(hex)) {
+    const r = Number.parseInt(hex[0] + hex[0], 16);
+    const g = Number.parseInt(hex[1] + hex[1], 16);
+    const b = Number.parseInt(hex[2] + hex[2], 16);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  }
+
+  return color;
+}
+
+function GlareHover({
   width = '500px',
   height = '500px',
   background = '#000',
@@ -30,25 +50,11 @@ const GlareHover: React.FC<GlareHoverProps> = ({
   glareAngle = -45,
   glareSize = 250,
   transitionDuration = 650,
-  playOnce = false,
+  alwaysActive = false,
   className = '',
-  style = {}
-}) => {
-  const hex = glareColor.replace('#', '');
-  let rgba = glareColor;
-  if (/^[0-9A-Fa-f]{6}$/.test(hex)) {
-    const r = parseInt(hex.slice(0, 2), 16);
-    const g = parseInt(hex.slice(2, 4), 16);
-    const b = parseInt(hex.slice(4, 6), 16);
-    rgba = `rgba(${r}, ${g}, ${b}, ${glareOpacity})`;
-  } else if (/^[0-9A-Fa-f]{3}$/.test(hex)) {
-    const r = parseInt(hex[0] + hex[0], 16);
-    const g = parseInt(hex[1] + hex[1], 16);
-    const b = parseInt(hex[2] + hex[2], 16);
-    rgba = `rgba(${r}, ${g}, ${b}, ${glareOpacity})`;
-  }
-
-  const vars: React.CSSProperties & { [k: string]: string } = {
+  style = {},
+}: GlareHoverProps) {
+  const vars: Record<string, string> = {
     '--gh-width': width,
     '--gh-height': height,
     '--gh-bg': background,
@@ -56,18 +62,18 @@ const GlareHover: React.FC<GlareHoverProps> = ({
     '--gh-angle': `${glareAngle}deg`,
     '--gh-duration': `${transitionDuration}ms`,
     '--gh-size': `${glareSize}%`,
-    '--gh-rgba': rgba,
-    '--gh-border': borderColor
+    '--gh-rgba': hexToRgba(glareColor, glareOpacity),
+    '--gh-border': borderColor,
   };
 
   return (
     <div
-      className={`glare-hover ${playOnce ? 'glare-hover--play-once' : ''} ${className}`}
-      style={{ ...vars, ...style } as React.CSSProperties}
+      className={`glare-hover ${alwaysActive ? 'glare-hover--always-active' : ''} ${className}`.trim()}
+      style={{ ...vars, ...style } as CSSProperties}
     >
       {children}
     </div>
   );
-};
+}
 
 export default GlareHover;

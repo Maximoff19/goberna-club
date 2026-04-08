@@ -47,7 +47,7 @@ export async function prepareDatabase() {
     });
   } else if (!isProduction) {
     // db push is unsafe for production — only use in development
-    execSync('npx prisma db push', {
+    execSync('npx prisma db push --accept-data-loss', {
       cwd: process.cwd(),
       stdio: 'inherit',
     });
