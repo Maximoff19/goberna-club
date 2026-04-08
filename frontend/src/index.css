@@ -33,8 +33,17 @@ section {
   will-change: transform;
 }
 
+section.hero {
+  transition: none;
+  will-change: auto;
+}
+
 section.section--focus {
   transform: scale(1.018);
+}
+
+section.hero.section--focus {
+  transform: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
