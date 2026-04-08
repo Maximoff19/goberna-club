@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import PopularProfileWideCard from './PopularProfileWideCard';
 import { fetchConsultants } from '../../../../shared/api/gobernaApi';
+import PrimaryButton from '../../../../shared/ui/PrimaryButton';
 import './popularProfiles.css';
 
 interface Consultant {
@@ -77,6 +78,11 @@ function splitProfilesIntoRows(profiles: PopularProfile[]): [PopularProfile[], P
 function PopularProfiles() {
   const [consultants, setConsultants] = useState<Consultant[]>([]);
   const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const goToConsultants = () => {
+    window.location.hash = '#explorar-consultores';
+    window.scrollTo(0, 0);
+  };
 
   useEffect(() => {
     let ignore = false;
@@ -184,6 +190,12 @@ function PopularProfiles() {
               <ChevronRight size={22} aria-hidden="true" />
             </button>
           </div>
+        </div>
+
+        <div className="popular-profiles__cta-row">
+          <PrimaryButton className="popular-profiles__cta-button" onClick={goToConsultants}>
+            Buscar consultor
+          </PrimaryButton>
         </div>
 
         <p className="popular-profiles__description">

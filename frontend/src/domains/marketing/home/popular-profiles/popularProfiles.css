@@ -140,16 +140,24 @@
 .popular-profile-wide-card__identity {
   min-width: 0;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .popular-profile-wide-card__name-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  margin: 0;
+  display: inline-flex;
+  align-items: baseline;
+  align-self: flex-start;
+  flex-wrap: wrap;
+  column-gap: 6px;
+  row-gap: 2px;
+  max-width: 100%;
 }
 
 .popular-profile-wide-card__name {
-  margin: 0;
+  display: inline;
   font-family: 'Montserrat', sans-serif;
   font-size: 18px;
   font-weight: 700;
@@ -160,8 +168,14 @@
   text-overflow: initial;
 }
 
+.popular-profile-wide-card__verified {
+  display: inline-flex;
+  align-items: center;
+  transform: translateY(1px);
+}
+
 .popular-profile-wide-card__specialization {
-  margin: 5px 0 0;
+  margin: 4px 0 0;
   font-family: 'Montserrat', sans-serif;
   font-size: 12px;
   font-weight: 500;
@@ -174,7 +188,7 @@
 }
 
 .popular-profile-wide-card__stars {
-  margin-top: 6px;
+  margin-top: 5px;
   display: inline-flex;
   align-items: center;
   gap: 3px;
@@ -186,11 +200,11 @@
 }
 
 .popular-profile-wide-card__metrics {
-  margin-top: 6px;
+  margin-top: 5px;
   min-width: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 12px;
+  gap: 7px 12px;
 }
 
 .popular-profile-wide-card__metric-item {
@@ -242,6 +256,16 @@
   font-weight: 500;
   line-height: 1.35;
   color: #0f1923;
+}
+
+.popular-profiles__cta-row {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.popular-profiles__cta-button {
+  min-width: 220px;
 }
 
 @media (max-width: 1120px) {
@@ -323,6 +347,10 @@
     margin-top: 56px;
     font-size: 22px;
   }
+
+  .popular-profiles__cta-row {
+    margin-top: 34px;
+  }
 }
 
 @media (max-width: 560px) {
@@ -361,6 +389,10 @@
     font-size: 15px;
   }
 
+  .popular-profile-wide-card__verified {
+    transform: translateY(0);
+  }
+
   .popular-profile-wide-card__specialization {
     font-size: 11px;
   }
@@ -379,5 +411,14 @@
 
   .popular-profiles__description {
     font-size: 18px;
+  }
+
+  .popular-profiles__cta-row {
+    margin-top: 28px;
+  }
+
+  .popular-profiles__cta-button {
+    width: 100%;
+    min-width: 0;
   }
 }

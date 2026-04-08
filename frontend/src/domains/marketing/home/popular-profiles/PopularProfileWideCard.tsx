@@ -63,10 +63,12 @@ function PopularProfileWideCard({ profile }: PopularProfileWideCardProps) {
 
       <div className="popular-profile-wide-card__content">
         <div className="popular-profile-wide-card__identity">
-          <div className="popular-profile-wide-card__name-row">
-            <h3 className="popular-profile-wide-card__name">{profile.name || 'Consultor acreditado'}</h3>
-            <VerifiedIcon size={18} />
-          </div>
+          <h3 className="popular-profile-wide-card__name-row">
+            <span className="popular-profile-wide-card__name">{profile.name || 'Consultor acreditado'}</span>
+            <span className="popular-profile-wide-card__verified">
+              <VerifiedIcon size={18} />
+            </span>
+          </h3>
 
           <p className="popular-profile-wide-card__specialization">{profile.description}</p>
 
