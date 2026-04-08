@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useRef, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import Footer from './domains/marketing/home/footer/Footer';
 import ConsultantSearchController from './domains/consultants/profile/ConsultantSearchController';
 import ProfileCreatePage from './domains/consultants/onboarding/ProfileCreatePage';
@@ -95,10 +95,6 @@ function App() {
   const [selectedProfileSlug, setSelectedProfileSlug] = useState(initialRoute.profileSlug);
   const [selectedProfileId, setSelectedProfileId] = useState(initialRoute.profileId);
   const [createdProfile, setCreatedProfile] = useState<CreatedProfile | null>(null);
-  const targetScrollRef = useRef(0);
-  const currentScrollRef = useRef(0);
-  const velocityRef = useRef(0);
-  const animationFrameRef = useRef(0);
 
   useEffect(() => {
     let resetTimer = 0;
@@ -158,51 +154,6 @@ function App() {
     }
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const isMobile = window.matchMedia('(max-width: 1120px)').matches || 'ontouchstart' in window;
-
-    currentScrollRef.current = window.scrollY;
-    targetScrollRef.current = window.scrollY;
-
-    const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
-
-    const animateToTarget = () => {
-      const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-      const target = clamp(targetScrollRef.current, 0, maxScroll);
-      const distance = target - currentScrollRef.current;
-
-      velocityRef.current += distance * 0.055;
-      velocityRef.current *= 0.78;
-
-      const nextScroll = currentScrollRef.current + velocityRef.current;
-
-      if (Math.abs(distance) < 0.5 && Math.abs(velocityRef.current) < 0.05) {
-        currentScrollRef.current = target;
-        velocityRef.current = 0;
-        window.scrollTo(0, target);
-        animationFrameRef.current = 0;
-        return;
-      }
-
-      currentScrollRef.current = nextScroll;
-      window.scrollTo(0, nextScroll);
-      animationFrameRef.current = window.requestAnimationFrame(animateToTarget);
-    };
-
-    const onWheel = (event: WheelEvent) => {
-      event.preventDefault();
-
-      if (!animationFrameRef.current) {
-        currentScrollRef.current = window.scrollY;
-        targetScrollRef.current = window.scrollY;
-        velocityRef.current = 0;
-      }
-
-      targetScrollRef.current += event.deltaY * 0.45;
-
-      if (!animationFrameRef.current) {
-        animationFrameRef.current = window.requestAnimationFrame(animateToTarget);
-      }
-    };
 
     const onProgrammaticScroll = (event: Event) => {
       const detail = (event as CustomEvent<{ selector?: string }>).detail;
@@ -216,18 +167,7 @@ function App() {
         return;
       }
 
-      if (prefersReducedMotion || isMobile) {
-        targetNode.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        return;
-      }
-
-      currentScrollRef.current = window.scrollY;
-      targetScrollRef.current = targetNode.offsetTop;
-      velocityRef.current = 0;
-
-      if (!animationFrameRef.current) {
-        animationFrameRef.current = window.requestAnimationFrame(animateToTarget);
-      }
+      targetNode.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' });
     };
 
     window.addEventListener('app:smooth-scroll-to', onProgrammaticScroll);
@@ -254,23 +194,13 @@ function App() {
       sections.forEach((section) => {
         observer!.observe(section);
       });
-
-      if (!isMobile) {
-        window.addEventListener('wheel', onWheel, { passive: false });
-      }
     }
 
     return () => {
-      if (!prefersReducedMotion && !isMobile) {
-        window.removeEventListener('wheel', onWheel);
-      }
       window.removeEventListener('app:smooth-scroll-to', onProgrammaticScroll);
       if (observer) {
         observer.disconnect();
       }
-      window.cancelAnimationFrame(animationFrameRef.current);
-      animationFrameRef.current = 0;
-      velocityRef.current = 0;
     };
   }, [viewMode]);
 
