@@ -5,6 +5,8 @@ import ProfileCreatePage from './domains/consultants/onboarding/ProfileCreatePag
 import ConsultantAuthPage from './domains/consultants/auth/ConsultantAuthPage';
 import './App.css';
 
+const VITE_PRELOAD_RELOAD_KEY = 'goberna:vite-preload-reload';
+
 const Hero = lazy(() => import('./domains/marketing/home/hero/Hero'));
 const PopularProfiles = lazy(() => import('./domains/marketing/home/popular-profiles/PopularProfiles'));
 const AboutIntro = lazy(() => import('./domains/marketing/home/about-intro/AboutIntro'));
@@ -97,6 +99,43 @@ function App() {
   const currentScrollRef = useRef(0);
   const velocityRef = useRef(0);
   const animationFrameRef = useRef(0);
+
+  useEffect(() => {
+    let resetTimer = 0;
+
+    const handleVitePreloadError = (event: Event) => {
+      const customEvent = event as Event & {
+        payload?: {
+          message?: string;
+        };
+      };
+
+      const errorMessage = String(customEvent.payload?.message || '');
+      const hasAlreadyReloaded = window.sessionStorage.getItem(VITE_PRELOAD_RELOAD_KEY) === 'true';
+
+      if (!errorMessage.includes('Unable to preload') || hasAlreadyReloaded) {
+        return;
+      }
+
+      event.preventDefault();
+      window.sessionStorage.setItem(VITE_PRELOAD_RELOAD_KEY, 'true');
+      window.location.reload();
+    };
+
+    const clearReloadFlag = () => {
+      resetTimer = window.setTimeout(() => {
+        window.sessionStorage.removeItem(VITE_PRELOAD_RELOAD_KEY);
+      }, 30000);
+    };
+
+    window.addEventListener('vite:preloadError', handleVitePreloadError as EventListener);
+    clearReloadFlag();
+
+    return () => {
+      window.removeEventListener('vite:preloadError', handleVitePreloadError as EventListener);
+      window.clearTimeout(resetTimer);
+    };
+  }, []);
 
   useEffect(() => {
     const syncWithHash = () => {
