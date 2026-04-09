@@ -53,14 +53,14 @@
 .popular-profile-wide-card {
   position: relative;
   flex: 0 0 auto;
-  width: 413px;
-  height: 118px;
-  border-radius: 30px;
+  width: 400px;
+  height: 110px;
+  border-radius: 28px;
   background: #0f1923;
   box-shadow: inset -4px -9px 16.5px rgba(255, 255, 255, 0.25);
   display: flex;
   align-items: center;
-  padding: 12px 18px 12px 94px;
+  padding: 10px 18px 10px 94px;
   overflow: visible;
 }
 
@@ -228,9 +228,9 @@
   }
 
   .popular-profile-wide-card {
-    width: 360px;
-    height: 118px;
-    padding: 12px 16px 12px 84px;
+    width: 350px;
+    height: 110px;
+    padding: 10px 16px 10px 84px;
   }
 }
 
@@ -262,8 +262,8 @@
   }
 
   .popular-profile-wide-card {
-    width: min(82vw, 413px);
-    height: 118px;
+    width: min(82vw, 400px);
+    height: 110px;
   }
 
   .popular-profiles__description {
@@ -296,10 +296,10 @@
   }
 
   .popular-profile-wide-card {
-    width: min(84vw, 320px);
-    height: 116px;
-    padding: 12px 12px 12px 74px;
-    border-radius: 24px;
+    width: min(84vw, 308px);
+    height: 108px;
+    padding: 10px 12px 10px 74px;
+    border-radius: 22px;
   }
 
   .popular-profile-wide-card__avatar-shell {

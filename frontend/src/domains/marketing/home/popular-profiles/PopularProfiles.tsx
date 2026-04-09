@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import PopularProfileWideCard from './PopularProfileWideCard';
 import { fetchConsultants } from '../../../../shared/api/gobernaApi';
 import PrimaryButton from '../../../../shared/ui/PrimaryButton';
@@ -23,6 +23,11 @@ interface PopularProfile {
   description: string;
   imageSrc?: string;
 }
+
+const ROW_INDEX = {
+  FIRST: 0,
+  SECOND: 1,
+} as const;
 
 function pickPopularProfiles(consultants: Consultant[]): PopularProfile[] {
   const seen = new Set<string>();
@@ -65,6 +70,7 @@ function splitProfilesIntoRows(profiles: PopularProfile[]): [PopularProfile[], P
 
 function PopularProfiles() {
   const [consultants, setConsultants] = useState<Consultant[]>([]);
+  const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const goToConsultants = () => {
     window.location.hash = '#explorar-consultores';
@@ -94,6 +100,31 @@ function PopularProfiles() {
   const popularProfiles = pickPopularProfiles(consultants);
   const [firstRowProfiles, secondRowProfiles] = splitProfilesIntoRows(popularProfiles);
 
+  useEffect(() => {
+    if (popularProfiles.length === 0) {
+      return;
+    }
+
+    const centerRows = () => {
+      rowRefs.current.forEach((rowNode) => {
+        if (!rowNode) {
+          return;
+        }
+
+        const maxScrollLeft = rowNode.scrollWidth - rowNode.clientWidth;
+        rowNode.scrollLeft = maxScrollLeft > 0 ? maxScrollLeft / 2 : 0;
+      });
+    };
+
+    const animationFrameId = window.requestAnimationFrame(centerRows);
+    window.addEventListener('resize', centerRows);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('resize', centerRows);
+    };
+  }, [popularProfiles.length]);
+
   return (
     <section id="popular-profiles" className="popular-profiles" aria-labelledby="popular-profiles-title">
       <div className="popular-profiles__safe-area">
@@ -103,7 +134,12 @@ function PopularProfiles() {
 
         <div className="popular-profiles__rows">
           <div className="popular-profiles__row-block">
-            <div className="popular-profiles__cards-row popular-profiles__cards-row--first">
+            <div
+              ref={(node) => {
+                rowRefs.current[ROW_INDEX.FIRST] = node;
+              }}
+              className="popular-profiles__cards-row popular-profiles__cards-row--first"
+            >
               {firstRowProfiles.map((profile) => (
                 <PopularProfileWideCard key={profile.id} profile={profile} />
               ))}
@@ -111,7 +147,12 @@ function PopularProfiles() {
           </div>
 
           <div className="popular-profiles__row-block">
-            <div className="popular-profiles__cards-row popular-profiles__cards-row--second">
+            <div
+              ref={(node) => {
+                rowRefs.current[ROW_INDEX.SECOND] = node;
+              }}
+              className="popular-profiles__cards-row popular-profiles__cards-row--second"
+            >
               {secondRowProfiles.map((profile) => (
                 <PopularProfileWideCard key={profile.id} profile={profile} />
               ))}
