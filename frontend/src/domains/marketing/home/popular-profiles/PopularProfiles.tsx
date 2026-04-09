@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import ProfileCard from './ProfileCard';
 import PopularProfileWideCard from './PopularProfileWideCard';
 import { fetchConsultants } from '../../../../shared/api/gobernaApi';
 import PrimaryButton from '../../../../shared/ui/PrimaryButton';
@@ -29,6 +30,7 @@ const ROW_INDEX = {
 } as const;
 
 const MOBILE_AUTO_SCROLL_MEDIA_QUERY = '(max-width: 860px)';
+const MOBILE_CARD_LAYOUT_MEDIA_QUERY = '(max-width: 768px)';
 const DESKTOP_AUTO_SCROLL_SPEED_PX_PER_SECOND = 72;
 const MOBILE_AUTO_SCROLL_SPEED_PX_PER_SECOND = 42;
 const INITIAL_SCROLL_DIRECTION = -1;
@@ -66,12 +68,28 @@ function splitProfilesIntoRows(profiles: PopularProfile[]): [PopularProfile[], P
 
 function PopularProfiles() {
   const [consultants, setConsultants] = useState<Consultant[]>([]);
+  const [isMobileCardLayout, setIsMobileCardLayout] = useState(false);
   const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const goToConsultants = () => {
     window.location.hash = '#explorar-consultores';
     window.scrollTo(0, 0);
   };
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(MOBILE_CARD_LAYOUT_MEDIA_QUERY);
+
+    const syncMobileCardLayout = () => {
+      setIsMobileCardLayout(mediaQuery.matches);
+    };
+
+    syncMobileCardLayout();
+    mediaQuery.addEventListener('change', syncMobileCardLayout);
+
+    return () => {
+      mediaQuery.removeEventListener('change', syncMobileCardLayout);
+    };
+  }, []);
 
   useEffect(() => {
     let ignore = false;
@@ -204,10 +222,10 @@ function PopularProfiles() {
               ref={(node) => {
                 rowRefs.current[ROW_INDEX.FIRST] = node;
               }}
-              className="popular-profiles__cards-row popular-profiles__cards-row--first"
+              className={`popular-profiles__cards-row popular-profiles__cards-row--first${isMobileCardLayout ? ' popular-profiles__cards-row--mobile-cards' : ''}`}
             >
               {firstRowProfiles.map((profile) => (
-                <PopularProfileWideCard key={profile.id} profile={profile} />
+                isMobileCardLayout ? <ProfileCard key={profile.id} profile={profile} /> : <PopularProfileWideCard key={profile.id} profile={profile} />
               ))}
             </div>
           </div>
@@ -217,10 +235,10 @@ function PopularProfiles() {
               ref={(node) => {
                 rowRefs.current[ROW_INDEX.SECOND] = node;
               }}
-              className="popular-profiles__cards-row popular-profiles__cards-row--second"
+              className={`popular-profiles__cards-row popular-profiles__cards-row--second${isMobileCardLayout ? ' popular-profiles__cards-row--mobile-cards' : ''}`}
             >
               {secondRowProfiles.map((profile) => (
-                <PopularProfileWideCard key={profile.id} profile={profile} />
+                isMobileCardLayout ? <ProfileCard key={profile.id} profile={profile} /> : <PopularProfileWideCard key={profile.id} profile={profile} />
               ))}
             </div>
           </div>

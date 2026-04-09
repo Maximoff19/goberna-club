@@ -34,6 +34,7 @@ function getInitials(name: string | undefined): string {
 
 function ProfileCard({ profile }: ProfileCardProps) {
   const [imageFailed, setImageFailed] = useState(false);
+  const hasMetrics = profile.followers !== undefined || profile.clicks !== undefined;
 
   const goToProfile = () => {
     window.location.hash = profile.slug ? `#perfil/${profile.slug}` : '#explorar-consultores';
@@ -64,16 +65,22 @@ function ProfileCard({ profile }: ProfileCardProps) {
         <p className="profile-card__description">{profile.description}</p>
 
         <div className="profile-card__bottom-row">
-          <div className="profile-card__metrics">
-            <div className="profile-card__metric-item">
-              <Users size={14} strokeWidth={2.2} aria-hidden="true" />
-              <span>{profile.followers}</span>
+          {hasMetrics ? (
+            <div className="profile-card__metrics">
+              {profile.followers !== undefined ? (
+                <div className="profile-card__metric-item">
+                  <Users size={14} strokeWidth={2.2} aria-hidden="true" />
+                  <span>{profile.followers}</span>
+                </div>
+              ) : null}
+              {profile.clicks !== undefined ? (
+                <div className="profile-card__metric-item">
+                  <MousePointer2 size={14} strokeWidth={2.2} aria-hidden="true" />
+                  <span>{profile.clicks}</span>
+                </div>
+              ) : null}
             </div>
-            <div className="profile-card__metric-item">
-              <MousePointer2 size={14} strokeWidth={2.2} aria-hidden="true" />
-              <span>{profile.clicks}</span>
-            </div>
-          </div>
+          ) : null}
 
           <button type="button" className="profile-card__connect-button" onClick={(event) => { event.stopPropagation(); goToProfile(); }}>
             Conectar
