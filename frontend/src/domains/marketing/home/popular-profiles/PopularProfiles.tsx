@@ -126,7 +126,7 @@ function PopularProfiles() {
         }
 
         const maxScrollLeft = rowNode.scrollWidth - rowNode.clientWidth;
-        rowNode.scrollLeft = maxScrollLeft > 0 ? maxScrollLeft / 2 : 0;
+        rowNode.scrollLeft = isMobileCardLayout ? 0 : maxScrollLeft > 0 ? maxScrollLeft / 2 : 0;
       });
     };
 
@@ -137,10 +137,14 @@ function PopularProfiles() {
       window.cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', centerRows);
     };
-  }, [popularProfiles.length]);
+  }, [popularProfiles.length, isMobileCardLayout]);
 
   useEffect(() => {
     if (popularProfiles.length === 0) {
+      return;
+    }
+
+    if (isMobileCardLayout) {
       return;
     }
 
@@ -207,7 +211,7 @@ function PopularProfiles() {
     return () => {
       window.cancelAnimationFrame(animationFrameId);
     };
-  }, [popularProfiles.length]);
+  }, [popularProfiles.length, isMobileCardLayout]);
 
   return (
     <section id="popular-profiles" className="popular-profiles" aria-labelledby="popular-profiles-title">
