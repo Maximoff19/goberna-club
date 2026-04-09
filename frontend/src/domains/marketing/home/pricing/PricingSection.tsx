@@ -1,5 +1,4 @@
 import SectionTitle from '../../../../shared/ui/SectionTitle';
-import ScrollReveal from '../../../../components/ScrollReveal.jsx';
 import PricingCard from './PricingCard';
 import './pricing.css';
 
@@ -84,28 +83,7 @@ function PricingSection() {
     <section id="precios" className="pricing" aria-labelledby="pricing-title">
       <div className="pricing__safe-area">
         <SectionTitle id="pricing-title" className="pricing__title" color="#0A66FF">
-          <ScrollReveal
-            text="NUESTROS PRECIOS"
-            className="pricing__title-reveal pricing__title-reveal--desktop"
-            animateBy="letters"
-            baseOpacity={0.03}
-            baseRotation={5}
-            blurStrength={10}
-            rotationStart="top bottom+=22%"
-            wordAnimationStart="top bottom+=18%"
-            wordAnimationEnd="+=520"
-          />
-          <ScrollReveal
-            text="NUESTROS PRECIOS"
-            className="pricing__title-reveal pricing__title-reveal--mobile"
-            animateBy="words"
-            baseOpacity={0.03}
-            baseRotation={5}
-            blurStrength={10}
-            rotationStart="top bottom+=22%"
-            wordAnimationStart="top bottom+=18%"
-            wordAnimationEnd="+=520"
-          />
+          NUESTROS PRECIOS
         </SectionTitle>
 
         <div className="pricing__cards-row">

@@ -19,29 +19,7 @@
   line-height: 0.94;
   letter-spacing: 0;
   text-transform: uppercase;
-  color: #ffc502;
   white-space: nowrap;
-}
-
-.benefits__title-reveal {
-  display: inline-block;
-  background: linear-gradient(180deg, #ffc502 0%, #ffc502 48%, #ffffff 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.benefits__title-reveal--mobile {
-  display: none;
-}
-
-.benefits__title-reveal .scroll-reveal__word {
-  display: inline-block;
-  will-change: transform, filter, opacity;
-  background: inherit;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
 }
 
 .benefits__cards-row {
@@ -216,24 +194,6 @@
     hyphens: none;
   }
 
-  .benefits__title-reveal--desktop {
-    display: none;
-  }
-
-  .benefits__title-reveal--mobile {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.05em;
-  }
-
-  .benefits__title-reveal--mobile .scroll-reveal__word {
-    display: block;
-  }
-
-  .benefits__title-reveal .scroll-reveal__word {
-    will-change: auto;
-  }
 }
 
 @media (max-width: 1120px) {

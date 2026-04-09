@@ -21,32 +21,7 @@
   line-height: 0.94;
   letter-spacing: 0;
   text-transform: uppercase;
-  color: transparent;
   white-space: nowrap;
-  background: none;
-  background-clip: initial;
-  -webkit-background-clip: initial;
-}
-
-.pricing__title-reveal {
-  display: inline-block;
-  background: linear-gradient(180deg, #ffc502 0%, #ffc502 48%, #ffffff 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.pricing__title-reveal .scroll-reveal__word {
-  display: inline-block;
-  will-change: transform, filter, opacity;
-  background: inherit;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.pricing__title-reveal--mobile {
-  display: none;
 }
 
 .pricing__cards-row {
@@ -204,25 +179,6 @@
     font-size: clamp(2.9rem, 8.8vw, 4.9rem);
     line-height: 1.01;
     white-space: normal;
-  }
-
-  .pricing__title-reveal--desktop {
-    display: none;
-  }
-
-  .pricing__title-reveal--mobile {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.05em;
-  }
-
-  .pricing__title-reveal--mobile .scroll-reveal__word {
-    display: block;
-  }
-
-  .pricing__title-reveal .scroll-reveal__word {
-    will-change: auto;
   }
 
   .pricing__cards-row {

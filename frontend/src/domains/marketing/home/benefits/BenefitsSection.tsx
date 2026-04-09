@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import ScrollReveal from '../../../../components/ScrollReveal.jsx';
 import SectionTitle from '../../../../shared/ui/SectionTitle';
 import BenefitCard from './BenefitCard';
 import './benefits.css';
@@ -95,28 +94,7 @@ function BenefitsSection() {
     <section className="benefits" aria-labelledby="benefits-title">
       <div className="benefits__safe-area">
         <SectionTitle id="benefits-title" className="benefits__title" color="#FFC502">
-          <ScrollReveal
-            text="BENEFICIOS"
-            className="benefits__title-reveal benefits__title-reveal--desktop"
-            animateBy="letters"
-            baseOpacity={0.03}
-            baseRotation={5}
-            blurStrength={10}
-            rotationStart="top bottom+=22%"
-            wordAnimationStart="top bottom+=18%"
-            wordAnimationEnd="+=520"
-          />
-          <ScrollReveal
-            text="BENEFICIOS"
-            className="benefits__title-reveal benefits__title-reveal--mobile"
-            animateBy="words"
-            baseOpacity={0.03}
-            baseRotation={5}
-            blurStrength={10}
-            rotationStart="top bottom+=22%"
-            wordAnimationStart="top bottom+=18%"
-            wordAnimationEnd="+=520"
-          />
+          BENEFICIOS
         </SectionTitle>
 
         <div className="benefits__carousel">
