@@ -12,7 +12,6 @@ interface Consultant {
   specialization?: string;
   summary?: string;
   imageSrc?: string;
-  featured?: boolean;
   hasUploadedPhoto?: boolean;
 }
 
@@ -52,15 +51,7 @@ function pickPopularProfiles(consultants: Consultant[]): PopularProfile[] {
     return true;
   });
 
-  const sorted = [...unique].sort((left, right) => {
-    if (left.featured !== right.featured) {
-      return left.featured ? -1 : 1;
-    }
-
-    return String(left.name || '').localeCompare(String(right.name || ''));
-  });
-
-  return sorted.slice(0, 10).map((consultant) => ({
+  return unique.slice(0, 10).map((consultant) => ({
     id: consultant.id,
     slug: consultant.slug,
     name: consultant.name,
@@ -87,7 +78,7 @@ function PopularProfiles() {
   useEffect(() => {
     let ignore = false;
 
-    fetchConsultants()
+    fetchConsultants({ sort: 'publishedAt' })
       .then((items) => {
         if (!ignore) {
           setConsultants(Array.isArray(items) ? items : []);

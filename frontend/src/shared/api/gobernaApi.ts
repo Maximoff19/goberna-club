@@ -220,6 +220,7 @@ interface ConsultantQueryParams {
   languages?: string[];
   specialties?: string[];
   skills?: string[];
+  sort?: string;
 }
 
 interface PaginationInfo {
@@ -1039,8 +1040,9 @@ export async function createProfile(formData: ProfileFormData): Promise<Normaliz
   return normalizeSharedProfile(updated);
 }
 
-export async function fetchConsultants(): Promise<PublicConsultant[]> {
-  const payload = (await apiRequest('/consultants?page=1&limit=25', { auth: false })) as { items?: RawProfile[] } | null;
+export async function fetchConsultants(params: ConsultantQueryParams = {}): Promise<PublicConsultant[]> {
+  const query = buildConsultantQueryParams({ page: 1, limit: 25, ...params });
+  const payload = (await apiRequest(`/consultants?${query}`, { auth: false })) as { items?: RawProfile[] } | null;
   return Array.isArray(payload?.items) ? payload!.items!.map(normalizePublicConsultant) : [];
 }
 
@@ -1068,6 +1070,10 @@ function buildConsultantQueryParams(params: ConsultantQueryParams = {}): string 
 
   if (Array.isArray(params.skills) && params.skills.length > 0) {
     searchParams.set('skills', params.skills.join(','));
+  }
+
+  if (params.sort) {
+    searchParams.set('sort', params.sort);
   }
 
   return searchParams.toString();

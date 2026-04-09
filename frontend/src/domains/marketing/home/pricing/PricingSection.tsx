@@ -82,7 +82,7 @@ function PricingSection() {
   return (
     <section id="precios" className="pricing" aria-labelledby="pricing-title">
       <div className="pricing__safe-area">
-        <SectionTitle id="pricing-title" className="pricing__title" color="#0A66FF">
+        <SectionTitle id="pricing-title" className="pricing__title" color="#112132">
           NUESTROS PRECIOS
         </SectionTitle>
 
