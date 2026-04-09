@@ -16,15 +16,6 @@ interface ProfileCardProps {
   profile: Profile;
 }
 
-function compactProfileName(name: string | undefined): string {
-  const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
-  if (parts.length <= 3) {
-    return parts.join(' ');
-  }
-
-  return parts.slice(0, -1).join(' ');
-}
-
 function getInitials(name: string | undefined): string {
   const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return '?';
@@ -41,7 +32,6 @@ function ProfileCard({ profile }: ProfileCardProps) {
     window.scrollTo(0, 0);
   };
 
-  const displayName = compactProfileName(profile.name);
   const showImage = profile.imageSrc && !imageFailed;
 
   return (
@@ -58,7 +48,7 @@ function ProfileCard({ profile }: ProfileCardProps) {
 
       <div className="profile-card__content">
         <div className="profile-card__name-row">
-          <h3 className="profile-card__name">{displayName}</h3>
+          <h3 className="profile-card__name">{profile.name}</h3>
           <VerifiedIcon size={16} />
         </div>
 
