@@ -295,16 +295,16 @@
   }
 
   .popular-profile-wide-card {
-    width: min(90vw, 328px);
-    height: 98px;
-    padding: 8px 12px 8px 66px;
+    width: min(90vw, 338px);
+    height: 102px;
+    padding: 9px 12px 9px 68px;
     border-radius: 22px;
   }
 
   .popular-profile-wide-card__avatar-shell {
-    width: 92px;
-    height: 92px;
-    transform: translate(-20%, -50%);
+    width: 96px;
+    height: 96px;
+    transform: translate(-21%, -50%);
   }
 
   .popular-profile-wide-card__name {
