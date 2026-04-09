@@ -34,7 +34,7 @@ const ROW_SCROLL_DIRECTION = {
   SECOND: 1,
 } as const;
 
-const AUTO_SCROLL_SPEED_PX_PER_SECOND = 22;
+const AUTO_SCROLL_SPEED_PX_PER_SECOND = 72;
 
 function pickPopularProfiles(consultants: Consultant[]): PopularProfile[] {
   const seen = new Set<string>();

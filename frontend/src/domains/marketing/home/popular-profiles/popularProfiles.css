@@ -34,7 +34,6 @@
   align-items: stretch;
   gap: 46px;
   overflow-x: auto;
-  scroll-behavior: smooth;
   scrollbar-width: none;
   width: 100vw;
   margin-left: calc(50% - 50vw);
