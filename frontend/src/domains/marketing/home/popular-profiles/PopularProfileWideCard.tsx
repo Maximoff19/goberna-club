@@ -1,4 +1,4 @@
-import { MousePointer2, Star, Users } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { useState } from 'react';
 import VerifiedIcon from '../../../../shared/ui/VerifiedIcon';
 
@@ -7,8 +7,6 @@ interface PopularProfileWideCardData {
   slug?: string;
   name?: string;
   description: string;
-  followers?: number | string;
-  clicks?: number | string;
   imageSrc?: string;
 }
 
@@ -26,14 +24,6 @@ function getInitials(name: string | undefined): string {
   if (parts.length === 0) return '?';
   if (parts.length === 1) return (parts[0][0] || '?').toUpperCase();
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
-
-function formatMetric(value: number | string | undefined): string {
-  if (value === undefined || value === null || value === '') {
-    return '0';
-  }
-
-  return String(value);
 }
 
 function splitNameParts(name: string | undefined): NameParts {
@@ -102,20 +92,6 @@ function PopularProfileWideCard({ profile }: PopularProfileWideCardProps) {
             {[1, 2, 3, 4, 5].map((star) => (
               <Star key={`${profile.id}-star-${star}`} size={12} fill="#FFC502" color="#FFC502" strokeWidth={1.8} />
             ))}
-          </div>
-
-          <div className="popular-profile-wide-card__metrics">
-            <div className="popular-profile-wide-card__metric-item">
-              <MousePointer2 size={15} strokeWidth={2.2} aria-hidden="true" />
-              <span className="popular-profile-wide-card__metric-value">{formatMetric(profile.clicks)}</span>
-              <span className="popular-profile-wide-card__metric-label">clicks</span>
-            </div>
-
-            <div className="popular-profile-wide-card__metric-item">
-              <Users size={15} strokeWidth={2.2} aria-hidden="true" />
-              <span className="popular-profile-wide-card__metric-value">{formatMetric(profile.followers)}</span>
-              <span className="popular-profile-wide-card__metric-label">contactos</span>
-            </div>
           </div>
         </div>
       </div>

@@ -50,33 +50,6 @@
   padding-left: 228px;
 }
 
-.popular-profiles__row-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 34px;
-  height: 34px;
-  border: 1px solid rgba(15, 25, 35, 0.12);
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(15, 25, 35, 0.06);
-  color: rgba(15, 25, 35, 0.76);
-  box-shadow: 0 6px 16px rgba(15, 25, 35, 0.08);
-  backdrop-filter: blur(8px);
-  cursor: pointer;
-  z-index: 2;
-}
-
-.popular-profiles__row-arrow--left {
-  left: 18px;
-}
-
-.popular-profiles__row-arrow--right {
-  right: 18px;
-}
-
 .popular-profile-wide-card {
   position: relative;
   flex: 0 0 auto;
@@ -202,46 +175,6 @@
   height: 11px;
 }
 
-.popular-profile-wide-card__metrics {
-  margin-top: 4px;
-  min-width: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 10px;
-}
-
-.popular-profile-wide-card__metric-item {
-  display: grid;
-  grid-template-columns: 14px 1fr;
-  column-gap: 6px;
-  row-gap: 0;
-  align-items: center;
-  color: rgba(255, 255, 255, 0.82);
-  min-width: 66px;
-}
-
-.popular-profile-wide-card__metric-item svg {
-  grid-row: span 2;
-  width: 13px;
-  height: 13px;
-}
-
-.popular-profile-wide-card__metric-value {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1;
-}
-
-.popular-profile-wide-card__metric-label {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 9px;
-  font-weight: 500;
-  line-height: 1.1;
-  color: rgba(255, 255, 255, 0.54);
-  text-transform: uppercase;
-}
-
 .popular-profile-wide-card__hitarea {
   position: absolute;
   inset: 0;
@@ -319,19 +252,6 @@
     padding: 0;
   }
 
-  .popular-profiles__row-arrow {
-    width: 30px;
-    height: 30px;
-  }
-
-  .popular-profiles__row-arrow--left {
-    left: 10px;
-  }
-
-  .popular-profiles__row-arrow--right {
-    right: 10px;
-  }
-
   .popular-profiles__cards-row {
     gap: 30px;
     padding: 14px 64px;
@@ -402,18 +322,6 @@
 
   .popular-profile-wide-card__specialization {
     font-size: 10px;
-  }
-
-  .popular-profile-wide-card__metrics {
-    gap: 6px 8px;
-  }
-
-  .popular-profile-wide-card__metric-value {
-    font-size: 11px;
-  }
-
-  .popular-profile-wide-card__metric-label {
-    font-size: 8px;
   }
 
   .popular-profiles__description {
