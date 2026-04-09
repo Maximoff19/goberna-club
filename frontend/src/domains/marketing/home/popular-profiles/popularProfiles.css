@@ -261,7 +261,7 @@
   }
 
   .popular-profile-wide-card {
-    width: min(82vw, 400px);
+    width: min(86vw, 420px);
     height: 110px;
   }
 
@@ -295,7 +295,7 @@
   }
 
   .popular-profile-wide-card {
-    width: min(84vw, 308px);
+    width: min(90vw, 328px);
     height: 108px;
     padding: 10px 12px 10px 74px;
     border-radius: 22px;

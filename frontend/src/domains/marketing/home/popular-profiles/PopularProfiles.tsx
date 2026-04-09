@@ -33,7 +33,9 @@ const ROW_SCROLL_DIRECTION = {
   SECOND: 1,
 } as const;
 
-const AUTO_SCROLL_SPEED_PX_PER_SECOND = 72;
+const MOBILE_AUTO_SCROLL_MEDIA_QUERY = '(max-width: 860px)';
+const DESKTOP_AUTO_SCROLL_SPEED_PX_PER_SECOND = 72;
+const MOBILE_AUTO_SCROLL_SPEED_PX_PER_SECOND = 42;
 
 function pickPopularProfiles(consultants: Consultant[]): PopularProfile[] {
   const seen = new Set<string>();
@@ -143,6 +145,9 @@ function PopularProfiles() {
 
       const deltaSeconds = (timestamp - previousTimestamp) / 1000;
       previousTimestamp = timestamp;
+      const autoScrollSpeed = window.matchMedia(MOBILE_AUTO_SCROLL_MEDIA_QUERY).matches
+        ? MOBILE_AUTO_SCROLL_SPEED_PX_PER_SECOND
+        : DESKTOP_AUTO_SCROLL_SPEED_PX_PER_SECOND;
 
       rowRefs.current.forEach((rowNode, rowIndex) => {
         if (!rowNode) {
@@ -155,7 +160,7 @@ function PopularProfiles() {
           return;
         }
 
-        const nextScrollLeft = rowNode.scrollLeft + AUTO_SCROLL_SPEED_PX_PER_SECOND * deltaSeconds * directions[rowIndex];
+        const nextScrollLeft = rowNode.scrollLeft + autoScrollSpeed * deltaSeconds * directions[rowIndex];
 
         if (nextScrollLeft <= 0) {
           rowNode.scrollLeft = 0;
