@@ -29,6 +29,13 @@ const ROW_INDEX = {
   SECOND: 1,
 } as const;
 
+const ROW_SCROLL_DIRECTION = {
+  FIRST: -1,
+  SECOND: 1,
+} as const;
+
+const AUTO_SCROLL_SPEED_PX_PER_SECOND = 22;
+
 function pickPopularProfiles(consultants: Consultant[]): PopularProfile[] {
   const seen = new Set<string>();
   const unique = consultants.filter((consultant) => {
@@ -122,6 +129,65 @@ function PopularProfiles() {
     return () => {
       window.cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', centerRows);
+    };
+  }, [popularProfiles.length]);
+
+  useEffect(() => {
+    if (popularProfiles.length === 0) {
+      return;
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
+    let animationFrameId = 0;
+    let previousTimestamp = 0;
+    const directions = [ROW_SCROLL_DIRECTION.FIRST, ROW_SCROLL_DIRECTION.SECOND];
+
+    const animateRows = (timestamp: number) => {
+      if (!previousTimestamp) {
+        previousTimestamp = timestamp;
+      }
+
+      const deltaSeconds = (timestamp - previousTimestamp) / 1000;
+      previousTimestamp = timestamp;
+
+      rowRefs.current.forEach((rowNode, rowIndex) => {
+        if (!rowNode) {
+          return;
+        }
+
+        const maxScrollLeft = rowNode.scrollWidth - rowNode.clientWidth;
+        if (maxScrollLeft <= 0) {
+          rowNode.scrollLeft = 0;
+          return;
+        }
+
+        const nextScrollLeft = rowNode.scrollLeft + AUTO_SCROLL_SPEED_PX_PER_SECOND * deltaSeconds * directions[rowIndex];
+
+        if (nextScrollLeft <= 0) {
+          rowNode.scrollLeft = 0;
+          directions[rowIndex] = 1;
+          return;
+        }
+
+        if (nextScrollLeft >= maxScrollLeft) {
+          rowNode.scrollLeft = maxScrollLeft;
+          directions[rowIndex] = -1;
+          return;
+        }
+
+        rowNode.scrollLeft = nextScrollLeft;
+      });
+
+      animationFrameId = window.requestAnimationFrame(animateRows);
+    };
+
+    animationFrameId = window.requestAnimationFrame(animateRows);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrameId);
     };
   }, [popularProfiles.length]);
 
