@@ -28,14 +28,10 @@ const ROW_INDEX = {
   SECOND: 1,
 } as const;
 
-const ROW_SCROLL_DIRECTION = {
-  FIRST: -1,
-  SECOND: 1,
-} as const;
-
 const MOBILE_AUTO_SCROLL_MEDIA_QUERY = '(max-width: 860px)';
 const DESKTOP_AUTO_SCROLL_SPEED_PX_PER_SECOND = 72;
 const MOBILE_AUTO_SCROLL_SPEED_PX_PER_SECOND = 42;
+const INITIAL_SCROLL_DIRECTION = -1;
 
 function pickPopularProfiles(consultants: Consultant[]): PopularProfile[] {
   const seen = new Set<string>();
@@ -136,7 +132,7 @@ function PopularProfiles() {
 
     let animationFrameId = 0;
     let previousTimestamp = 0;
-    const directions = [ROW_SCROLL_DIRECTION.FIRST, ROW_SCROLL_DIRECTION.SECOND];
+    let baseDirection = INITIAL_SCROLL_DIRECTION;
 
     const animateRows = (timestamp: number) => {
       if (!previousTimestamp) {
@@ -149,6 +145,27 @@ function PopularProfiles() {
         ? MOBILE_AUTO_SCROLL_SPEED_PX_PER_SECOND
         : DESKTOP_AUTO_SCROLL_SPEED_PX_PER_SECOND;
 
+      const rowDirections = [baseDirection, -baseDirection];
+      const shouldReverseDirection = rowRefs.current.some((rowNode, rowIndex) => {
+        if (!rowNode) {
+          return false;
+        }
+
+        const maxScrollLeft = rowNode.scrollWidth - rowNode.clientWidth;
+        if (maxScrollLeft <= 0) {
+          return false;
+        }
+
+        const nextScrollLeft = rowNode.scrollLeft + autoScrollSpeed * deltaSeconds * rowDirections[rowIndex];
+        return nextScrollLeft <= 0 || nextScrollLeft >= maxScrollLeft;
+      });
+
+      if (shouldReverseDirection) {
+        baseDirection *= -1;
+      }
+
+      const effectiveDirections = [baseDirection, -baseDirection];
+
       rowRefs.current.forEach((rowNode, rowIndex) => {
         if (!rowNode) {
           return;
@@ -160,21 +177,8 @@ function PopularProfiles() {
           return;
         }
 
-        const nextScrollLeft = rowNode.scrollLeft + autoScrollSpeed * deltaSeconds * directions[rowIndex];
-
-        if (nextScrollLeft <= 0) {
-          rowNode.scrollLeft = 0;
-          directions[rowIndex] = 1;
-          return;
-        }
-
-        if (nextScrollLeft >= maxScrollLeft) {
-          rowNode.scrollLeft = maxScrollLeft;
-          directions[rowIndex] = -1;
-          return;
-        }
-
-        rowNode.scrollLeft = nextScrollLeft;
+        const nextScrollLeft = rowNode.scrollLeft + autoScrollSpeed * deltaSeconds * effectiveDirections[rowIndex];
+        rowNode.scrollLeft = Math.min(Math.max(nextScrollLeft, 0), maxScrollLeft);
       });
 
       animationFrameId = window.requestAnimationFrame(animateRows);

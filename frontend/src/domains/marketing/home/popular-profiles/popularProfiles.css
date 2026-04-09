@@ -296,19 +296,19 @@
 
   .popular-profile-wide-card {
     width: min(90vw, 328px);
-    height: 108px;
-    padding: 10px 12px 10px 74px;
+    height: 98px;
+    padding: 8px 12px 8px 66px;
     border-radius: 22px;
   }
 
   .popular-profile-wide-card__avatar-shell {
-    width: 104px;
-    height: 104px;
-    transform: translate(-24%, -50%);
+    width: 92px;
+    height: 92px;
+    transform: translate(-20%, -50%);
   }
 
   .popular-profile-wide-card__name {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .popular-profile-wide-card__name-tail {
@@ -320,7 +320,7 @@
   }
 
   .popular-profile-wide-card__specialization {
-    font-size: 10px;
+    font-size: 9px;
   }
 
   .popular-profiles__description {
