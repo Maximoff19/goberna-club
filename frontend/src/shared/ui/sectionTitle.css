@@ -12,10 +12,7 @@
   letter-spacing: 0;
   text-transform: uppercase;
   white-space: nowrap;
-  background: linear-gradient(180deg, var(--section-title-color, #ffc502) 0%, var(--section-title-color, #ffc502) 48%, #ffffff 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--section-title-color, #ffc502);
 }
 
 @media (max-width: 1120px) {
