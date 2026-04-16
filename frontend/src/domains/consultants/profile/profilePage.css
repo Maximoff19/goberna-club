@@ -3,7 +3,7 @@
 }
 
 .profile-page__safe-area {
-  padding: 0 20px 72px;
+  padding: 0 64px 72px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -17,8 +17,8 @@
   z-index: 12;
   background: #0f1923;
   padding-bottom: 0;
-  margin-left: -20px;
-  margin-right: -20px;
+  margin-left: 0;
+  margin-right: 0;
   overflow: visible;
 }
 
@@ -892,7 +892,6 @@
   align-items: start;
   overflow: visible;
   padding-top: 12px;
-  padding-inline: 32px;
 }
 
 .profile-page__column {
@@ -1612,7 +1611,6 @@
   .profile-page__layout {
     grid-template-columns: 1fr;
     padding-top: 66px;
-    padding-inline: 16px;
   }
 
   .profile-page__column {
@@ -1631,7 +1629,7 @@
 
 @media (max-width: 860px) {
   .profile-page__safe-area {
-    padding: 0 10px 72px;
+    padding: 0 24px 72px;
   }
 
   .profile-hero__banner-wrap {
@@ -1648,8 +1646,8 @@
   }
 
   .profile-hero {
-    margin-left: -10px;
-    margin-right: -10px;
+    margin-left: 0;
+    margin-right: 0;
   }
 
   .profile-hero__avatar {
@@ -1696,7 +1694,6 @@
     grid-template-columns: 1fr;
     gap: 18px;
     padding-top: 98px;
-    padding-inline: 0;
   }
 
   .profile-page__column {
