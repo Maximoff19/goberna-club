@@ -3,7 +3,8 @@
 }
 
 .profile-page__safe-area {
-  padding: 0 64px 72px;
+  --hero-bleed: 64px;
+  padding: 0 var(--hero-bleed) 72px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -17,8 +18,8 @@
   z-index: 12;
   background: #0f1923;
   padding-bottom: 0;
-  margin-left: 0;
-  margin-right: 0;
+  margin-left: calc(var(--hero-bleed) * -1);
+  margin-right: calc(var(--hero-bleed) * -1);
   overflow: visible;
 }
 
@@ -32,7 +33,7 @@
 
 .profile-hero__avatar-wrap {
   position: absolute;
-  left: 34px;
+  left: calc(34px + var(--hero-bleed));
   bottom: -76px;
   z-index: 40;
   width: 176px;
@@ -151,7 +152,7 @@
 
 .profile-hero__brand-wrap {
   position: absolute;
-  right: 22px;
+  right: calc(22px + var(--hero-bleed));
   bottom: 16px;
   z-index: 2;
   display: inline-flex;
@@ -162,7 +163,7 @@
 .profile-hero__actions {
   position: absolute;
   top: 18px;
-  right: 18px;
+  right: calc(18px + var(--hero-bleed));
   z-index: 3;
   display: inline-flex;
   align-items: center;
@@ -1593,12 +1594,12 @@
   .profile-hero__avatar-wrap {
     width: 152px;
     height: 152px;
-    left: 28px;
+    left: calc(28px + var(--hero-bleed));
     bottom: -62px;
   }
 
   .profile-hero__actions {
-    right: 14px;
+    right: calc(14px + var(--hero-bleed));
     top: 14px;
     gap: 8px;
   }
@@ -1629,7 +1630,7 @@
 
 @media (max-width: 860px) {
   .profile-page__safe-area {
-    padding: 0 24px 72px;
+    --hero-bleed: 24px;
   }
 
   .profile-hero__banner-wrap {
@@ -1645,11 +1646,6 @@
     object-position: center;
   }
 
-  .profile-hero {
-    margin-left: 0;
-    margin-right: 0;
-  }
-
   .profile-hero__avatar {
     width: 128px;
     height: 128px;
@@ -1658,13 +1654,13 @@
   .profile-hero__avatar-wrap {
     width: 128px;
     height: 128px;
-    left: 22px;
+    left: calc(22px + var(--hero-bleed));
     bottom: -48px;
   }
 
   .profile-hero__actions {
     position: absolute;
-    right: 10px;
+    right: calc(10px + var(--hero-bleed));
     top: calc(100% + 10px);
     z-index: 42;
     gap: 6px;
@@ -1818,7 +1814,7 @@
   }
 
   .profile-hero__brand-wrap {
-    right: 12px;
+    right: calc(12px + var(--hero-bleed));
     bottom: 12px;
   }
 
