@@ -892,6 +892,7 @@
   align-items: start;
   overflow: visible;
   padding-top: 12px;
+  padding-inline: 32px;
 }
 
 .profile-page__column {
@@ -1611,6 +1612,7 @@
   .profile-page__layout {
     grid-template-columns: 1fr;
     padding-top: 66px;
+    padding-inline: 16px;
   }
 
   .profile-page__column {
@@ -1694,6 +1696,7 @@
     grid-template-columns: 1fr;
     gap: 18px;
     padding-top: 98px;
+    padding-inline: 0;
   }
 
   .profile-page__column {
