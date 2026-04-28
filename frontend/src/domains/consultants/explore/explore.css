@@ -1,7 +1,7 @@
 .explore-hero {
   position: relative;
   overflow: hidden;
-  margin: 0 20px;
+  margin: 0 40px;
   border-radius: 0 0 22px 22px;
   background-color: #0F1923;
   background-size: cover;
@@ -102,7 +102,7 @@
 }
 
 .explore-page__safe-area {
-  padding: 28px 20px 72px;
+  padding: 28px 40px 72px;
 }
 
 .explore-page__layout {
@@ -588,7 +588,7 @@
 
 @media (max-width: 1120px) {
   .explore-hero {
-    margin: 0 10px;
+    margin: 0 24px;
   }
 
   .explore-page__layout {
@@ -658,7 +658,7 @@
   }
 
   .explore-page__safe-area {
-    padding: 22px 10px 64px;
+    padding: 22px 16px 64px;
   }
 
   .explore-filters__title {
