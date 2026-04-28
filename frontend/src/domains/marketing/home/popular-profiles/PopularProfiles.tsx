@@ -154,7 +154,7 @@ function PopularProfiles() {
 
     let animationFrameId = 0;
     let previousTimestamp = 0;
-    let baseDirection = INITIAL_SCROLL_DIRECTION;
+    const rowDirections = [INITIAL_SCROLL_DIRECTION, -INITIAL_SCROLL_DIRECTION];
 
     const animateRows = (timestamp: number) => {
       if (!previousTimestamp) {
@@ -167,27 +167,6 @@ function PopularProfiles() {
         ? MOBILE_AUTO_SCROLL_SPEED_PX_PER_SECOND
         : DESKTOP_AUTO_SCROLL_SPEED_PX_PER_SECOND;
 
-      const rowDirections = [baseDirection, -baseDirection];
-      const shouldReverseDirection = rowRefs.current.some((rowNode, rowIndex) => {
-        if (!rowNode) {
-          return false;
-        }
-
-        const maxScrollLeft = rowNode.scrollWidth - rowNode.clientWidth;
-        if (maxScrollLeft <= 0) {
-          return false;
-        }
-
-        const nextScrollLeft = rowNode.scrollLeft + autoScrollSpeed * deltaSeconds * rowDirections[rowIndex];
-        return nextScrollLeft <= 0 || nextScrollLeft >= maxScrollLeft;
-      });
-
-      if (shouldReverseDirection) {
-        baseDirection *= -1;
-      }
-
-      const effectiveDirections = [baseDirection, -baseDirection];
-
       rowRefs.current.forEach((rowNode, rowIndex) => {
         if (!rowNode) {
           return;
@@ -199,8 +178,21 @@ function PopularProfiles() {
           return;
         }
 
-        const nextScrollLeft = rowNode.scrollLeft + autoScrollSpeed * deltaSeconds * effectiveDirections[rowIndex];
-        rowNode.scrollLeft = Math.min(Math.max(nextScrollLeft, 0), maxScrollLeft);
+        const nextScrollLeft = rowNode.scrollLeft + autoScrollSpeed * deltaSeconds * rowDirections[rowIndex];
+
+        if (nextScrollLeft <= 0) {
+          rowNode.scrollLeft = 0;
+          rowDirections[rowIndex] = 1;
+          return;
+        }
+
+        if (nextScrollLeft >= maxScrollLeft) {
+          rowNode.scrollLeft = maxScrollLeft;
+          rowDirections[rowIndex] = -1;
+          return;
+        }
+
+        rowNode.scrollLeft = nextScrollLeft;
       });
 
       animationFrameId = window.requestAnimationFrame(animateRows);
