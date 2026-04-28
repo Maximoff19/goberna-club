@@ -102,7 +102,9 @@
 }
 
 .explore-page__safe-area {
+  max-width: 1300px;
   padding: 28px 40px 72px;
+  margin: 0 auto;
 }
 
 .explore-page__layout {
